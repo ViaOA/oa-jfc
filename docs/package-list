@@ -14,8 +14,6 @@ com.viaoa.jfc.editor.html.view
 com.viaoa.jfc.editor.image
 com.viaoa.jfc.editor.image.control
 com.viaoa.jfc.editor.image.view
-com.viaoa.jfc.image
-com.viaoa.jfc.image.jpg
 com.viaoa.jfc.model
 com.viaoa.jfc.print
 com.viaoa.jfc.print.view
@@ -31,5 +29,4 @@ com.viaoa.jfc.text.spellcheck
 com.viaoa.jfc.text.view
 com.viaoa.jfc.toolbar
 com.viaoa.jfc.tree
-com.viaoa.jfc.undo
 com.viaoa.jfcapp
