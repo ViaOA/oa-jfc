@@ -19,10 +19,7 @@ Visit [www.viaoa.com](www.viaoa.com) for more information.
 
 Visit [OA-Jfc Javadoc](http://viaoa.github.io/oa-jfc/docs/index.html)
 
-Current release on Maven Central:
-
-<dependency>
-  <groupId>com.viaoa</groupId>
-  <artifactId>oa-jfc</artifactId>
-  <version>3.5.56</version>
-</dependency>
+Current release on Maven Central: 
+    Group Id: com.viaoa
+    Artifact Id: oa-jfc
+    Version: 3.5.56
