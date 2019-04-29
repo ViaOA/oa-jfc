@@ -25,7 +25,7 @@ import com.viaoa.jfc.OATextField;
 /**
  * Used to bind a components enabled/disabled value to a one or more Hub/Property value
  * @author vincevia
- * @deprecated  use OAObjectChangeListener instead
+ * @deprecated  use OAJfcController instead
  */
 public class EnabledController extends HubPropController {
     protected JComponent component;

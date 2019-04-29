@@ -20,7 +20,7 @@ import com.viaoa.jfc.OAJfcComponent;
 /**
  * Used to bind a components visible value to a one or more Hub/Property value
  * @author vincevia
- * @deprecated  use OAObjectChangeListener instead
+ * @deprecated  use OAJfcController instead
  */
 public class VisibleController extends HubPropController {
     protected JComponent component;
