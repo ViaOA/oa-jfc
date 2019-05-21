@@ -57,6 +57,7 @@ import com.viaoa.jfc.OATextField;
 import com.viaoa.model.oa.VDate;
 import com.viaoa.object.OAObject;
 import com.viaoa.object.OAObjectReflectDelegate;
+import com.viaoa.scheduler.OAScheduler;
 import com.viaoa.util.OADate;
 import com.viaoa.util.OAString;
 
@@ -99,9 +100,8 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
 
     protected boolean bAllowCreateNew;
     
-    
     /**
-     * Used to display 0+ objetcts by date.
+     * Used to display 0+ objects by date.
      */
     public OAMonthCalendar(Hub<F> hub, String propertyPath, String[] datePropertyPaths) {
         this.hub = hub;
@@ -599,7 +599,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
     public JLabel createLabel(Hub<F> hub) {
         return null;
     }
-    
+
     
     class DayPanel extends JPanel {
         OADate date;
@@ -796,8 +796,14 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
             return d;
         }
     }
-}
+
+    /**
+     * this can be overwritten to supply an OAScheduler for a date.
+     */
+    public OAScheduler getScheduler(OADate date) {
+        return null;
+    }
 
     
-    
-    
+}
+

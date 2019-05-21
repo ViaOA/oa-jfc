@@ -444,8 +444,8 @@ if (newValue != null && newValue.startsWith("FIRSTNAME")) {
         }
         return true;
     }
-    @OAEditQuery()
-    public void onEditQueryLastName(OAObjectEditQuery eq) {
+//    @OAEditQuery()  // not needed
+    public void lastNameCallback(OAObjectEditQuery eq) {  // <- naming convention for editQuery callback
         if (eq == null) return;
         if (eq.getType() == Type.VerifyPropertyChange) {
             boolean b = isValidLastName((String) eq.getValue(), eq);
