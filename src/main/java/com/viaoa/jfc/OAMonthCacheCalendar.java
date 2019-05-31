@@ -36,9 +36,15 @@ public class OAMonthCacheCalendar<F extends OAObject> extends OAMonthCalendar {
     protected OAObjectCacheFilter cacheFilterCalendar; 
     private final AtomicInteger aiSelectCnt = new AtomicInteger(); 
     
+    /**
+     * 
+     * @param hub objects to display
+     * @param propertyPath display PP
+     * @param datePropertyPaths
+     */
     public OAMonthCacheCalendar(Hub<F> hub, String propertyPath, String[] datePropertyPaths) {
         super(hub, propertyPath, datePropertyPaths);
-        if (hub.getMasterHub() != null) throw new RuntimeException("can not use a detail hub for cache calendar");
+        //?? if (hub.getMasterHub() != null) throw new RuntimeException("can not use a detail hub for cache calendar");
         onNewMonth();
     }
     public OAMonthCacheCalendar(Hub<F> hub, String propertyPath, String datePropertyPaths) {
