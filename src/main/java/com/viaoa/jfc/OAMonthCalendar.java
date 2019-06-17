@@ -173,26 +173,10 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
      * called when a date is selected.
      * @param hub used to find the AO that was selected
      */
-    protected void onDaySelected(OADate date, Hub<F> hub, Hub<T> hubDetail) {
-        updateSelectButton(date);
+    protected void onDaySelected(OADate date, Hub<F> hub, Hub<T> hubForList) {
         getHub().setAO(hub.getAO());
-        if (hubDetail != null && getDetailHub() != null) {
-            getDetailHub().setAO(hubDetail.getAO());
-        }
-    }
-    
-    protected void updateSelectButton(OADate date) {
-        if (cmdSelect != null) {
-            boolean b = false;
-            if (date != null) {
-                OAScheduler schr = getScheduler(date);
-                if (schr == null) b = true;
-                else {
-                    ArrayList<OASchedulerPlan> al = schr.getSchedulePlans();
-                    b = schr.isAvailable(date);
-                }
-            }
-            cmdSelect.setEnabled(b);
+        if (hubForList != null && getDetailHub() != null) {
+            getDetailHub().setAO(hubForList.getAO());
         }
     }
     
@@ -206,7 +190,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
     protected void onNewMonth() {
     }
 
-    private OADate lastSelectedDate;
+    protected OADate lastSelectedDate;
     
     /**
      * called by UI or manually, to display the new day.  If the month is not currently displayed, then onNewMonth will also be called.
@@ -219,7 +203,6 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
 
         if (dx.equals(lastSelectedDate)) return;
         lastSelectedDate = new OADate(dx);
-        
         vdCalendar.setValue(new OADate(dx));
         
         final int month = bFromDayPanel ? alDayPanel.get(20).date.getMonth() :dx.getMonth(); 
@@ -322,7 +305,18 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                 }
             };
             alDayPanel.add(dp);
+
+            dp.hubForList.addHubListener(new HubListenerAdapter() {
+                public void afterChangeActiveObject(HubEvent e) {
+                    if (dp.hub.getAO() != null) {
+                        setSelectedDate(dp.date, true);
+                        onDaySelected(dp.date, dp.hub, dp.hubForList);
+                    }
+                }
+            });
             
+            
+            /*qqqqqqqqqqqq was
             if (OAMonthCalendar.this.hubDetail != null) {
                 dp.hubDetail.addHubListener(new HubListenerAdapter() {
                     public void afterChangeActiveObject(HubEvent e) {
@@ -334,7 +328,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                 });
             }
             else {
-                dp.hub.addHubListener(new HubListenerAdapter() {
+                dp.hubForList.addHubListener(new HubListenerAdapter() {
                     public void afterChangeActiveObject(HubEvent e) {
                         if (dp.hub.getAO() != null) {
                             setSelectedDate(dp.date, true);
@@ -343,6 +337,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                     }
                 });
             }
+            */
         }
         
         setupHubs();
@@ -363,7 +358,8 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                     
                     for (DayPanel dp : alDayPanel) {
                         if (!d.equals(dp.date)) continue;
-                        dp.hubDetail.setAO(obj);
+                        //was: qqqqqq dp.hubDetail.setAO(obj);
+                        dp.hubForList.setAO(obj);
                         break;
                     }
                     
@@ -562,24 +558,9 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
         
         panx.add(dcboCalendar);
         
-        //url = OAButton.class.getResource("icons/goto.gif");
-        //Icon icon = new ImageIcon(url);
-        //JButton cmdSelect = new JButton("Select", icon);
-        cmdSelect = new JButton("Select");
-        cmdSelect.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                onSelected(lastSelectedDate);
-            }
-        });
-        OAButton.setup(cmdSelect);
-        cmdSelect.setFocusPainted(true);
-        panx.add(cmdSelect);
-        
         return panx;
     }
 
-    private JButton cmdSelect;
     
     /**
      * Called by the "select" button is clicked.
@@ -645,7 +626,8 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
         JLabel lbl;
         OAList lst;
         Hub<F> hub;
-        Hub<T> hubDetail;
+        //Hub<T> hubDetail;
+        Hub hubForList;
         boolean bLabelSetText;
         JButton cmd;
         JPanel panCmd;
@@ -699,32 +681,34 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
             lbl.setHorizontalAlignment(SwingConstants.CENTER);
             add(lbl, BorderLayout.NORTH);
             
-            Hub hubx = hub;
+            hubForList = hub;
             String propPath = propertyPath;
             if (OAMonthCalendar.this.getDetailHub() != null) {
                 HubAODelegate.keepActiveObject(this.hub);
                 
                 hubDetail = hub.getDetailHub(OAMonthCalendar.this.getDetailHub().getObjectClass()).createSharedHub();
-                hubx = hubDetail;
+                hubForList = hubDetail;
             }
             else {
                 // propertyPath could be using hub
                 if (propertyPath != null && propertyPath.indexOf('.') > 0) {
                     OAPropertyPath ppx = new OAPropertyPath(hub.getObjectClass(), propertyPath);
                     if (ppx.getHasHubProperty()) {
+                        HubAODelegate.keepActiveObject(this.hub);
+                        
                         int x = OAString.dcount(propertyPath, '.');
                         if (x == 1) {
-                            hubx = hub.getDetailHub(propertyPath);
+                            hubForList = hub.getDetailHub(propertyPath);
                             propPath = "";
                         }
                         else {
-                            hubx = hub.getDetailHub(OAString.field(propertyPath, '.', 1, x-1));
+                            hubForList = hub.getDetailHub(OAString.field(propertyPath, '.', 1, x-1));
                             propPath = OAString.field(propertyPath, '.', x);
                         }
                     }
                 }
             }
-            lst = createList(hubx, propPath);
+            lst = createList(hubForList, propPath);
             lst.setVisibleRows(5);
 
             // hack to let scrollwheel work for panel, and not list
@@ -819,8 +803,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                 lbl.setOpaque(false);
                 lbl.setForeground(Color.black);
                 setBorder(borderUnselected);
-               if (hubDetail != null) hubDetail.setAO(null);
-               else hub.setAO(null);
+                hubForList.setAO(null);
             }
             if (lbl instanceof OALabel) {
                 ((OALabel) lbl).customizeRenderer(lbl, hub.getAO(), date, b, b, 0, false, false);

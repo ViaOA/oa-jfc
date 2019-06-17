@@ -670,7 +670,7 @@ public class OAJfcController extends HubListenerAdapter {
     public void setViewOnly(boolean b) {
         if (b) {
             if (hpViewOnly == null) {
-                hpViewOnly = getEnabledChangeListener().addAlwaysFalse();
+                hpViewOnly = getEnabledChangeListener().addOnlySuperAdmin(); // viewOnly, unless OAContext.SuperAdmin=true
             }
         }
         else {

@@ -1,6 +1,11 @@
 package com.viaoa.jfc;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import com.viaoa.hub.Hub;
@@ -12,6 +17,7 @@ import com.viaoa.object.OAObjectReflectDelegate;
 import com.viaoa.object.OAObjectSchedulerDelegate;
 import com.viaoa.scheduler.OAScheduler;
 import com.viaoa.scheduler.OASchedulerController;
+import com.viaoa.scheduler.OASchedulerPlan;
 import com.viaoa.util.OADate;
 import com.viaoa.util.OADateTime;
 import com.viaoa.util.OAPropertyPath;
@@ -55,6 +61,8 @@ public class OASchedulerPanel<F extends OAObject> extends JPanel {
         if (control == null) return;
         
         monthCalendar = new OAMonthCacheCalendar(control.getDetailHub(), ppDisplay, control.getFromDateProperty()) {
+            private JButton cmdSelect;
+
             @Override
             protected void onSelected(OADateTime dt) {
                 OASchedulerPanel.this.control.set(dt, dt);;
@@ -64,6 +72,45 @@ public class OASchedulerPanel<F extends OAObject> extends JPanel {
             public OAScheduler getScheduler(OADate date) {
                 return OASchedulerPanel.this.control.getSchedulerCallback(date);
             }
+            @Override
+            protected JPanel getSelectDatePanel() {
+                JPanel panx = super.getSelectDatePanel();
+                
+                //url = OAButton.class.getResource("icons/goto.gif");
+                //Icon icon = new ImageIcon(url);
+                //JButton cmdSelect = new JButton("Select", icon);
+                cmdSelect = new JButton("Select");
+                cmdSelect.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        onSelected(lastSelectedDate);
+                    }
+                });
+                OAButton.setup(cmdSelect);
+                cmdSelect.setFocusPainted(true);
+                panx.add(cmdSelect);
+                return panx;
+            }
+            
+            @Override
+            protected void onDaySelected(OADate date, Hub hub, Hub hubDetail) {
+                updateSelectButton(date);
+                super.onDaySelected(date, hub, hubDetail);
+            }
+            protected void updateSelectButton(OADate date) {
+                if (cmdSelect == null) return;
+                boolean b = false;
+                if (date != null) {
+                    OAScheduler schr = getScheduler(date);
+                    if (schr == null) b = true;
+                    else {
+                        ArrayList<OASchedulerPlan> al = schr.getSchedulePlans();
+                        b = schr.isAvailable(date);
+                    }
+                }
+                cmdSelect.setEnabled(b);
+            }
+            
         };
         
         this.setLayout(new BorderLayout());
@@ -71,7 +118,6 @@ public class OASchedulerPanel<F extends OAObject> extends JPanel {
     }
 
     protected void onSelected(OADateTime dt) {
-        
     }
     
 }
