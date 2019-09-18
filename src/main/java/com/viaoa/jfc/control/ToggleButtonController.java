@@ -212,8 +212,10 @@ public class ToggleButtonController extends OAJfcController implements ItemListe
         afterChangeActiveObject();
     }
     
+int aa=0;    
     // HUB Events
     public @Override void afterChangeActiveObject() {
+if (DEBUG) System.out.println("aaaaaaaaaaa "+(++aa)+", bFlag="+bFlag);        
         try {
             if (bFlag) return;
             _afterChangeActiveObject();
@@ -224,8 +226,10 @@ public class ToggleButtonController extends OAJfcController implements ItemListe
         }
         super.afterChangeActiveObject();
     }
+int xx=0;    
     protected void _afterChangeActiveObject() {
         boolean b = false;
+if (DEBUG) System.out.println("qqqqqqqqqqqqqqq "+(++xx));        
 
         Object oaObject = hub.getActiveObject();
 

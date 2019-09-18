@@ -1708,22 +1708,8 @@ cntAllUpdate++;
     private final AtomicInteger aiAfterPropChange = new AtomicInteger();
     @Override
     public void afterPropertyChange(final HubEvent e) {
-        if (!SwingUtilities.isEventDispatchThread()) {
-            final int x = aiAfterPropChange.incrementAndGet();
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    if (x == aiAfterPropChange.get()) {
-                        _afterPropertyChange(e);
-                    }
-                }
-            });
-        }
-        else {
-            _afterPropertyChange(e);
-        }
-    }
-    private void _afterPropertyChange(HubEvent e) {
+        
+        // 20190918        
         Object ao = getHub().getAO();
         if (bAoOnly) {
             if (ao == null || e.getObject() != ao) return;
@@ -1743,10 +1729,27 @@ cntAllUpdate++;
                 }
             }
         }
-        if (b) {
-            OAJfcController.this.afterPropertyChange();
-            callUpdate();
+        if (!b) return;
+        
+        if (!SwingUtilities.isEventDispatchThread()) {
+            final int x = aiAfterPropChange.incrementAndGet();
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    if (x == aiAfterPropChange.get()) {
+                        _afterPropertyChange(e);
+                    }
+                }
+            });
         }
+        else {
+            _afterPropertyChange(e);
+        }
+    }
+    
+    private void _afterPropertyChange(HubEvent e) {
+        OAJfcController.this.afterPropertyChange();
+        callUpdate();
     }
 
     // called if the actual property is changed in the actualHub.activeObject
