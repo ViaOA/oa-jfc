@@ -17,7 +17,6 @@ import javax.swing.*;
 
 import com.viaoa.hub.*;
 import com.viaoa.undo.*;
-import com.viaoa.object.OAThreadLocalDelegate;
 import com.viaoa.util.*;
 
 /**
@@ -226,10 +225,9 @@ if (DEBUG) System.out.println("aaaaaaaaaaa "+(++aa)+", bFlag="+bFlag);
         }
         super.afterChangeActiveObject();
     }
-int xx=0;    
+    
     protected void _afterChangeActiveObject() {
         boolean b = false;
-if (DEBUG) System.out.println("qqqqqqqqqqqqqqq "+(++xx));        
 
         Object oaObject = hub.getActiveObject();
 
