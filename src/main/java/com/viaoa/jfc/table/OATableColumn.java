@@ -55,6 +55,7 @@ public class OATableColumn {
     protected OATableColumnCustomizer columnCustomizer;
     public OATemplate templateToolTip;
     public String format;
+    public boolean DEBUG;
     
     public boolean getAllowSorting() {
         return allowSorting;

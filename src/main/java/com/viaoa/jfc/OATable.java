@@ -3797,6 +3797,8 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
     }
     private static Icon iconFake;
     protected Component _getRenderer(Component comp, JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column, boolean wasChanged, boolean wasMouseOver) {
+int xx = 6;
+xx++;//qqqqqqqqqqqqq
         JLabel lbl = null; 
         // 1of3: set default settings
         if (!(comp instanceof JLabel)) {
@@ -3863,7 +3865,12 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
         // 20181004   
         final Object objx = getObjectAt(row, column);
         if (oacomp instanceof OAJfcComponent) {
-            ((OAJfcComponent) oacomp).getController().update((JComponent) oacomp, objx, false);  // was: lbl
+            if (oacomp instanceof JLabel) {  // 20190919
+                ((OAJfcComponent) oacomp).getController().update(lbl, objx, false);  // was: lbl
+            }
+            else {
+                ((OAJfcComponent) oacomp).getController().update((JComponent) oacomp, objx, false);  // was: lbl
+            }
         }
         
         // 2of4: allow component to customize
@@ -4361,7 +4368,18 @@ class TableController extends OAJfcController implements ListSelectionListener {
                     cellRect.width = 5;
                 }
             }
-            if (cellRect != null) table.scrollRectToVisible(cellRect);
+            if (cellRect != null) {
+                if (SwingUtilities.isEventDispatchThread()) {
+                    table.scrollRectToVisible(cellRect);
+                }
+                else {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            table.scrollRectToVisible(cellRect);
+                        }
+                    });
+                }
+            }            
             // table.repaint();
         }
     }

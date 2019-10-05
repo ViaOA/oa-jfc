@@ -20,6 +20,7 @@ import java.util.WeakHashMap;
 
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubChangeListener;
@@ -195,6 +196,18 @@ public class OAConsole extends OATable implements FocusListener, MouseListener {
     }
 
     protected void afterPropertyChange(OAObject oaObj, String val) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            _afterPropertyChange(oaObj, val);
+        }
+        else {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    _afterPropertyChange(oaObj, val);
+                }
+            });
+        }
+    }
+    protected void _afterPropertyChange(OAObject oaObj, String val) {
         Hub<Console> hubx = hmConsole.get(oaObj);
         if (hubx == null) {
             hubx = new Hub<Console>(Console.class);
