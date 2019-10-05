@@ -2820,7 +2820,8 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
                     Object obj = hub.getAt(row);
                     if (obj != null) {
                         if (hubSelect.contains(obj)) { // removing from select hub
-                            hub.setAO(null);
+                            hub.setAO(obj);
+                            //was:  hub.setAO(null);
                             return false; 
                         }
                     }
