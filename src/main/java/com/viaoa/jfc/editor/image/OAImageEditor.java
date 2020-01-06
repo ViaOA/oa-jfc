@@ -39,6 +39,9 @@ public class OAImageEditor extends JPanel implements OAJfcComponent {
         add(new OAScroller(control.getToolBar()), BorderLayout.NORTH);
         add(new JScrollPane(control.getOAImagePanel()), BorderLayout.CENTER);
     }
+    public OAImageEditor(Hub hub, String bytesProperty) {
+        this(hub, bytesProperty, null);
+    }
 
     @Override
     public OAImagePanelController getController() {

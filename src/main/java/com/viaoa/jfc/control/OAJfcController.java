@@ -634,7 +634,7 @@ public class OAJfcController extends HubListenerAdapter {
         if (!(obj instanceof OAObject)) return null;
         
         OAObject oaObj = (OAObject) obj;
-        OAObjectEditQuery em = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery(oaObj, linkPropertyName, null, objNew);
+        OAObjectEditQuery em = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery(OAObjectEditQuery.CHECK_ALL, oaObj, linkPropertyName, null, objNew);
 
         String result = null;
         if (!em.getAllowed()) {
@@ -708,7 +708,7 @@ public class OAJfcController extends HubListenerAdapter {
         }
         String result = null;
         if (objx instanceof OAObject) {
-            OAObjectEditQuery em = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery((OAObject)objx, prop, null, newValue);
+            OAObjectEditQuery em = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery(OAObjectEditQuery.CHECK_ALL, (OAObject)objx, prop, null, newValue);
             if (!em.getAllowed()) {
                 result = em.getResponse();
                 Throwable t = em.getThrowable();
@@ -1162,7 +1162,7 @@ public class OAJfcController extends HubListenerAdapter {
             return;
         }
         
-/*qqqqqqqqqqqqq Test
+/*qqqqqqq Test
 cntAllUpdate++;        
     System.out.printf((++cntUpdate)+"/"+cntAllUpdate+") %s %s %s\n", 
         hub!=null ? hub.getObjectClass().getSimpleName() : "", 

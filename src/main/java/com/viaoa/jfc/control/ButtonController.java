@@ -363,11 +363,22 @@ public class ButtonController extends OAJfcController implements ActionListener 
                 break;
             case Add:
             case Insert:
-            case New:
-                eq = OAObjectEditQueryDelegate.getVerifyAddEditQuery(getHub(), null);
+                eq = OAObjectEditQueryDelegate.getVerifyAddEditQuery(getHub(), null, OAObjectEditQuery.CHECK_ALL);
                 if (!eq.getAllowed()) {
                     String s = eq.getDisplayResponse();
                     if (s == null) s = "Add is not allowed";
+                    JOptionPane.showMessageDialog(button, s, "Warning", JOptionPane.WARNING_MESSAGE);
+                    return false;
+                }
+                eq = OAObjectEditQueryDelegate.getConfirmAddEditQuery(getHub(), null, msg, title);
+                msg = eq.getConfirmMessage();
+                title = eq.getConfirmTitle();
+                break;
+            case New:
+                eq = OAObjectEditQueryDelegate.getAllowNewEditQuery(getHub(), OAObjectEditQuery.CHECK_ALL);
+                if (!eq.getAllowed()) {
+                    String s = eq.getDisplayResponse();
+                    if (s == null) s = "New is not allowed";
                     JOptionPane.showMessageDialog(button, s, "Warning", JOptionPane.WARNING_MESSAGE);
                     return false;
                 }
@@ -412,7 +423,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
                         if (i > 0) break;
                         continue;
                     }
-                    eq = OAObjectEditQueryDelegate.getVerifySaveEditQuery((OAObject) objx);
+                    eq = OAObjectEditQueryDelegate.getVerifySaveEditQuery((OAObject) objx, OAObjectEditQuery.CHECK_ALL);
                     if (!eq.getAllowed()) {
                         String s = eq.getDisplayResponse();
                         if (s == null) s = "Save is not allowed";
@@ -428,7 +439,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
         }
         
         if (OAString.isNotEmpty(getMethodName())) {
-            eq = OAObjectEditQueryDelegate.getVerifyCommandEditQuery(obj, getMethodName());
+            eq = OAObjectEditQueryDelegate.getVerifyCommandEditQuery(obj, getMethodName(), OAObjectEditQuery.CHECK_ALL);
             if (!eq.getAllowed()) {
                 String s = eq.getDisplayResponse();
                 JOptionPane.showMessageDialog(button, s, "Command Warning", JOptionPane.WARNING_MESSAGE);
@@ -474,7 +485,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
         switch (command) {
         case ClearAO:
             if (hub.getLinkHub(true) != null) {
-                eq = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery((OAObject) hub.getLinkHub(true).getAO(), hub.getLinkPath(true), obj, null);
+                eq = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery(OAObjectEditQuery.CHECK_ALL, (OAObject) hub.getLinkHub(true).getAO(), hub.getLinkPath(true), obj, null);
             }
             break;
         case Delete:
@@ -495,7 +506,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
                     continue;
                 }
                 
-                eq = OAObjectEditQueryDelegate.getVerifyDeleteEditQuery((OAObject)objx);
+                eq = OAObjectEditQueryDelegate.getVerifyDeleteEditQuery(getHub(), (OAObject)objx, OAObjectEditQuery.CHECK_ALL);
                 if (eq != null && !eq.getAllowed()) break;
             }
             if (eq != null && !eq.getAllowed()) break;
@@ -517,7 +528,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
                     if (i > 0) break;
                     continue;
                 }
-                eq = OAObjectEditQueryDelegate.getVerifyRemoveEditQuery(getHub(), (OAObject) objx);
+                eq = OAObjectEditQueryDelegate.getVerifyRemoveEditQuery(getHub(), (OAObject) objx, OAObjectEditQuery.CHECK_ALL);
                 if (!eq.getAllowed()) break;
             }
             break;
@@ -525,7 +536,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
         case Insert:
         case New:
             if (obj instanceof OAObject) {
-                eq = OAObjectEditQueryDelegate.getVerifyAddEditQuery(getHub(), (OAObject) obj);
+                eq = OAObjectEditQueryDelegate.getVerifyAddEditQuery(getHub(), (OAObject) obj, OAObjectEditQuery.CHECK_ALL);
             }
         case Search:
             Hub hubx = HubLinkDelegate.getHubWithLink(hub, true);
@@ -543,12 +554,12 @@ public class ButtonController extends OAJfcController implements ActionListener 
             if (hubx == null || propx == null) return null;
             objx = hubx.getAO();
             if (!(objx instanceof OAObject)) return null;
-            eq = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery((OAObject) objx, propx, null, obj);
+            eq = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery(OAObjectEditQuery.CHECK_ALL, (OAObject) objx, propx, null, obj);
             break;
         }            
         
         if (OAString.isNotEmpty(getMethodName()) && (obj instanceof OAObject) && (eq == null || eq.isAllowed()) ) {
-            eq = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery((OAObject)obj, getMethodName(), null, updateValue);
+            eq = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery(OAObjectEditQuery.CHECK_ALL, (OAObject)obj, getMethodName(), null, updateValue);
         }
         return eq;
     }
@@ -1667,7 +1678,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
                 if (flag && !HubAddRemoveDelegate.isAllowAddRemove(getHub())) {
                     flag = false;
                 }
-                flag = flag && OAObjectEditQueryDelegate.getAllowRemove(hub, true);
+                flag = flag && OAObjectEditQueryDelegate.getAllowRemove(hub, null, OAObjectEditQuery.CHECK_ALL);
 
                 break;
             case ClearAO:
@@ -1698,7 +1709,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
                         continue;
                     }
                     // 20190220
-                    flag = OAObjectEditQueryDelegate.getAllowDelete(hub, (OAObject)objx, true);
+                    flag = OAObjectEditQueryDelegate.getAllowDelete(hub, (OAObject)objx, OAObjectEditQuery.CHECK_ALL);
                     //was: flag = ((OAObject)objx).canDelete();
                 }
                 break;
@@ -1711,7 +1722,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
                     flag = (hub.getSize() == 0);
                     break;
                 }
-                flag = flag && OAObjectEditQueryDelegate.getAllowAdd(getHub(), true);
+                flag = flag && OAObjectEditQueryDelegate.getAllowAdd(getHub(), null, OAObjectEditQuery.CHECK_ALL);
                 //was: flag = flag && getHub().canAdd();
                 break;
             case Up:
@@ -1721,7 +1732,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
                 flag = (obj != null && (hub.isMoreData() || hub.getPos() < (hub.getSize() - 1)));
                 break;
             case Cut:
-                OAObjectEditQuery eq = OAObjectEditQueryDelegate.getAllowRemoveEditQuery(hub, true);
+                OAObjectEditQuery eq = OAObjectEditQueryDelegate.getAllowRemoveEditQuery(hub, null, OAObjectEditQuery.CHECK_ALL);
                 flag = eq.getAllowed();
                 if (!flag) break;
             case Copy:

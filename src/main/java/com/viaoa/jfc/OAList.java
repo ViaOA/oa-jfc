@@ -527,7 +527,7 @@ public class OAList extends JList implements OATableComponent, DragGestureListen
         Point p = this.getLocation();
         pt.translate(p.x, p.y);
         for (;cont != null; ) {
-            if (cont instanceof JPanel) break;//qqqqqqqqqqq 20101030
+            if (cont instanceof JPanel) break;
             if (cont instanceof JScrollPane) {
                 long ltime = (new java.util.Date()).getTime();
                 if (ltime < (timeDragOver + 200)) break;
