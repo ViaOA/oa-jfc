@@ -535,9 +535,12 @@ refreshHub();
             }
         });
     }
+//20200226 removed this, not sure why it was here.  nodes are not able to be added to treetable, and this seems to be the cause
+/*was:    
     public void add(OATreeNode node) {
         // TODO Auto-generated method stub
         
     }
+*/    
 }
 
