@@ -27,8 +27,8 @@ import javax.swing.border.EmptyBorder;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
 
-import com.sun.java.swing.plaf.motif.MotifComboBoxUI;
-import com.sun.java.swing.plaf.windows.WindowsComboBoxUI;
+//import com.sun.java.swing.plaf.motif.MotifComboBoxUI;
+//import com.sun.java.swing.plaf.windows.WindowsComboBoxUI;
 
 import com.viaoa.hub.*;
 import com.viaoa.object.OAObject;
@@ -159,6 +159,7 @@ public class OADateComboBox extends OACustomComboBox {
     */
     public void updateUI() {
 	    ComboBoxUI cui = (ComboBoxUI) UIManager.getUI(this);
+/*	    
 	    if (cui instanceof MotifComboBoxUI) {
 	        cui = new MotifComboBoxUI() {
 	            protected ComboPopup createPopup() {
@@ -178,6 +179,12 @@ public class OADateComboBox extends OACustomComboBox {
 	            return new DatePopup( comboBox );
 	        }
 	    };
+*/	    
+        cui = new MetalComboBoxUI() {
+            protected ComboPopup createPopup() {
+                return new DatePopup( comboBox );
+            }
+        };
         setUI(cui);
     }
     

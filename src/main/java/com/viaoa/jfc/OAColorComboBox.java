@@ -22,8 +22,8 @@ import javax.swing.plaf.ComboBoxUI;
 import javax.swing.plaf.basic.ComboPopup;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 
-import com.sun.java.swing.plaf.motif.MotifComboBoxUI;
-import com.sun.java.swing.plaf.windows.WindowsComboBoxUI;
+//import com.sun.java.swing.plaf.motif.MotifComboBoxUI;
+//import com.sun.java.swing.plaf.windows.WindowsComboBoxUI;
 
 import com.viaoa.hub.*;
 import com.viaoa.util.*;
@@ -221,6 +221,7 @@ public class OAColorComboBox extends OACustomComboBox {
     */
     public void updateUI() {
 	    ComboBoxUI cui = (ComboBoxUI) UIManager.getUI(this);
+/*	20200304 windows only options    
 	    if (cui instanceof MotifComboBoxUI) {
 	        cui = new MotifComboBoxUI() {
 	            protected ComboPopup createPopup() {
@@ -240,6 +241,12 @@ public class OAColorComboBox extends OACustomComboBox {
 	            return new CBColorPopup( (OAColorComboBox)comboBox );
 	        }
 	    };
+*/	    
+        cui = new MetalComboBoxUI() {
+            protected ComboPopup createPopup() {
+                return new CBColorPopup( (OAColorComboBox)comboBox );
+            }
+        };
         setUI(cui);
     }
 
