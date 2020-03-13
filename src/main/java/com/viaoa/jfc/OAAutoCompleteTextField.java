@@ -315,7 +315,15 @@ public class OAAutoCompleteTextField extends JTextField implements OATableCompon
     	return control.getBackgroundColorPropertyPath();
     }
 
+
+    public void addEnabledCheck(Hub hub, HubChangeListener.Type type) {
+        control.getEnabledChangeListener().add(hub, type);
+    }
     
+    /**
+     * Adds a changelistner for type=hubvalid
+     * @param hub
+     */
     public void addEnabledCheck(Hub hub) {
         control.getEnabledChangeListener().add(hub);
     }
