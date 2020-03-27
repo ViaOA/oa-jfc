@@ -64,10 +64,9 @@ import com.viaoa.util.OAString;
       todo: replace smiles with image
 
  * 
- * Note: sizes are based on pixels. If point sizes were used in HTML, then they
- * are converted to pixel size. Java font sizes are based on pixel, printer font
- * sizes are based on point. <br>
- * 
+ * Note: Java font sizes are based on screen resolution of 72, and windows uses 96. If point sizes were used in HTML, then they
+ * are converted to pixel size. Printer font
+ * sizes are based on point. CSS font sizes are based on the 'pt' or 'px' (default)<br>
  * 
  * From Font.getSize():
  * "The Java(tm)2D API adopts the convention that one point is equivalent to one unit in user coordinates"

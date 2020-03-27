@@ -15,11 +15,12 @@ import java.awt.Toolkit;
 /**
  * Utility methods for converting between pixels and points.
  * @author vvia
- *
  */
 public class OAPrintUtil {
 
-    private static float pointToPixel; 
+    private static float pointToPixel = 0.0f; 
+    private static float pixelToPoint = 0.0f;
+    
     public static float convertPointsToPixels(double pointSize) {
         if (pointToPixel == 0.0) {
             pointToPixel = (float) (Toolkit.getDefaultToolkit().getScreenResolution() / 72.0);
@@ -27,7 +28,6 @@ public class OAPrintUtil {
         return (float) (pointToPixel * pointSize);
     }
     
-    private static float pixelToPoint;
     public static float convertPixelsToPoints(double pixelSize) {
         return (float) (getPixelToPointScale() * pixelSize);
     }

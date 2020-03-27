@@ -1812,7 +1812,7 @@ public class OAHTMLTextPaneController extends OATextController {
 
                     // 20121112
                     if (s.matches("[\\d]+[\\s]*pt")) {
-//qqqqqqqqq get correct regex                        
+                        
                         int fontSize = OAString.parseInt(s);
                         //System.out.println("Selected fontSize="+fontSize);                  
                         MutableAttributeSet attr = new SimpleAttributeSet();
@@ -2603,7 +2603,10 @@ public class OAHTMLTextPaneController extends OATextController {
         if (dlgFont == null) {
             dlgFont = new FontDialog(getWindow(), getFontNames(), fontSizes);
         }
-        AttributeSet a = editorDocument.getCharacterElement(htmlEditor.getCaretPosition()).getAttributes();
+        // was: AttributeSet a = editorDocument.getCharacterElement(htmlEditor.getCaretPosition()).getAttributes();
+        
+        AttributeSet a = getCurrentDocAttributeSet(); 
+        
         dlgFont.setAttributes(a);
         dlgFont.setVisible(true);
         if (dlgFont.succeeded()) {
@@ -3366,10 +3369,10 @@ System.out.println("View Font="+fontView);//qqqqqqqqq
             
             
             AttributeSet as = this.htmlEditor.getParagraphAttributes();
-            fontSize = StyleConstants.getAlignment(as);
-            getLeftToggleButton().setSelected( (fontSize == StyleConstants.ALIGN_LEFT) );
-            getCenterToggleButton().setSelected( (fontSize == StyleConstants.ALIGN_CENTER) );
-            getRightToggleButton().setSelected( (fontSize == StyleConstants.ALIGN_RIGHT) );
+            int x = StyleConstants.getAlignment(as);
+            getLeftToggleButton().setSelected( (x == StyleConstants.ALIGN_LEFT) );
+            getCenterToggleButton().setSelected( (x == StyleConstants.ALIGN_CENTER) );
+            getRightToggleButton().setSelected( (x == StyleConstants.ALIGN_RIGHT) );
             // getJustifiedToggleButton().setSelected( (x == StyleConstants.ALIGN_JUSTIFIED) );
 
             // getFontColorMenu().setColor(htmlEditor.getForeground());

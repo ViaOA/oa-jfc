@@ -84,13 +84,14 @@ public class OAMonthCacheCalendar<F extends OAObject> extends OAMonthCalendar {
     
     @Override
     protected void onNewMonth() {
+        final OADate currentDate = getLastSelectedDate();
         // create finders for each pp
         if (hub == null || alFinder == null) return;
         hub.clear();
         alFinder.clear();
         OAFinder finder;
 
-        OADate d1  = getBeginDate();
+        OADate d1 = getBeginDate();
         OADate d2 = getEndDate();
         
         String query = "";
@@ -113,12 +114,15 @@ public class OAMonthCacheCalendar<F extends OAObject> extends OAMonthCalendar {
             ArrayList al = new ArrayList();
             @Override
             protected Void doInBackground() throws Exception {
+                if (currentDate != null && !currentDate.equals(getLastSelectedDate())) return null;
                 try {
                     aiSelectCnt.incrementAndGet();
                     OASelect sel = new OASelect(getHub().getObjectClass(), q, params, "");
+                    sel.select();
                     for (; ;) {
                         Object objx = sel.next();
                         if (objx == null) break;
+                        if (currentDate != null && !currentDate.equals(getLastSelectedDate())) return null;
                         al.add(objx);
                     }
                 }
@@ -129,7 +133,9 @@ public class OAMonthCacheCalendar<F extends OAObject> extends OAMonthCalendar {
             }
             @Override
             protected void done() {
-                cacheFilterCalendar.refresh();
+                if (currentDate == null || currentDate.equals(getLastSelectedDate())) {
+                    cacheFilterCalendar.refresh(false);
+                }
                 al.clear();
             }
         };

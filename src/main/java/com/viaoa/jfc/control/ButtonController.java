@@ -375,7 +375,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
                 title = eq.getConfirmTitle();
                 break;
             case New:
-                eq = OAObjectEditQueryDelegate.getAllowNewEditQuery(getHub(), OAObjectEditQuery.CHECK_ALL);
+                eq = OAObjectEditQueryDelegate.getAllowNewEditQuery(getHub());
                 if (!eq.getAllowed()) {
                     String s = eq.getDisplayResponse();
                     if (s == null) s = "New is not allowed";
@@ -1709,7 +1709,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
                         continue;
                     }
                     // 20190220
-                    flag = OAObjectEditQueryDelegate.getAllowDelete(hub, (OAObject)objx, OAObjectEditQuery.CHECK_ALL);
+                    flag = OAObjectEditQueryDelegate.getAllowDelete(hub, (OAObject)objx);
                     //was: flag = ((OAObject)objx).canDelete();
                 }
                 break;

@@ -26,7 +26,9 @@ import javax.swing.event.*;
 // import javax.help.*;
 
 import com.viaoa.jfc.*;
+import com.viaoa.jfc.print.OAPrintUtil;
 import com.viaoa.jfc.text.view.OpenList;
+import com.viaoa.util.OAConv;
 
 public class FontDialog extends JDialog
 {
@@ -204,8 +206,16 @@ public class FontDialog extends JDialog
 		m_attributes = new SimpleAttributeSet(a);
 		String name = StyleConstants.getFontFamily(a);
 		m_lstFontName.setSelected(name);
+		
+		
 		int size = StyleConstants.getFontSize(a);
-		m_lstFontSize.setSelectedInt(size);
+		double d = OAPrintUtil.convertPixelsToPoints(size);
+		size = (int) OAConv.round(d, 0);
+		
+		
+		m_lstFontSize.setSelected(size+"pt");
+		
+		
 		m_chkBold.setSelected(StyleConstants.isBold(a));
 		m_chkItalic.setSelected(StyleConstants.isItalic(a));
 		m_chkUnderline.setSelected(StyleConstants.isUnderline(a));
@@ -278,8 +288,11 @@ public class FontDialog extends JDialog
 		if (m_chkItalic.isSelected())
 			style |= Font.ITALIC;
 
+        int sr = getToolkit().getScreenResolution();
+        int x = (int) (size * (sr/72.0f));
+        
 		// Bug Alert! This doesn't work if only style is changed.
-		Font fn = new Font(name, style, size);
+		Font fn = new Font(name, style, x);
 		m_preview.setFont(fn);
 
 		Color c = (Color)m_cbColor.getSelectedItem();

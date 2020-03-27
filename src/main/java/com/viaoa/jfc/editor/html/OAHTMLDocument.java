@@ -88,7 +88,7 @@ public class OAHTMLDocument extends HTMLDocument {
             final String[] fontSizeValues = { "xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large" };
             // From StyleSheet, font pt sizes for the 1-7 <font size=x>
             // conversion
-            final int sizeMapDefault[] = { 8, 10, 12, 14, 18, 24, 36 };
+            final int sizeMapDefault[] = { 8, 10, 12, 14, 18, 24, 36 };  // point sizes
             Stack<Boolean> stackNoBorder = new Stack<Boolean>();
 
             /**

@@ -102,6 +102,8 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
     protected Icon iconSquare = new OAColorIcon(colorUnselected, 8, 8);
 
     protected boolean bAllowCreateNew;
+    protected OADate lastSelectedDate;
+
     
     /**
      * Used to display 0+ objects by date.
@@ -180,7 +182,6 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
         }
     }
     
-    
     /**
      * Called when a new month is being displayed.
      * This is used when working with objectCache, so that objects can be loaded from datasource that match the selected date range for the new month.
@@ -190,14 +191,16 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
     protected void onNewMonth() {
     }
 
-    protected OADate lastSelectedDate;
+    public OADate getLastSelectedDate() {
+        return lastSelectedDate;
+    }
     
     /**
      * called by UI or manually, to display the new day.  If the month is not currently displayed, then onNewMonth will also be called.
      * @param dx date to display.
      * @param bFromDayPanel to know if this was called by user selecting one of the current days.
      */
-    protected void setSelectedDate(OADate dx, boolean bFromDayPanel) {
+    protected void setSelectedDate(OADate dx, final boolean bFromDayPanel) {
         if (dx == null) return;
         dx = new OADate(dx);
 
@@ -221,7 +224,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
             bNewMonth = !dx.equals(dateLastBegin);
             dateLastBegin = dx;
         }
-        
+
         int i = 0;
         boolean bVis = true;
         if (bNewMonth) {
@@ -237,6 +240,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
 
                 dp.hub.clear();
             }
+            onNewMonth();
         
             // reload
             for (F obj : hub) {
@@ -285,7 +289,6 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
             }
             dp.setSelected(b);
         }
-        if (bNewMonth) onNewMonth();
     }
     
 
@@ -301,43 +304,19 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                 @Override
                 protected void onMouseClick() {
                     setSelectedDate(this.date, true);
-                    onDaySelected(this.date, this.hub, hubDetail);
+                    onDaySelected(this.date, this.hub, this.hubForList);
                 }
             };
             alDayPanel.add(dp);
 
             dp.hubForList.addHubListener(new HubListenerAdapter() {
                 public void afterChangeActiveObject(HubEvent e) {
-                    if (dp.hub.getAO() != null) {
+                    if (dp.hub.getAO() != null && e.getObject() != null) {
                         setSelectedDate(dp.date, true);
                         onDaySelected(dp.date, dp.hub, dp.hubForList);
                     }
                 }
             });
-            
-            
-            /*qqqqqqqqqqqq was
-            if (OAMonthCalendar.this.hubDetail != null) {
-                dp.hubDetail.addHubListener(new HubListenerAdapter() {
-                    public void afterChangeActiveObject(HubEvent e) {
-                        if (dp.hubDetail.getAO() != null) {
-                            setSelectedDate(dp.date, true);
-                            onDaySelected(dp.date, dp.hub, dp.hubDetail);
-                        }
-                    }
-                });
-            }
-            else {
-                dp.hubForList.addHubListener(new HubListenerAdapter() {
-                    public void afterChangeActiveObject(HubEvent e) {
-                        if (dp.hub.getAO() != null) {
-                            setSelectedDate(dp.date, true);
-                            onDaySelected(dp.date, dp.hub, dp.hubDetail);
-                        }
-                    }
-                });
-            }
-            */
         }
         
         setupHubs();
@@ -346,13 +325,12 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
     }        
 
     protected void setupHubs() {
-
         if (hubDetail != null) {
             hubDetail.addHubListener(new HubListenerAdapter<T>() {
                 @Override
                 public void afterChangeActiveObject(HubEvent<T> e) {
                     T obj = e.getObject();
-                    if (obj == null) return;
+                    // if (obj == null) return;
                     OADate d = vdCalendar.getValue();
                     if (d == null) return;
                     
@@ -362,7 +340,6 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                         dp.hubForList.setAO(obj);
                         break;
                     }
-                    
                 }            
             });
         }
@@ -626,7 +603,6 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
         JLabel lbl;
         OAList lst;
         Hub<F> hub;
-        //Hub<T> hubDetail;
         Hub hubForList;
         boolean bLabelSetText;
         JButton cmd;
@@ -654,7 +630,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                     obj.setProperty(OAMonthCalendar.this.datePropertyPaths[0], date);
                     obj.save();
                     OAMonthCalendar.this.hub.add((F) obj);
-                    onDaySelected(date, hub, hubDetail);
+                    onDaySelected(date, hub, hubForList);
                     setSelectedDate(date, true);
                 }
             });
@@ -681,13 +657,11 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
             lbl.setHorizontalAlignment(SwingConstants.CENTER);
             add(lbl, BorderLayout.NORTH);
             
-            hubForList = hub;
+            hubForList = this.hub;
             String propPath = propertyPath;
             if (OAMonthCalendar.this.getDetailHub() != null) {
                 HubAODelegate.keepActiveObject(this.hub);
-                
-                hubDetail = hub.getDetailHub(OAMonthCalendar.this.getDetailHub().getObjectClass()).createSharedHub();
-                hubForList = hubDetail;
+                hubForList = hub.getDetailHub(OAMonthCalendar.this.getDetailHub().getObjectClass()).createSharedHub();
             }
             else {
                 // propertyPath could be using hub
