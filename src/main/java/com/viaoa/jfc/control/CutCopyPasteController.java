@@ -26,6 +26,7 @@ import com.viaoa.jfc.tree.*;
 import com.viaoa.jfc.*;
 import com.viaoa.jfc.OAButton.ButtonCommand;
 import com.viaoa.object.OAObject;
+import com.viaoa.object.OAObjectEditQueryDelegate;
 import com.viaoa.util.OAString;
 import com.viaoa.hub.*;
 
@@ -399,13 +400,16 @@ public class CutCopyPasteController {
             OAObject obj = getClipboardObject(true);
             if (obj == null) {
                 obj = getClipboardObject(false);
-                obj = obj.createCopy();
+                if (obj != null) {
+                    obj = OAObjectEditQueryDelegate.getCopy(obj);
+                }
             }
-            
-            if (!hubManual.contains(obj)) {
-                hubManual.add(obj);
+            if (obj != null) {
+                if (!hubManual.contains(obj)) {
+                    hubManual.add(obj);
+                }
+                hubManual.setAO(obj);
             }
-            hubManual.setAO(obj);
         }
         update();
     }
