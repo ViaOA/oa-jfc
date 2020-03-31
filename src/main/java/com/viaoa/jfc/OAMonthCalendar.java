@@ -44,6 +44,7 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.ColorUIResource;
 
+import com.viaoa.ds.OASelect;
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubAODelegate;
 import com.viaoa.hub.HubEvent;
@@ -626,9 +627,18 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                 public void actionPerformed(ActionEvent e) {
                     Class c = hub.getObjectClass();
                     if (c == null) return;
-                    OAObject obj = (OAObject) OAObjectReflectDelegate.createNewObject(c);
-                    obj.setProperty(OAMonthCalendar.this.datePropertyPaths[0], date);
-                    obj.save();
+                    
+                    OAObject obj = null;
+                    
+                    OASelect sel = new OASelect(c);
+                    sel.select(OAMonthCalendar.this.datePropertyPaths[0], new Object[] {date});
+                    obj = sel.next();
+                    if (obj == null) {
+                        obj = (OAObject) OAObjectReflectDelegate.createNewObject(c);
+                        obj.setProperty(OAMonthCalendar.this.datePropertyPaths[0], date);
+                        obj.save();
+                    }                    
+                    
                     OAMonthCalendar.this.hub.add((F) obj);
                     onDaySelected(date, hub, hubForList);
                     setSelectedDate(date, true);
