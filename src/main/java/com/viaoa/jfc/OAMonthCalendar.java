@@ -631,7 +631,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                     OAObject obj = null;
                     
                     OASelect sel = new OASelect(c);
-                    sel.select(OAMonthCalendar.this.datePropertyPaths[0], new Object[] {date});
+                    sel.select(OAMonthCalendar.this.datePropertyPaths[0] +" = ?", new Object[] {date});
                     obj = sel.next();
                     if (obj == null) {
                         obj = (OAObject) OAObjectReflectDelegate.createNewObject(c);
