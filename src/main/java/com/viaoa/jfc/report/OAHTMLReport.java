@@ -68,10 +68,10 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
     protected OAProperties properties;
     private String htmlTitleHeader, htmlHeader, htmlDetail, htmlFooter;
     
-    protected OAHTMLConverter htmlConverterTitleHeader;
-    protected OAHTMLConverter htmlConverterHeader;
-    protected OAHTMLConverter htmlConverterDetail;
-    protected OAHTMLConverter htmlConverterFooter;
+    protected OATemplate htmlConverterTitleHeader;
+    protected OATemplate htmlConverterHeader;
+    protected OATemplate htmlConverterDetail;
+    protected OATemplate htmlConverterFooter;
     
     protected PageFormat pageFormat;
     
@@ -132,36 +132,51 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
     
     public void setTitleHeaderHTML(String htmlTitleHeader) {
         this.htmlTitleHeader = htmlTitleHeader;
-        htmlConverterTitleHeader.setHtmlTemplate(htmlTitleHeader);
+        htmlConverterTitleHeader.setTemplate(htmlTitleHeader);
     }
     public String getTitleHeaderHTML() {
-        return htmlConverterTitleHeader.getHtmlTemplate();
+        return htmlConverterTitleHeader.getTemplate();
     }
     public void setHeaderHTML(String htmlHeader) {
         this.htmlHeader = htmlHeader;
-        htmlConverterHeader.setHtmlTemplate(htmlHeader);
+        htmlConverterHeader.setTemplate(htmlHeader);
     }
     public String getHeaderHTML() {
-        return htmlConverterHeader.getHtmlTemplate();
+        return htmlConverterHeader.getTemplate();
     }
     public void setFooterHTML(String htmlFooter) {
         this.htmlFooter = htmlFooter;
-        htmlConverterFooter.setHtmlTemplate(htmlFooter);
+        htmlConverterFooter.setTemplate(htmlFooter);
     }
     public String getFooterHTML() {
-        return htmlConverterFooter.getHtmlTemplate();
+        return htmlConverterFooter.getTemplate();
     }
     public void setDetailHTML(String html) {
         this.htmlDetail = html;
-        htmlConverterDetail.setHtmlTemplate(htmlDetail);
+        htmlConverterDetail.setTemplate(htmlDetail);
     }
     public String getDetailHTML() {
-        return htmlConverterDetail.getHtmlTemplate();
+        return htmlConverterDetail.getTemplate();
     }
     
+    public OATemplate getTitleHeaderTemplate() {
+        return htmlConverterTitleHeader;
+    }
+    public OATemplate getHeaderTemplate() {
+        return htmlConverterHeader;
+    }
+    public OATemplate getDetailTemplate() {
+        return htmlConverterDetail;
+    }
+    public OATemplate getFooterTemplate() {
+        return htmlConverterFooter;
+    }
+
     
-    protected OAHTMLConverter createHTMLConverter() {
-        OAHTMLConverter htmlConverter = new OAHTMLConverter() {
+    
+    
+    protected OATemplate createOATemplate() {
+        OATemplate template = new OATemplate() {
             @Override
             protected String getValue(OAObject obj, String propertyName, int width, String fmt, OAProperties props, boolean bUseFormat) {
                 String value = super.getValue(obj, propertyName, width, fmt, props, bUseFormat);
@@ -185,20 +200,20 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
             }
         };
         // detail = conv.preprocess(detail);
-        return htmlConverter;
+        return template;
     }
     
     protected void setup() {
         if (htmlConverterTitleHeader != null) return;
-        htmlConverterTitleHeader = createHTMLConverter();
-        htmlConverterHeader = createHTMLConverter();
-        htmlConverterDetail = createHTMLConverter();
-        htmlConverterFooter = createHTMLConverter();
+        htmlConverterTitleHeader = createOATemplate();
+        htmlConverterHeader = createOATemplate();
+        htmlConverterDetail = createOATemplate();
+        htmlConverterFooter = createOATemplate();
         
         txtTitleHeader = new OAHTMLTextPaneHeader() {
             @Override
             public String getText(int pageIndex) {
-                String s = htmlConverterTitleHeader.getHtml(obj, hub, properties);
+                String s = htmlConverterTitleHeader.process(obj, hub, properties);
                 return s;
             }
         };
@@ -207,7 +222,7 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
         txtHeader = new OAHTMLTextPaneHeader() {
             @Override
             public String getText(int pageIndex) {
-                String s = htmlConverterHeader.getHtml(obj, hub, properties);
+                String s = htmlConverterHeader.process(obj, hub, properties);
                 return s;
             }
         };
@@ -216,7 +231,7 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
         txtFooter = new OAHTMLTextPaneFooter() {
             @Override
             public String getText(int pageIndex) {
-                String s = htmlConverterFooter.getHtml(obj, hub, properties);
+                String s = htmlConverterFooter.process(obj, hub, properties);
                 return s;
             }
         };
@@ -245,7 +260,7 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
      */
     public void refreshDetail() {
         final int cntRefreshDetail = aiRefreshDetail.incrementAndGet();
-        htmlConverterDetail.stopHtml();
+        htmlConverterDetail.stopProcessing();
         
         if (getDetailTextPane() == null) {
             return;
@@ -273,7 +288,7 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
             @Override
             protected Void doInBackground() {
                 try {
-                    txt = htmlConverterDetail.getHtml(obj, hub, properties);
+                    txt = htmlConverterDetail.process(obj, hub, properties);
                 }
                 catch (Exception e) {
                     txt = "Error while creating html text for report";

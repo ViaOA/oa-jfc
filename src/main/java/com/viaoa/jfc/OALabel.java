@@ -360,6 +360,8 @@ public class OALabel extends JLabel implements OATableComponent, OAJfcComponent 
 
     // OATableComponent Interface method
     public Component getTableRenderer(JLabel renderer, JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        renderer.setVerticalTextPosition(this.getVerticalTextPosition()); // 20200416
+        renderer.setVerticalAlignment(this.getVerticalAlignment());
         if (control != null) {
             control.getTableRenderer(renderer, table, value, isSelected, hasFocus, row, column);
         }

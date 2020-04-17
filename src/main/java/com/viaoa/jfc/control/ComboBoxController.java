@@ -27,7 +27,7 @@ import com.viaoa.object.OAObject;
  */
 public class ComboBoxController extends OAJfcController implements FocusListener {
     JComboBox comboBox;
-    MyComboBoxModel myComboBoxModel = new MyComboBoxModel();
+    final MyComboBoxModel myComboBoxModel = new MyComboBoxModel();
     JList list;
 
     public ComboBoxController(Hub hub, JComboBox cb, String propertyPath) {
