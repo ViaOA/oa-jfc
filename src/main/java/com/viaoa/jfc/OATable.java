@@ -464,7 +464,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 	public String getToolTipText(int row, int col, String defaultValue) {
 		/* not needed, redundant from getToolTipText1
 		OATableColumn[] tcs = getAllTableColumns();
-		
+
 		if (col >= 0 && col < tcs.length) {
 		    OATableColumn tc = (OATableColumn) tcs[col];
 		    defaultValue = tc.getToolTipText(this, row, col, defaultValue);
@@ -2522,18 +2522,18 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		    if (hub == null) return null;
 		    Object obj;
 		    int cnt = hub.getSize();
-		
+
 		    if (hub.isMoreData()) {
 		        if (row + 5 >= cnt) {
 		            if (!loadMoreFlag && !loadingMoreFlag) {
 		                loadMoreFlag = true;
 		                loadingMoreFlag = true;
-		
+
 		                if (isEditing()) getCellEditor().stopCellEditing(); // instead of
 		                                                                    // "removeEditor();"
 		                obj = hub.elementAt(row);
 		                hub.elementAt(row + 5);
-		
+
 		                // make sure cell is visible
 		                int pos = hub.getPos(obj);
 		                if (pos < 0) pos = 0;
@@ -2541,20 +2541,20 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		                cellRect = getCellRect(pos, col, true);
 		                scrollRectToVisible(cellRect);
 		                repaint(100);
-		
+
 		                pos = hub.getPos(hub.getActiveObject());
 		                if (pos < 0) getSelectionModel().clearSelection();
 		                else setRowSelectionInterval(pos, pos);
-		
+
 		                loadingMoreFlag = false;
 		            }
 		        }
 		        else loadMoreFlag = false;
 		    }
-		
+
 		    obj = hub.elementAt(row);
 		    if (obj == null) return null;
-		
+
 		    OATableColumn tc = (OATableColumn) columns.elementAt(col);
 		    obj = tc.getObject(hub, obj);
 		    return obj;
@@ -2832,6 +2832,11 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 
 			@Override
 			public boolean isUsed(Object obj) {
+				boolean b = _isUsed(obj);
+				return b;
+			}
+
+			public boolean _isUsed(Object obj) {
 				if (!bIsFilterBeingUsed) {
 					return true;
 				}
@@ -2912,7 +2917,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 	        confirmMessage = em.getConfirmMessage();
 	        confirmTitle = em.getConfirmTitle();
 	    }
-	
+
 	    boolean result = true;
 	    if (OAString.isNotEmpty(confirmMessage)) {
 	        if (OAString.isEmpty(confirmTitle)) confirmTitle = "Confirmation";
@@ -4296,7 +4301,7 @@ class TableController extends OAJfcController implements ListSelectionListener {
 	OATable table;
 	private HubListenerAdapter hlSelect;
 
-	AtomicInteger aiIgnoreValueChanged = new AtomicInteger(); // used to ignore calls to valueChanged(...)
+	final AtomicInteger aiIgnoreValueChanged = new AtomicInteger(); // used to ignore calls to valueChanged(...)
 	volatile boolean _bIsRunningValueChanged; // flag set when valueChanged is running
 
 	public TableController(Hub hub, OATable table) {
@@ -4359,7 +4364,25 @@ class TableController extends OAJfcController implements ListSelectionListener {
 		}
 
 		hlSelect = new HubListenerAdapter() {
+			final AtomicInteger aiAdd = new AtomicInteger();
+			final AtomicInteger aiRemove = new AtomicInteger();
+
 			public @Override void afterAdd(HubEvent e) {
+				int x = aiAdd.incrementAndGet();
+				if (x == 1) {
+					SwingUtilities.invokeLater(() -> {
+						boolean b = aiAdd.get() == 1;
+						aiAdd.set(0);
+						if (b) {
+							_afterAdd(e);
+						} else {
+							onNewList(e);
+						}
+					});
+				}
+			}
+
+			public void _afterAdd(HubEvent e) {
 				Object obj = e.getObject();
 				if (obj == null || hub == null) {
 					return;
@@ -4375,7 +4398,6 @@ class TableController extends OAJfcController implements ListSelectionListener {
 
 				try {
 					aiIgnoreValueChanged.incrementAndGet();
-
 					hub.setPos(pos);
 					if (pos >= 0) {
 						ListSelectionModel lsm = table.getSelectionModel();
@@ -4397,6 +4419,21 @@ class TableController extends OAJfcController implements ListSelectionListener {
 			}
 
 			public @Override void afterRemove(HubEvent e) {
+				int x = aiRemove.incrementAndGet();
+				if (x == 1) {
+					SwingUtilities.invokeLater(() -> {
+						boolean b = aiRemove.get() == 1;
+						aiRemove.set(0);
+						if (b) {
+							_afterRemove(e);
+						} else {
+							onNewList(e);
+						}
+					});
+				}
+			}
+
+			public void _afterRemove(HubEvent e) {
 				if (table.chkSelection != null) {
 					table.repaint(100);
 				}
@@ -4477,6 +4514,8 @@ class TableController extends OAJfcController implements ListSelectionListener {
 		}
 
 		// update hubSelect, to see if objects are in table.hub
+		int beginPos = -1; // 20200428
+		int endPos = -1;
 		for (int i = 0;; i++) {
 			Object obj = hubSelect.getAt(i);
 			if (obj == null) {
@@ -4501,8 +4540,20 @@ class TableController extends OAJfcController implements ListSelectionListener {
 					i--;
 				}
 			} else {
-				lsm.addSelectionInterval(pos, pos);
+				if (beginPos < 0) {
+					beginPos = endPos = pos;
+				} else {
+					if (pos == endPos + 1) {
+						endPos = pos;
+					} else {
+						lsm.addSelectionInterval(beginPos, endPos);
+						beginPos = endPos = -1;
+					}
+				}
 			}
+		}
+		if (beginPos >= 0 && endPos >= 0) {
+			lsm.addSelectionInterval(beginPos, endPos);
 		}
 	}
 
@@ -4608,8 +4659,11 @@ class TableController extends OAJfcController implements ListSelectionListener {
 			_bIsRunningValueChanged = false;
 			if (hubSelect.getSize() == 1) {
 				hub.setAO(hubSelect.getAt(0));
-			} else if (newAoPos < 0 || hubSelect.size() > 1) {
+			} else if (newAoPos < 0) {
 				hub.setAO(null);
+			} else if (hubSelect.size() > 1) {
+				hub.setPos(newAoPos); // 20200428
+				//was: hub.setAO(null);
 			} else {
 				table.setHubPos(newAoPos);
 			}

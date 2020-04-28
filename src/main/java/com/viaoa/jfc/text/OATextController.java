@@ -94,6 +94,13 @@ public class OATextController {
                     onRightMouse(e);
                 }
             }
+            // 20200428
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    onRightMouse(e);
+                }
+            }
         });
     
         
