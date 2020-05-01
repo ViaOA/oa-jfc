@@ -2917,7 +2917,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 	        confirmMessage = em.getConfirmMessage();
 	        confirmTitle = em.getConfirmTitle();
 	    }
-
+	
 	    boolean result = true;
 	    if (OAString.isNotEmpty(confirmMessage)) {
 	        if (OAString.isEmpty(confirmTitle)) confirmTitle = "Confirmation";
@@ -4387,7 +4387,6 @@ class TableController extends OAJfcController implements ListSelectionListener {
 				if (obj == null || hub == null) {
 					return;
 				}
-				// 20150424
 				if (table.chkSelection != null) {
 					table.repaint(200);
 				}
