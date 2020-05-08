@@ -254,7 +254,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 
 	/**
 	 * Return command value.
-	 * 
+	 *
 	 * @see OACommand
 	 */
 	public OAButton.ButtonCommand getCommand() {
@@ -1400,7 +1400,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					}
 					hub.setAO(obj);
 				} else {
-					// 20190117 todo: add undo support qqqqqq                    
+					// 20190117 todo: add undo support qqqqqq
 					Hub hx = getClipboardHub(false);
 					if (hx != null) {
 						int x = 0;
@@ -1459,7 +1459,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				break;
 			}
 
-			//qqqqqqqqqq review this qqqqqqqqq            
+			//qqqqqqqqqq review this qqqqqqqqq
 			if (methodName != null) {
 				// Method[] method = OAReflect.getMethods(hub.getObjectClass(), methodName);
 
@@ -1827,6 +1827,9 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						}
 					} else {
 						if (mhub != null) {
+							if (i > 1) {
+								break; // 20200508 for large select hubs
+							}
 							objx = mhub.getAt(i - 1);
 						}
 					}
@@ -1875,7 +1878,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				flag = obj != null;
 				if (oaObj != null) {
 					if (hub.getLinkHub(true) != null) {
-						// flag = OAObjectEditQueryDelegate.getVerifyPropertyChange((OAObject)hub.getLinkHub().getAO(), hub.getLinkPath(), oaObj, null); 
+						// flag = OAObjectEditQueryDelegate.getVerifyPropertyChange((OAObject)hub.getLinkHub().getAO(), hub.getLinkPath(), oaObj, null);
 					}
 				}
 				break;
@@ -1889,6 +1892,9 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						}
 					} else {
 						if (mhub != null) {
+							if (i > 1) {
+								break; // 20200508 for large select hubs
+							}
 							objx = mhub.getAt(i - 1);
 						}
 					}
@@ -1944,6 +1950,9 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						}
 					} else {
 						if (mhub != null) {
+							if (i > 1) {
+								break; // 20200508 for large select hubs
+							}
 							objx = mhub.getAt(i - 1);
 						}
 					}
@@ -1962,7 +1971,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				break;
 			case Paste:
 				flag = false;
-				// 20190121 dont get clipboard object, too much overhead  
+				// 20190121 dont get clipboard object, too much overhead
 				Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
 				DataFlavor[] dfs;
 				try {

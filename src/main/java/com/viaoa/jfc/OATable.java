@@ -3851,12 +3851,24 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 				if (isAnySelected()) {
 					// could be filtered
 					if (hubFilter != null) {
+						boolean b = true;
 						for (Object obj : getSelectHub()) {
-							if (getHub().contains(obj)) {
-								getSelectHub().remove(obj);
+							if (!getHub().contains(obj)) {
+								b = false;
+								break;
 							}
 						}
-						control.rebuildListSelectionModel();
+						if (b) {
+							getSelectHub().removeAll();
+							getSelectionModel().clearSelection();
+						} else {
+							for (Object obj : getSelectHub()) {
+								if (getHub().contains(obj)) {
+									getSelectHub().remove(obj);
+								}
+							}
+							control.rebuildListSelectionModel();
+						}
 					} else {
 						getSelectHub().removeAll();
 						getSelectionModel().clearSelection();
@@ -4368,6 +4380,9 @@ class TableController extends OAJfcController implements ListSelectionListener {
 			final AtomicInteger aiRemove = new AtomicInteger();
 
 			public @Override void afterAdd(HubEvent e) {
+				if (getRunningValueChanged()) { // 20200508
+					return;
+				}
 				int x = aiAdd.incrementAndGet();
 				if (x == 1) {
 					SwingUtilities.invokeLater(() -> {
@@ -4389,9 +4404,6 @@ class TableController extends OAJfcController implements ListSelectionListener {
 				}
 				if (table.chkSelection != null) {
 					table.repaint(200);
-				}
-				if (getRunningValueChanged()) {
-					return;
 				}
 				int pos = hub.getPos(obj);
 
@@ -4418,6 +4430,9 @@ class TableController extends OAJfcController implements ListSelectionListener {
 			}
 
 			public @Override void afterRemove(HubEvent e) {
+				if (getRunningValueChanged()) {
+					return;
+				}
 				int x = aiRemove.incrementAndGet();
 				if (x == 1) {
 					SwingUtilities.invokeLater(() -> {
@@ -4435,9 +4450,6 @@ class TableController extends OAJfcController implements ListSelectionListener {
 			public void _afterRemove(HubEvent e) {
 				if (table.chkSelection != null) {
 					table.repaint(100);
-				}
-				if (getRunningValueChanged()) {
-					return;
 				}
 				int pos = HubDataDelegate.getPos(hub, e.getObject(), false, false);
 				// int pos = hub.getPos(e.getObject());
