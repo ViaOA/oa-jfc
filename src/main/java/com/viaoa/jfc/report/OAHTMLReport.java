@@ -213,7 +213,7 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
         txtTitleHeader = new OAHTMLTextPaneHeader() {
             @Override
             public String getText(int pageIndex) {
-                String s = htmlConverterTitleHeader.process(obj, hub, properties);
+                String s = htmlConverterTitleHeader.process(getObject(), hub, properties);
                 return s;
             }
         };
@@ -222,7 +222,7 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
         txtHeader = new OAHTMLTextPaneHeader() {
             @Override
             public String getText(int pageIndex) {
-                String s = htmlConverterHeader.process(obj, hub, properties);
+                String s = htmlConverterHeader.process(getObject(), hub, properties);
                 return s;
             }
         };
@@ -231,7 +231,7 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
         txtFooter = new OAHTMLTextPaneFooter() {
             @Override
             public String getText(int pageIndex) {
-                String s = htmlConverterFooter.process(obj, hub, properties);
+                String s = htmlConverterFooter.process(getObject(), hub, properties);
                 return s;
             }
         };
@@ -255,6 +255,8 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
 
     
     private final AtomicInteger aiRefreshDetail = new AtomicInteger();
+    private final AtomicInteger aiRefreshDetail2 = new AtomicInteger();
+    
     /**
      * Updates the Detail component.  Must be manually called
      */
@@ -281,14 +283,17 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
             return;
         }
         
+        aiRefreshDetail2.incrementAndGet();
         getDetailTextPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        
+        final OAObject objx = this.obj;
         
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
             String txt;
             @Override
             protected Void doInBackground() {
                 try {
-                    txt = htmlConverterDetail.process(obj, hub, properties);
+                    txt = htmlConverterDetail.process(objx, hub, properties);
                 }
                 catch (Exception e) {
                     txt = "Error while creating html text for report";
@@ -299,10 +304,12 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
             }
             @Override
             protected void done() {
-                if (cntRefreshDetail != aiRefreshDetail.get()) return;
-                getDetailTextPane().setText(txt);
-                getDetailTextPane().getCaret().setDot(0);
-                getDetailTextPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                if (cntRefreshDetail == aiRefreshDetail.get()) {
+                    getDetailTextPane().setText(txt);
+                    getDetailTextPane().getCaret().setDot(0);
+                    getDetailTextPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                }
+                aiRefreshDetail2.decrementAndGet();
             }
         };
         sw.execute();
@@ -351,10 +358,20 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
         super.setDetail(txt);
     }
 
-    
+
+    protected void waitForDetailToRefresh() {
+        for (int i=0; i<2000; i++) {
+            if (aiRefreshDetail2.get() == 0) break;
+            try {
+                Thread.sleep(10);
+            }
+            catch (Exception e) {}
+        }
+    }
 
     @Override
     public void beforePreview(PageFormat pageFormat) {
+        waitForDetailToRefresh();
         // set internal properties for HtmlConverter - $Date, $Time, $Page
         htmlConverterTitleHeader.setProperty("DATE", new OADate());
         htmlConverterHeader.setProperty("DATE", new OADate());
@@ -370,6 +387,7 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
     }
     @Override
     public void beforePrint(PageFormat pageFormat) {
+        waitForDetailToRefresh();
         // set internal properties for HtmlConverter - $Date, $Time, $Page
         super.beforePrint(pageFormat);
     }
