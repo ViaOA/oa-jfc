@@ -183,8 +183,13 @@ public class OAWaitDialog extends JDialog implements ActionListener {
                 setVisible(false);
             }
             */
+            onCancel();
         }
     }
+    
+    protected void onCancel() {
+    }
+    
     public void setConsole(OAConsole con) {
         this.console = con;
         
