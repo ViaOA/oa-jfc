@@ -2026,7 +2026,9 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				break;
 			case Other:
 				// 20190203 added support for hubSelect.size > 0
-				flag = flag && ((hubSelect != null && hubSelect.getSize() > 0) || (obj != null));
+				if (hubSelect != null) {
+					flag &= ((hubSelect.getSize() > 0) || (obj != null));
+				}
 			default:
 			}
 			if (flag && !HubDelegate.isValid(hub)) {
