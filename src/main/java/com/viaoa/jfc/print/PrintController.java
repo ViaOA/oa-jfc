@@ -55,7 +55,7 @@ public class PrintController {
     private PrinterJob printerJob;
     private PrintRequestAttributeSet pras;  // not curently used qqqqqqqqqq
     private PrintPreviewController controlPrintPreview;
-    private boolean bPreviewing;
+    private volatile boolean bPreviewing;
     private String title;
     private Printable printable;
     private PageFormat pageFormat; 
@@ -116,6 +116,7 @@ public class PrintController {
                     OAPrintable p = (OAPrintable) printable;
                     p.afterPreview();
                 }
+                PrintController.this.afterPreview();
             }
             public void onPageSetup() {
                 showPageSetupDialog();
@@ -235,6 +236,7 @@ public class PrintController {
         }
     }
     
+   
     public void preview() {
         if (getPrintable() == null) return;
         if (printable instanceof OAPrintable) {
@@ -242,6 +244,7 @@ public class PrintController {
             p.beforePreview(getPageFormat());
         }
         bPreviewing = true;
+        PrintController.this.beforePreview();
         if (getPrintPreviewController().getParentWindow() == null) {
             Window window = SwingUtilities.getWindowAncestor(cmdPrintPreview);
             getPrintPreviewController().setParentWindow(window);
@@ -253,7 +256,13 @@ public class PrintController {
         LOG.fine("called");
         Printable p = getPrintable();
         if (p == null) return;
-        Thread t = new PrintThread(this.title, printerJob, p, bUseDialog, getPageFormat(), getPrintRequestAttributeSet());
+        beforePrint();
+        Thread t = new PrintThread(this.title, printerJob, p, bUseDialog, getPageFormat(), getPrintRequestAttributeSet()) {
+            @Override
+            protected void afterPrint() {
+                PrintController.this.afterPrint();
+            }
+        };
         // if (frm != null) frm.setCursor( Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         t.start();
     }
@@ -338,7 +347,10 @@ public class PrintController {
             }
             finally {
                 // if (frm != null) frm.setCursor( Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                afterPrint();
             }
+        }
+        protected void afterPrint() {
         }
     }
 
@@ -511,7 +523,6 @@ public class PrintController {
     }
     
     
-    
     private Action actionPageSetup;
     public Action getPageSetupAction() {
         if (actionPageSetup == null) {
@@ -601,6 +612,15 @@ public class PrintController {
         if (controlPrintPreview != null) {
             controlPrintPreview.updateUI();
         }
+    }
+
+    protected void beforePreview() {
+    }
+    protected void afterPreview() {
+    }
+    protected void beforePrint() {
+    }
+    protected void afterPrint() {
     }
     
 

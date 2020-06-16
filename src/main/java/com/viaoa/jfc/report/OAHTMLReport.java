@@ -306,8 +306,10 @@ public class OAHTMLReport<F extends OAObject> extends OAReport {
             protected void done() {
                 if (cntRefreshDetail == aiRefreshDetail.get()) {
                     getDetailTextPane().setText(txt);
-                    getDetailTextPane().getCaret().setDot(0);
-                    getDetailTextPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    if (!getDetailTextPane().isPrinting()) {
+                        getDetailTextPane().getCaret().setDot(0);
+                        getDetailTextPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    }
                 }
                 aiRefreshDetail2.decrementAndGet();
             }

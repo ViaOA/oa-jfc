@@ -432,6 +432,10 @@ public class OAHTMLTextPane extends JTextPane implements OAPrintable {
         }
     }
 
+    public boolean isPrinting() {
+        return bIsPrinting;
+    }
+    
     /**
      * Overwritten to
      */
