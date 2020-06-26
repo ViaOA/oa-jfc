@@ -185,6 +185,13 @@ public class OAJfcUtil {
 		lbl.setForeground(Color.GRAY);
 	}
 
+	public static void useGrayBackground(JLabel lbl) {
+		if (lbl == null) {
+			return;
+		}
+		lbl.setBackground(Color.GRAY);
+	}
+
 	public static void useColorText(JLabel lbl, Color color) {
 		if (lbl == null) {
 			return;

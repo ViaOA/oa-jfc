@@ -464,7 +464,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 	public String getToolTipText(int row, int col, String defaultValue) {
 		/* not needed, redundant from getToolTipText1
 		OATableColumn[] tcs = getAllTableColumns();
-
+		
 		if (col >= 0 && col < tcs.length) {
 		    OATableColumn tc = (OATableColumn) tcs[col];
 		    defaultValue = tc.getToolTipText(this, row, col, defaultValue);
@@ -763,6 +763,15 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 			//qqqqqqqqqqqq 20181004
 			obj = tc.getObjectForTableObject(obj);
 		}
+		return obj;
+	}
+
+	public Object getRowObject(int row) {
+		Hub h = getHub();
+		if (h == null) {
+			return null;
+		}
+		Object obj = h.getAt(row);
 		return obj;
 	}
 
@@ -2522,18 +2531,18 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		    if (hub == null) return null;
 		    Object obj;
 		    int cnt = hub.getSize();
-
+		
 		    if (hub.isMoreData()) {
 		        if (row + 5 >= cnt) {
 		            if (!loadMoreFlag && !loadingMoreFlag) {
 		                loadMoreFlag = true;
 		                loadingMoreFlag = true;
-
+		
 		                if (isEditing()) getCellEditor().stopCellEditing(); // instead of
 		                                                                    // "removeEditor();"
 		                obj = hub.elementAt(row);
 		                hub.elementAt(row + 5);
-
+		
 		                // make sure cell is visible
 		                int pos = hub.getPos(obj);
 		                if (pos < 0) pos = 0;
@@ -2541,20 +2550,20 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		                cellRect = getCellRect(pos, col, true);
 		                scrollRectToVisible(cellRect);
 		                repaint(100);
-
+		
 		                pos = hub.getPos(hub.getActiveObject());
 		                if (pos < 0) getSelectionModel().clearSelection();
 		                else setRowSelectionInterval(pos, pos);
-
+		
 		                loadingMoreFlag = false;
 		            }
 		        }
 		        else loadMoreFlag = false;
 		    }
-
+		
 		    obj = hub.elementAt(row);
 		    if (obj == null) return null;
-
+		
 		    OATableColumn tc = (OATableColumn) columns.elementAt(col);
 		    obj = tc.getObject(hub, obj);
 		    return obj;
@@ -2917,7 +2926,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 	        confirmMessage = em.getConfirmMessage();
 	        confirmTitle = em.getConfirmTitle();
 	    }
-	
+
 	    boolean result = true;
 	    if (OAString.isNotEmpty(confirmMessage)) {
 	        if (OAString.isEmpty(confirmTitle)) confirmTitle = "Confirmation";
