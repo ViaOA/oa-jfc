@@ -291,8 +291,8 @@ public class PrintController {
             PrinterJob pj = this.printerJob;
             Printable pr = this.printable;
 
-            if (pr == null) return;
             try {
+                if (pr == null) return;
                 pj.setJobName(title==null?"":title);
         
                 // PageFormat pageFormat#2 = printerJob.validatePage(getPageFormat());
