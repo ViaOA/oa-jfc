@@ -218,12 +218,12 @@ Example:
             </td>
             <td style="vertical-align:center">
               Concrete Designs Inc.<br>
-              3650 S. Broadmont Dr.<br>
-              Tucson, AZ 85713<br>
-              Phone: (520) 624-6653<br>
-              Fax: (520) 624-3420<br>
+              650 N. Broad St.<br>
+              Tucson, AZ 45213<br>
+              Phone: (521) 625-6853<br>
+              Fax: (521) 625-3220<br>
               <nobr>
-                <u>www.concrete-designs.com</u> 
+                <u>www.concrete-designs-inc.com</u> 
               </nobr>
             </td>
             
