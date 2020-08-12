@@ -121,6 +121,7 @@ import com.viaoa.jfc.table.OATableListener;
 import com.viaoa.object.OAObject;
 import com.viaoa.object.OASiblingHelper;
 import com.viaoa.object.OAThreadLocalDelegate;
+import com.viaoa.template.OATemplate;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
 import com.viaoa.util.OACompare;
@@ -129,7 +130,6 @@ import com.viaoa.util.OANullObject;
 import com.viaoa.util.OAProperties;
 import com.viaoa.util.OAReflect;
 import com.viaoa.util.OAString;
-import com.viaoa.util.OATemplate;
 
 /**
  * Used for building a Table of columns/rows listing Objects. All columns are created by adding an OATableComponent as a column to the

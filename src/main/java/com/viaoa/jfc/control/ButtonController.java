@@ -72,12 +72,12 @@ import com.viaoa.object.OAObjectEditQueryDelegate;
 import com.viaoa.object.OAObjectInfo;
 import com.viaoa.object.OAObjectInfoDelegate;
 import com.viaoa.object.OAObjectReflectDelegate;
+import com.viaoa.template.OATemplate;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
 import com.viaoa.util.OACompare;
 import com.viaoa.util.OAReflect;
 import com.viaoa.util.OAString;
-import com.viaoa.util.OATemplate;
 
 /**
  * Functionality for binding JButton to OA. Note: order of tasks for actionPerformed event: actionPerformed, [password dialog]

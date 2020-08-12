@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 
 import com.viaoa.hub.*;
 import com.viaoa.object.*;
+import com.viaoa.template.OATemplate;
 import com.viaoa.util.*;
 
 /*

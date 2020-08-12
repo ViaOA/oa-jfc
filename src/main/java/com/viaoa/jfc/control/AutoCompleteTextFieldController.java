@@ -19,8 +19,8 @@ import javax.swing.*;
 import com.viaoa.hub.*;
 import com.viaoa.jfc.text.autocomplete.AutoCompleteList;
 import com.viaoa.object.OAObject;
+import com.viaoa.template.OATemplate;
 import com.viaoa.util.OAString;
-import com.viaoa.util.OATemplate;
 
 /**
  * Controller OAAutoComplete.

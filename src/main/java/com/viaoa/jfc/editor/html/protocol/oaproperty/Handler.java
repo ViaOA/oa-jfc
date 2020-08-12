@@ -18,7 +18,7 @@ import java.net.URL;
 import java.net.URLConnection; 
 import java.util.logging.Logger;
 
-import com.viaoa.ds.OASelect;
+import com.viaoa.datasource.OASelect;
 import com.viaoa.image.OAImageUtil;
 import com.viaoa.object.OAObject;
 import com.viaoa.object.OAObjectCacheDelegate;

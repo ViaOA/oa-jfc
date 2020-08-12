@@ -19,6 +19,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 import com.viaoa.object.*;
+import com.viaoa.template.OATemplate;
 import com.viaoa.hub.*;
 import com.viaoa.util.*;
 import com.viaoa.jfc.*;

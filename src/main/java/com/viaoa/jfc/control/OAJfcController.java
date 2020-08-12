@@ -48,7 +48,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.text.JTextComponent;
 
 import com.viaoa.annotation.OAOne;
-import com.viaoa.ds.OADataSource;
+import com.viaoa.datasource.OADataSource;
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubChangeListener;
 import com.viaoa.hub.HubChangeListener.HubProp;
@@ -78,6 +78,7 @@ import com.viaoa.object.OAObjectInfoDelegate;
 import com.viaoa.object.OAObjectReflectDelegate;
 import com.viaoa.object.OAPropertyInfo;
 import com.viaoa.object.OAThreadLocalDelegate;
+import com.viaoa.template.OATemplate;
 import com.viaoa.undo.OAUndoableEdit;
 import com.viaoa.util.OACompare;
 import com.viaoa.util.OAConv;
@@ -86,7 +87,6 @@ import com.viaoa.util.OADate;
 import com.viaoa.util.OANullObject;
 import com.viaoa.util.OAPropertyPath;
 import com.viaoa.util.OAString;
-import com.viaoa.util.OATemplate;
 
 /**
  * Base controller class for OA JFC/Swing components. Implements the HubListener and provides most of the methods required for creating

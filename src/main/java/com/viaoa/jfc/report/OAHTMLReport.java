@@ -31,6 +31,7 @@ import javax.swing.text.html.HTMLDocument;
 
 import com.viaoa.jfc.editor.html.OAHTMLTextPane;
 import com.viaoa.object.*;
+import com.viaoa.template.OATemplate;
 import com.viaoa.hub.*;
 import com.viaoa.util.*;
 

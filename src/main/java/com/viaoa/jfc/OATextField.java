@@ -17,7 +17,7 @@ import javax.swing.table.*;
 import com.viaoa.object.*;
 import com.viaoa.util.OADate;
 import com.viaoa.util.OAString;
-import com.viaoa.util.converter.OAConverterNumber;
+import com.viaoa.converter.OAConverterNumber;
 import com.viaoa.hub.*;
 import com.viaoa.jfc.control.*;
 import com.viaoa.jfc.table.*;

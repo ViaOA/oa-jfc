@@ -16,8 +16,8 @@ import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubEvent;
 import com.viaoa.hub.HubListenerAdapter;
 import com.viaoa.object.OAObject;
+import com.viaoa.template.OATemplate;
 import com.viaoa.util.OAConv;
-import com.viaoa.util.OATemplate;
 
 public class OAAlert {
 
