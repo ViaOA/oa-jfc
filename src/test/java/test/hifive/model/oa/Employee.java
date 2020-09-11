@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import com.viaoa.annotation.OACalculatedProperty;
 import com.viaoa.annotation.OAClass;
 import com.viaoa.annotation.OAColumn;
-import com.viaoa.annotation.OAEditQuery;
+import com.viaoa.annotation.OAObjCallback;
 import com.viaoa.annotation.OAFkey;
 import com.viaoa.annotation.OAId;
 import com.viaoa.annotation.OAIndex;
@@ -26,8 +26,8 @@ import com.viaoa.hub.HubListenerAdapter;
 import com.viaoa.hub.HubMerger;
 import com.viaoa.object.OAHierFinder;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectEditQuery;
-import com.viaoa.object.OAObjectEditQuery.Type;
+import com.viaoa.object.OAObjectCallback;
+import com.viaoa.object.OAObjectCallback.Type;
 import com.viaoa.object.OAObjectInfoDelegate;
 import com.viaoa.object.OAObjectKey;
 import com.viaoa.object.OAObjectModel;
@@ -51,7 +51,7 @@ import test.hifive.model.oa.filter.EmployeeNextBirthdaysFilter;
 		@OAIndex(name = "EmployeeParentEmployee", columns = { @OAIndexColumn(name = "ParentEmployeeId") }),
 		@OAIndex(name = "EmployeePointsNextApproval", columns = { @OAIndexColumn(name = "PointsNextApprovalId") })
 })
-@OAEditQuery(enabledProperty = "xxxx", enabledValue = false)
+@OAObjCallback(enabledProperty = "xxxx", enabledValue = false)
 public class Employee extends OAObject {
 
 	private static final long serialVersionUID = 1L;
@@ -336,10 +336,10 @@ public class Employee extends OAObject {
 		setId(id);
 	}
 
-	public transient OAObjectEditQuery TestEditQuery_Class;
+	public transient OAObjectCallback TestEditQuery_Class;
 
-	@OAEditQuery(enabledProperty = "inactiveDate", enabledValue = false)
-	public void onEditQuery(OAObjectEditQuery eq) {
+	@OAObjCallback(enabledProperty = "inactiveDate", enabledValue = false)
+	public void onEditQuery(OAObjectCallback eq) {
 		if (TestEditQuery_Class == null) {
 			return;
 		}
@@ -463,7 +463,7 @@ public class Employee extends OAObject {
 		firePropertyChange(P_LastName, old, this.lastName);
 	}
 
-	public boolean isValidLastName(String newValue, OAObjectEditQuery msg) {
+	public boolean isValidLastName(String newValue, OAObjectCallback msg) {
 		// check valud of validateTestType   see:HubEventDelegateTest
 		validateTestResult++;
 		if (validateTestType == 2 && !"test".equals(newValue)) {
@@ -476,8 +476,8 @@ public class Employee extends OAObject {
 		return true;
 	}
 
-	//    @OAEditQuery()  // not needed
-	public void lastNameCallback(OAObjectEditQuery eq) { // <- naming convention for editQuery callback
+	//    @OAObjCallback()  // not needed
+	public void lastNameCallback(OAObjectCallback eq) { // <- naming convention for editQuery callback
 		if (eq == null) {
 			return;
 		}
@@ -573,8 +573,8 @@ public class Employee extends OAObject {
 		return inactiveReason;
 	}
 
-	@OAEditQuery()
-	public void onEditQueryInactiveDate(OAObjectEditQuery eq) {
+	@OAObjCallback()
+	public void onEditQueryInactiveDate(OAObjectCallback eq) {
 		if (eq == null) {
 			return;
 		}
@@ -979,7 +979,7 @@ public class Employee extends OAObject {
 	}
 
 	@OAMany(toClass = Address.class, owner = true, reverseName = Address.P_Employee, cascadeSave = true, cascadeDelete = true)
-	@OAEditQuery(enabledProperty = "created")
+	@OAObjCallback(enabledProperty = "created")
 	public Hub<Address> getAddresses() {
 		if (hubAddresses == null) {
 			hubAddresses = (Hub<Address>) getHub(P_Addresses);
@@ -1094,7 +1094,7 @@ public class Employee extends OAObject {
 		firePropertyChange(P_CountryCode, old, this.countryCode);
 	}
 
-	public boolean isValidCountryCode(CountryCode newValue, OAObjectEditQuery msg) {
+	public boolean isValidCountryCode(CountryCode newValue, OAObjectCallback msg) {
 		// check valud of validateTestType   see:HubEventDelegateTest
 		validateTestResult++;
 		if (validateTestType == 3) {
@@ -1112,8 +1112,8 @@ public class Employee extends OAObject {
 		return hubEmployeeAwards;
 	}
 
-	@OAEditQuery
-	public void onEditQueryEmployeeAwards(OAObjectEditQuery eq) {
+	@OAObjCallback
+	public void onEditQueryEmployeeAwards(OAObjectCallback eq) {
 		if (validateTestType == 3) {
 			eq.setAllowed(false);
 			return;
@@ -1784,12 +1784,12 @@ public class Employee extends OAObject {
 	}
 
 	@OAMethod
-	@OAEditQuery(visibleProperty = "xxxx")
+	@OAObjCallback(visibleProperty = "xxxx")
 	public void command() {
 	}
 
-	@OAEditQuery(visibleProperty = "birthDate")
-	public void onEditQueryCommand(OAObjectEditQuery eq) {
+	@OAObjCallback(visibleProperty = "birthDate")
+	public void onEditQueryCommand(OAObjectCallback eq) {
 
 	}
 }

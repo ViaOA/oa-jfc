@@ -2922,7 +2922,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 	    }
 	    if (obj instanceof OAObject) {
 	        String s = HubLinkDelegate.getLinkToProperty(hub);
-	        OAObjectEditQuery em = OAObjectEditQueryDelegate.getConfirmAddEditQuery((OAObject)obj, s, hub.getAt(newRow), confirmMessage, confirmTitle);
+	        OAObjectCallback em = OAObjectCallbackDelegate.getConfirmAddEditQuery((OAObject)obj, s, hub.getAt(newRow), confirmMessage, confirmTitle);
 	        confirmMessage = em.getConfirmMessage();
 	        confirmTitle = em.getConfirmTitle();
 	    }

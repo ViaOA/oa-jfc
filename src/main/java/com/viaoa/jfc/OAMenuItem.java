@@ -21,7 +21,7 @@ import com.viaoa.jfc.OAButton.OAButtonController;
 import com.viaoa.jfc.control.*;
 import com.viaoa.object.OAObject;
 import com.viaoa.object.OAObjectDelegate;
-import com.viaoa.object.OAObjectEditQueryDelegate;
+import com.viaoa.object.OAObjectCallbackDelegate;
 import com.viaoa.util.OAString;
 import com.viaoa.hub.*;
 
@@ -799,7 +799,7 @@ public class OAMenuItem extends JMenuItem implements OAJfcComponent {
             if (newHub != null) {
                 // listen to all of the selectHub to see if it's enabled
                 String s = getMethodName();
-                if (OAString.isNotEmpty(s)) getChangeListener().addEditQueryEnabled(newHub, s, true);
+                if (OAString.isNotEmpty(s)) getChangeListener().addObjectCallbackEnabled(newHub, s, true);
             }
             
             /* 20190203 remove, since this is already taken care of at setup

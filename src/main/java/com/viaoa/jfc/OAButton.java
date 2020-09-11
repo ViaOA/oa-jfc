@@ -28,8 +28,8 @@ import com.viaoa.jfc.table.OATableComponent;
 import com.viaoa.object.OALinkInfo;
 import com.viaoa.object.OAObject;
 import com.viaoa.object.OAObjectDelegate;
-import com.viaoa.object.OAObjectEditQuery;
-import com.viaoa.object.OAObjectEditQueryDelegate;
+import com.viaoa.object.OAObjectCallback;
+import com.viaoa.object.OAObjectCallbackDelegate;
 import com.viaoa.util.OAFilter;
 import com.viaoa.util.OAString;
 import com.viaoa.hub.*;
@@ -189,7 +189,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
                 }
             }
             if (hubx != null && OAString.isNotEmpty(propx)) {
-                control.getEnabledChangeListener().addEditQueryEnabled(hubx, propx);
+                control.getEnabledChangeListener().addObjectCallbackEnabled(hubx, propx);
             }
         }
         else if (command == ButtonCommand.Save) {
@@ -1033,7 +1033,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
             if (newHub != null) {
                 // listen to all of the selectHub to see if it's enabled
                 String s = getMethodName();
-                if (OAString.isNotEmpty(s)) getChangeListener().addEditQueryEnabled(newHub, s, true);
+                if (OAString.isNotEmpty(s)) getChangeListener().addObjectCallbackEnabled(newHub, s, true);
             }
             
             /* 20190203 remove, since this is alredy taken care of at setup

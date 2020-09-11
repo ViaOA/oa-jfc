@@ -67,8 +67,8 @@ import com.viaoa.jfc.table.OATableComponent;
 import com.viaoa.object.OALinkInfo;
 import com.viaoa.object.OAObject;
 import com.viaoa.object.OAObjectDeleteDelegate;
-import com.viaoa.object.OAObjectEditQuery;
-import com.viaoa.object.OAObjectEditQueryDelegate;
+import com.viaoa.object.OAObjectCallback;
+import com.viaoa.object.OAObjectCallbackDelegate;
 import com.viaoa.object.OAObjectInfo;
 import com.viaoa.object.OAObjectInfoDelegate;
 import com.viaoa.object.OAObjectReflectDelegate;
@@ -339,7 +339,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		String msg = getConfirmMessage();
 		String title = "Confirm";
 
-		OAObjectEditQuery eq = null;
+		OAObjectCallback eq = null;
 		final Hub mhub = getSelectHub();
 		Object objx;
 
@@ -349,7 +349,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				if (obj != null) {
 					Hub hx = HubLinkDelegate.getHubWithLink(hub, true);
 					if (hx != null) {
-						eq = OAObjectEditQueryDelegate.getConfirmPropertyChangeEditQuery(	(OAObject) hx.getLinkHub(false).getAO(),
+						eq = OAObjectCallbackDelegate.getConfirmPropertyChangeObjectCallback(	(OAObject) hx.getLinkHub(false).getAO(),
 																							hx.getLinkPath(false), null, msg, title);
 					}
 				}
@@ -373,7 +373,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						continue;
 					}
 
-					eq = OAObjectEditQueryDelegate.getConfirmDeleteEditQuery((OAObject) objx, msg, title);
+					eq = OAObjectCallbackDelegate.getConfirmDeleteObjectCallback((OAObject) objx, msg, title);
 					msg = eq.getConfirmMessage();
 					title = eq.getConfirmTitle();
 				}
@@ -396,14 +396,14 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						}
 						continue;
 					}
-					eq = OAObjectEditQueryDelegate.getConfirmRemoveEditQuery(getHub(), (OAObject) objx, msg, title);
+					eq = OAObjectCallbackDelegate.getConfirmRemoveObjectCallback(getHub(), (OAObject) objx, msg, title);
 					msg = eq.getConfirmMessage();
 					title = eq.getConfirmTitle();
 				}
 				break;
 			case Add:
 			case Insert:
-				eq = OAObjectEditQueryDelegate.getVerifyAddEditQuery(getHub(), null, OAObjectEditQuery.CHECK_ALL);
+				eq = OAObjectCallbackDelegate.getVerifyAddObjectCallback(getHub(), null, OAObjectCallback.CHECK_ALL);
 				if (!eq.getAllowed()) {
 					String s = eq.getDisplayResponse();
 					if (s == null) {
@@ -412,12 +412,12 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					JOptionPane.showMessageDialog(button, s, "Warning", JOptionPane.WARNING_MESSAGE);
 					return false;
 				}
-				eq = OAObjectEditQueryDelegate.getConfirmAddEditQuery(getHub(), null, msg, title);
+				eq = OAObjectCallbackDelegate.getConfirmAddObjectCallback(getHub(), null, msg, title);
 				msg = eq.getConfirmMessage();
 				title = eq.getConfirmTitle();
 				break;
 			case New:
-				eq = OAObjectEditQueryDelegate.getAllowNewEditQuery(getHub());
+				eq = OAObjectCallbackDelegate.getAllowNewObjectCallback(getHub());
 				if (!eq.getAllowed()) {
 					String s = eq.getDisplayResponse();
 					if (s == null) {
@@ -426,7 +426,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					JOptionPane.showMessageDialog(button, s, "Warning", JOptionPane.WARNING_MESSAGE);
 					return false;
 				}
-				eq = OAObjectEditQueryDelegate.getConfirmAddEditQuery(getHub(), null, msg, title);
+				eq = OAObjectCallbackDelegate.getConfirmAddObjectCallback(getHub(), null, msg, title);
 				msg = eq.getConfirmMessage();
 				title = eq.getConfirmTitle();
 				break;
@@ -449,7 +449,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				if (!(objx instanceof OAObject)) {
 					break;
 				}
-				eq = OAObjectEditQueryDelegate.getConfirmPropertyChangeEditQuery((OAObject) objx, propx, objSearch, msg, title);
+				eq = OAObjectCallbackDelegate.getConfirmPropertyChangeObjectCallback((OAObject) objx, propx, objSearch, msg, title);
 				msg = eq.getConfirmMessage();
 				title = eq.getConfirmTitle();
 				break;
@@ -471,7 +471,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						}
 						continue;
 					}
-					eq = OAObjectEditQueryDelegate.getVerifySaveEditQuery((OAObject) objx, OAObjectEditQuery.CHECK_ALL);
+					eq = OAObjectCallbackDelegate.getVerifySaveObjectCallback((OAObject) objx, OAObjectCallback.CHECK_ALL);
 					if (!eq.getAllowed()) {
 						String s = eq.getDisplayResponse();
 						if (s == null) {
@@ -480,7 +480,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						JOptionPane.showMessageDialog(button, s, "Warning", JOptionPane.WARNING_MESSAGE);
 						return false;
 					}
-					eq = OAObjectEditQueryDelegate.getConfirmSaveEditQuery((OAObject) objx, msg, title);
+					eq = OAObjectCallbackDelegate.getConfirmSaveObjectCallback((OAObject) objx, msg, title);
 					msg = eq.getConfirmMessage();
 					title = eq.getConfirmTitle();
 				}
@@ -489,13 +489,13 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		}
 
 		if (OAString.isNotEmpty(getMethodName())) {
-			eq = OAObjectEditQueryDelegate.getVerifyCommandEditQuery(obj, getMethodName(), OAObjectEditQuery.CHECK_ALL);
+			eq = OAObjectCallbackDelegate.getVerifyCommandObjectCallback(obj, getMethodName(), OAObjectCallback.CHECK_ALL);
 			if (!eq.getAllowed()) {
 				String s = eq.getDisplayResponse();
 				JOptionPane.showMessageDialog(button, s, "Command Warning", JOptionPane.WARNING_MESSAGE);
 				return false;
 			}
-			eq = OAObjectEditQueryDelegate.getConfirmCommandEditQuery(obj, getMethodName(), msg, title);
+			eq = OAObjectCallbackDelegate.getConfirmCommandObjectCallback(obj, getMethodName(), msg, title);
 		}
 
 		if (eq != null) {
@@ -518,7 +518,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 
 	@Override
 	public String isValid(Object obj, Object newValue) {
-		OAObjectEditQuery em = _isValid(obj);
+		OAObjectCallback em = _isValid(obj);
 		String result = null;
 		if (em != null) {
 			if (!em.getAllowed()) {
@@ -531,8 +531,8 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		return result;
 	}
 
-	protected OAObjectEditQuery _isValid(Object obj) {
-		OAObjectEditQuery eq = null;
+	protected OAObjectCallback _isValid(Object obj) {
+		OAObjectCallback eq = null;
 
 		final Hub mhub = getSelectHub();
 		Object objx;
@@ -540,7 +540,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		switch (command) {
 		case ClearAO:
 			if (hub.getLinkHub(true) != null) {
-				eq = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery(OAObjectEditQuery.CHECK_ALL,
+				eq = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL,
 																				(OAObject) hub.getLinkHub(true).getAO(),
 																				hub.getLinkPath(true), obj, null);
 			}
@@ -564,7 +564,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					continue;
 				}
 
-				eq = OAObjectEditQueryDelegate.getVerifyDeleteEditQuery(getHub(), (OAObject) objx, OAObjectEditQuery.CHECK_ALL);
+				eq = OAObjectCallbackDelegate.getVerifyDeleteObjectCallback(getHub(), (OAObject) objx, OAObjectCallback.CHECK_ALL);
 				if (eq != null && !eq.getAllowed()) {
 					break;
 				}
@@ -591,7 +591,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					}
 					continue;
 				}
-				eq = OAObjectEditQueryDelegate.getVerifyRemoveEditQuery(getHub(), (OAObject) objx, OAObjectEditQuery.CHECK_ALL);
+				eq = OAObjectCallbackDelegate.getVerifyRemoveObjectCallback(getHub(), (OAObject) objx, OAObjectCallback.CHECK_ALL);
 				if (!eq.getAllowed()) {
 					break;
 				}
@@ -601,7 +601,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		case Insert:
 		case New:
 			if (obj instanceof OAObject) {
-				eq = OAObjectEditQueryDelegate.getVerifyAddEditQuery(getHub(), (OAObject) obj, OAObjectEditQuery.CHECK_ALL);
+				eq = OAObjectCallbackDelegate.getVerifyAddObjectCallback(getHub(), (OAObject) obj, OAObjectCallback.CHECK_ALL);
 			}
 		case Search:
 			Hub hubx = HubLinkDelegate.getHubWithLink(hub, true);
@@ -622,12 +622,12 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			if (!(objx instanceof OAObject)) {
 				return null;
 			}
-			eq = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery(OAObjectEditQuery.CHECK_ALL, (OAObject) objx, propx, null, obj);
+			eq = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) objx, propx, null, obj);
 			break;
 		}
 
 		if (OAString.isNotEmpty(getMethodName()) && (obj instanceof OAObject) && (eq == null || eq.isAllowed())) {
-			eq = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery(OAObjectEditQuery.CHECK_ALL, (OAObject) obj, getMethodName(),
+			eq = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) obj, getMethodName(),
 																			null, updateValue);
 		}
 		return eq;
@@ -1372,7 +1372,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					obj = getClipboardObject(false);
 					if (obj != null) {
 						if (obj.getClass().equals(hub.getObjectClass())) {
-							obj = OAObjectEditQueryDelegate.getCopy(obj);
+							obj = OAObjectCallbackDelegate.getCopy(obj);
 						}
 					}
 				} else if (!obj.getClass().equals(hub.getObjectClass())) {
@@ -1408,7 +1408,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 							if (!objxx.getClass().equals(hub.getObjectClass())) {
 								break;
 							}
-							objxx = OAObjectEditQueryDelegate.getCopy((OAObject) objxx);
+							objxx = OAObjectCallbackDelegate.getCopy((OAObject) objxx);
 							if (pos < 0) {
 								hub.add(objxx);
 							} else {
@@ -1653,7 +1653,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		// 20190293 select hub
 		if (getSelectHub() != null) {
 			// listen to all of the selectHub to see if it's enabled
-			getChangeListener().addEditQueryEnabled(getSelectHub(), methodName, true);
+			getChangeListener().addObjectCallbackEnabled(getSelectHub(), methodName, true);
 		}
 
 	}
@@ -1871,14 +1871,14 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				if (flag && !HubAddRemoveDelegate.isAllowAddRemove(getHub())) {
 					flag = false;
 				}
-				flag = flag && OAObjectEditQueryDelegate.getAllowRemove(hub, null, OAObjectEditQuery.CHECK_ALL);
+				flag = flag && OAObjectCallbackDelegate.getAllowRemove(hub, null, OAObjectCallback.CHECK_ALL);
 
 				break;
 			case ClearAO:
 				flag = obj != null;
 				if (oaObj != null) {
 					if (hub.getLinkHub(true) != null) {
-						// flag = OAObjectEditQueryDelegate.getVerifyPropertyChange((OAObject)hub.getLinkHub().getAO(), hub.getLinkPath(), oaObj, null);
+						// flag = OAObjectCallbackDelegate.getVerifyPropertyChange((OAObject)hub.getLinkHub().getAO(), hub.getLinkPath(), oaObj, null);
 					}
 				}
 				break;
@@ -1908,7 +1908,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						continue;
 					}
 					// 20190220
-					flag = OAObjectEditQueryDelegate.getAllowDelete(hub, (OAObject) objx);
+					flag = OAObjectCallbackDelegate.getAllowDelete(hub, (OAObject) objx);
 					//was: flag = ((OAObject)objx).canDelete();
 				}
 				break;
@@ -1925,7 +1925,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					flag = (hub.getSize() == 0);
 					break;
 				}
-				flag = flag && OAObjectEditQueryDelegate.getAllowAdd(getHub(), null, OAObjectEditQuery.CHECK_ALL);
+				flag = flag && OAObjectCallbackDelegate.getAllowAdd(getHub(), null, OAObjectCallback.CHECK_ALL);
 				//was: flag = flag && getHub().canAdd();
 				break;
 			case Up:
@@ -1935,7 +1935,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				flag = (obj != null && (hub.isMoreData() || hub.getPos() < (hub.getSize() - 1)));
 				break;
 			case Cut:
-				OAObjectEditQuery eq = OAObjectEditQueryDelegate.getAllowRemoveEditQuery(hub, null, OAObjectEditQuery.CHECK_ALL);
+				OAObjectCallback eq = OAObjectCallbackDelegate.getAllowRemoveObjectCallback(hub, null, OAObjectCallback.CHECK_ALL);
 				flag = eq.getAllowed();
 				if (!flag) {
 					break;
@@ -1965,7 +1965,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						}
 						continue;
 					}
-					eq = OAObjectEditQueryDelegate.getAllowCopyEditQuery((OAObject) objx);
+					eq = OAObjectCallbackDelegate.getAllowCopyObjectCallback((OAObject) objx);
 					flag = eq.getAllowed();
 				}
 				break;
@@ -2037,7 +2037,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		}
 
 		if (flag) {
-			OAObjectEditQuery eq;
+			OAObjectCallback eq;
 			switch (command) {
 			case Delete:
 				break;
@@ -2049,7 +2049,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			case Insert:
 			case New:
 				if (hub != null) {
-					//already done: flag = OAObjectEditQueryDelegate.getAllowAdd(getHub(), true);
+					//already done: flag = OAObjectCallbackDelegate.getAllowAdd(getHub(), true);
 					//was: flag = hub.canAdd();
 				}
 			}
@@ -2275,7 +2275,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 	public String getToolTipText(Object obj, String ttDefault) {
 		ttDefault = super.getToolTipText(obj, ttDefault);
 		if (obj instanceof OAObject && OAString.isNotEmpty(methodName)) {
-			ttDefault = OAObjectEditQueryDelegate.getToolTip((OAObject) obj, methodName, ttDefault);
+			ttDefault = OAObjectCallbackDelegate.getToolTip((OAObject) obj, methodName, ttDefault);
 		}
 		return ttDefault;
 	}

@@ -71,8 +71,8 @@ import com.viaoa.model.oa.VString;
 import com.viaoa.object.OAFinder;
 import com.viaoa.object.OALinkInfo;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectEditQuery;
-import com.viaoa.object.OAObjectEditQueryDelegate;
+import com.viaoa.object.OAObjectCallback;
+import com.viaoa.object.OAObjectCallbackDelegate;
 import com.viaoa.object.OAObjectInfo;
 import com.viaoa.object.OAObjectInfoDelegate;
 import com.viaoa.object.OAObjectReflectDelegate;
@@ -333,8 +333,8 @@ public class OAJfcController extends HubListenerAdapter {
 						addEnabledEditQueryCheck(hub, prop);
 						addVisibleEditQueryCheck(hub, prop);
 					} else {
-						OAObjectEditQueryDelegate.addEditQueryChangeListeners(hub, cz, prop, ppPrefix, getEnabledChangeListener(), true);
-						OAObjectEditQueryDelegate.addEditQueryChangeListeners(hub, cz, prop, ppPrefix, getVisibleChangeListener(), false);
+						OAObjectCallbackDelegate.addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getEnabledChangeListener(), true);
+						OAObjectCallbackDelegate.addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getVisibleChangeListener(), false);
 					}
 					ppPrefix += prop + ".";
 					cz = oaPropertyPath.getClasses()[cnt++];
@@ -648,7 +648,7 @@ public class OAJfcController extends HubListenerAdapter {
 				}
 			}
 			if (objx instanceof OAObject) {
-				OAObjectEditQuery em = OAObjectEditQueryDelegate.getConfirmPropertyChangeEditQuery(	(OAObject) objx, prop, newValue,
+				OAObjectCallback em = OAObjectCallbackDelegate.getConfirmPropertyChangeObjectCallback(	(OAObject) objx, prop, newValue,
 																									confirmMessage, confirmTitle);
 				confirmMessage = em.getConfirmMessage();
 				confirmTitle = em.getConfirmTitle();
@@ -716,7 +716,7 @@ public class OAJfcController extends HubListenerAdapter {
 		}
 
 		OAObject oaObj = (OAObject) obj;
-		OAObjectEditQuery em = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery(	OAObjectEditQuery.CHECK_ALL, oaObj,
+		OAObjectCallback em = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(	OAObjectCallback.CHECK_ALL, oaObj,
 																							linkPropertyName, null, objNew);
 
 		String result = null;
@@ -802,7 +802,7 @@ public class OAJfcController extends HubListenerAdapter {
 		}
 		String result = null;
 		if (objx instanceof OAObject) {
-			OAObjectEditQuery em = OAObjectEditQueryDelegate.getVerifyPropertyChangeEditQuery(	OAObjectEditQuery.CHECK_ALL, (OAObject) objx,
+			OAObjectCallback em = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(	OAObjectCallback.CHECK_ALL, (OAObject) objx,
 																								prop, null, newValue);
 			if (!em.getAllowed()) {
 				result = em.getResponse();
@@ -857,7 +857,7 @@ public class OAJfcController extends HubListenerAdapter {
 					objx = oaPropertyPath.getLastLinkValue(objx);
 				}
 				if (objx instanceof OAObject) {
-					return OAObjectEditQueryDelegate.getFormat((OAObject) objx, endPropertyName, defaultFormat);
+					return OAObjectCallbackDelegate.getFormat((OAObject) objx, endPropertyName, defaultFormat);
 				}
 			}
 		}
@@ -1338,7 +1338,7 @@ public class OAJfcController extends HubListenerAdapter {
 	}
 
 	public HubProp addEnabledEditQueryCheck(Hub hub, String propertyName) {
-		return getEnabledChangeListener().addEditQueryEnabled(hub, propertyName);
+		return getEnabledChangeListener().addObjectCallbackEnabled(hub, propertyName);
 	}
 
 	public HubProp addVisibleCheck(Hub hub, String pp) {
@@ -1354,7 +1354,7 @@ public class OAJfcController extends HubListenerAdapter {
 	}
 
 	public HubProp addVisibleEditQueryCheck(Hub hub, String propertyName) {
-		return getVisibleChangeListener().addEditQueryVisible(hub, propertyName);
+		return getVisibleChangeListener().addObjectCallbackVisible(hub, propertyName);
 	}
 
 	private HubEvent lastUpdateHubEvent;
@@ -1485,7 +1485,7 @@ public class OAJfcController extends HubListenerAdapter {
 				oaobj = (OAObject) object;
 			}
 			String s = bUseLinkHub ? linkPropertyName : propertyPath;
-			OAObjectEditQueryDelegate.updateLabel(oaobj, s, lbl);
+			OAObjectCallbackDelegate.updateLabel(oaobj, s, lbl);
 		}
 	}
 
@@ -1582,7 +1582,7 @@ public class OAJfcController extends HubListenerAdapter {
 								objx = oaPropertyPath.getLastLinkValue(objx);
 							}
 							if (objx instanceof OAObject) {
-								OAObjectEditQueryDelegate.renderLabel((OAObject) objx, endPropertyName, lblThis);
+								OAObjectCallbackDelegate.renderLabel((OAObject) objx, endPropertyName, lblThis);
 							}
 						}
 					} catch (Exception e) {
@@ -2199,7 +2199,7 @@ public class OAJfcController extends HubListenerAdapter {
 				objx = oaPropertyPath.getLastLinkValue(objx);
 			}
 			if (objx instanceof OAObject) {
-				ttDefault = OAObjectEditQueryDelegate.getToolTip((OAObject) objx, endPropertyName, ttDefault);
+				ttDefault = OAObjectCallbackDelegate.getToolTip((OAObject) objx, endPropertyName, ttDefault);
 			}
 		} else {
 			if (OAString.isNotEmpty(toolTipTextPropertyPath) || OAString.isNotEmpty(getToolTipTextTemplate())) {
