@@ -66,9 +66,9 @@ import com.viaoa.jfc.dnd.OATransferable;
 import com.viaoa.jfc.table.OATableComponent;
 import com.viaoa.object.OALinkInfo;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectDeleteDelegate;
 import com.viaoa.object.OAObjectCallback;
 import com.viaoa.object.OAObjectCallbackDelegate;
+import com.viaoa.object.OAObjectDeleteDelegate;
 import com.viaoa.object.OAObjectInfo;
 import com.viaoa.object.OAObjectInfoDelegate;
 import com.viaoa.object.OAObjectReflectDelegate;
@@ -350,7 +350,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					Hub hx = HubLinkDelegate.getHubWithLink(hub, true);
 					if (hx != null) {
 						eq = OAObjectCallbackDelegate.getConfirmPropertyChangeObjectCallback(	(OAObject) hx.getLinkHub(false).getAO(),
-																							hx.getLinkPath(false), null, msg, title);
+																								hx.getLinkPath(false), null, msg, title);
 					}
 				}
 				break;
@@ -541,8 +541,8 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		case ClearAO:
 			if (hub.getLinkHub(true) != null) {
 				eq = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL,
-																				(OAObject) hub.getLinkHub(true).getAO(),
-																				hub.getLinkPath(true), obj, null);
+																					(OAObject) hub.getLinkHub(true).getAO(),
+																					hub.getLinkPath(true), obj, null);
 			}
 			break;
 		case Delete:
@@ -622,13 +622,14 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			if (!(objx instanceof OAObject)) {
 				return null;
 			}
-			eq = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) objx, propx, null, obj);
+			eq = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) objx, propx, null,
+																				obj);
 			break;
 		}
 
 		if (OAString.isNotEmpty(getMethodName()) && (obj instanceof OAObject) && (eq == null || eq.isAllowed())) {
 			eq = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) obj, getMethodName(),
-																			null, updateValue);
+																				null, updateValue);
 		}
 		return eq;
 	}
@@ -947,7 +948,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		}
 
 		dlgWait.getCancelButton().setText("Run in background");
-		dlgWait.getCancelButton().setToolTipText("use this to close the dialog, and allow the the procss to run in the background");
+		dlgWait.getCancelButton().setToolTipText("use this to close the dialog, and allow the the process to run in the background");
 
 		String s = processingTitle;
 		if (s == null) {
@@ -1250,6 +1251,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 							if (HubAddRemoveDelegate.isAllowAddRemove(getHub())) {
 								getHub().remove(ho); // 20110215 remove first, so that cascading deletes are not so "noisy"
 							}
+
 							// else it can only be removed when delete is called (ex: a detail hub that is from a linkOne)
 							((OAObject) ho).delete();
 						} else {
@@ -2258,7 +2260,6 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		if (this.dlgConfirm != null) {
 			return this.dlgConfirm;
 		}
-		;
 
 		dlgConfirm = new OAConfirmDialog(SwingUtilities.getWindowAncestor(this.button), button.getText(), getConfirmMessage());
 

@@ -333,8 +333,10 @@ public class OAJfcController extends HubListenerAdapter {
 						addEnabledEditQueryCheck(hub, prop);
 						addVisibleEditQueryCheck(hub, prop);
 					} else {
-						OAObjectCallbackDelegate.addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getEnabledChangeListener(), true);
-						OAObjectCallbackDelegate.addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getVisibleChangeListener(), false);
+						OAObjectCallbackDelegate.addObjectCallbackChangeListeners(	hub, cz, prop, ppPrefix, getEnabledChangeListener(),
+																					true);
+						OAObjectCallbackDelegate.addObjectCallbackChangeListeners(	hub, cz, prop, ppPrefix, getVisibleChangeListener(),
+																					false);
 					}
 					ppPrefix += prop + ".";
 					cz = oaPropertyPath.getClasses()[cnt++];
@@ -649,7 +651,7 @@ public class OAJfcController extends HubListenerAdapter {
 			}
 			if (objx instanceof OAObject) {
 				OAObjectCallback em = OAObjectCallbackDelegate.getConfirmPropertyChangeObjectCallback(	(OAObject) objx, prop, newValue,
-																									confirmMessage, confirmTitle);
+																										confirmMessage, confirmTitle);
 				confirmMessage = em.getConfirmMessage();
 				confirmTitle = em.getConfirmTitle();
 			}
@@ -717,7 +719,7 @@ public class OAJfcController extends HubListenerAdapter {
 
 		OAObject oaObj = (OAObject) obj;
 		OAObjectCallback em = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(	OAObjectCallback.CHECK_ALL, oaObj,
-																							linkPropertyName, null, objNew);
+																								linkPropertyName, null, objNew);
 
 		String result = null;
 		if (!em.getAllowed()) {
@@ -802,8 +804,9 @@ public class OAJfcController extends HubListenerAdapter {
 		}
 		String result = null;
 		if (objx instanceof OAObject) {
-			OAObjectCallback em = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(	OAObjectCallback.CHECK_ALL, (OAObject) objx,
-																								prop, null, newValue);
+			OAObjectCallback em = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(	OAObjectCallback.CHECK_ALL,
+																									(OAObject) objx,
+																									prop, null, newValue);
 			if (!em.getAllowed()) {
 				result = em.getResponse();
 				Throwable t = em.getThrowable();
@@ -1724,7 +1727,9 @@ public class OAJfcController extends HubListenerAdapter {
 		for (Container cp = comp.getParent(); cp != null && i < 5; cp = cp.getParent(), i++) {
 			if (cp instanceof OAResizePanel) {
 				OAResizePanel rp = (OAResizePanel) cp;
-				if (rp.getMainComponent() == comp && rp.isVisible() != bVisible) {
+				// 20200916
+				if (rp.isVisible() != bVisible) {
+					// was: if (rp.getMainComponent() == comp && rp.isVisible() != bVisible) {
 					// 20190328 could be in a tab
 					boolean b = true;
 					if (rp.getParent() instanceof JTabbedPane) {
@@ -2062,26 +2067,7 @@ public class OAJfcController extends HubListenerAdapter {
 				return;
 			}
 		}
-		boolean b = false;
-		String prop = e.getPropertyName();
-		if (prop != null) {
-			if (prop.equalsIgnoreCase(OAJfcController.this.getHubListenerPropertyName())) {
-				b = true;
-			} else {
-				final MyHubChangeListener[] mcls = new MyHubChangeListener[] { changeListener, changeListenerEnabled,
-						changeListenerVisible };
-				for (MyHubChangeListener mcl : mcls) {
-					if (mcl == null) {
-						continue;
-					}
-					if (mcl.isListeningTo(hub, prop)) {
-						b = true;
-						break;
-					}
-				}
-			}
-		}
-		if (!b) {
+		if (!isListeningTo(hub, e.getObject(), e.getPropertyName())) {
 			return;
 		}
 
@@ -2366,8 +2352,43 @@ public class OAJfcController extends HubListenerAdapter {
 		return bVisible;
 	}
 
+	protected boolean isListeningTo(Hub hub, Object object, String prop) {
+		if (hub == null || object == null || prop == null) {
+			return false;
+		}
+
+		if (getHub() == hub && prop.equalsIgnoreCase(getHubListenerPropertyName())) {
+			if (!bAoOnly || hub.getAO() == object) {
+				return true;
+			}
+		}
+
+		final MyHubChangeListener[] mcls = new MyHubChangeListener[] { changeListener, changeListenerEnabled,
+				changeListenerVisible };
+		for (MyHubChangeListener mcl : mcls) {
+			if (mcl == null) {
+				continue;
+			}
+			if (mcl.originalIsListeningTo(hub, object, prop)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	// Shares hubListeners between hub and all 3 hubChangeListeners
 	protected abstract class MyHubChangeListener extends HubChangeListener {
+		@Override
+		public boolean isListeningTo(Hub hub, Object object, String property) {
+			// need to check others, since the hubListener is shared across the changeListeners
+			return OAJfcController.this.isListeningTo(hub, object, property);
+		}
+
+		public boolean originalIsListeningTo(Hub hub, Object object, String property) {
+			// just check this one by calling the super
+			return super.isListeningTo(hub, object, property);
+		}
+
 		@Override
 		public void remove(Hub hub, String prop) {
 			final MyHubChangeListener[] mcls = new MyHubChangeListener[] { changeListener, changeListenerEnabled, changeListenerVisible };
@@ -2527,23 +2548,6 @@ public class OAJfcController extends HubListenerAdapter {
 			return false;
 		}
 
-		public boolean isListeningTo(Hub hub, String prop) {
-			if (hub == null) {
-				return false;
-			}
-			for (HubProp hp : hubProps) {
-				if (hp.bIgnore) {
-					continue;
-				}
-				if (hp.hub != hub) {
-					continue;
-				}
-				if (OAString.isEqual(hp.propertyPath, prop, true)) {
-					return true;
-				}
-			}
-			return false;
-		}
 	}
 
 }
