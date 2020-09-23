@@ -129,6 +129,16 @@ public class PrintController {
                 onClose();
                 PrintController.this.print(true);
             }
+            @Override
+            public void refresh(boolean bRebuild) {
+                beforePreviewRefresh();
+                try {
+                    super.refresh(bRebuild);
+                }
+                finally {
+                    afterPreviewRefresh();
+                }
+            }
         };
         controlPrintPreview.setParentWindow(parentWindow);
         return controlPrintPreview;
@@ -621,6 +631,10 @@ public class PrintController {
     protected void beforePrint() {
     }
     protected void afterPrint() {
+    }
+    protected void beforePreviewRefresh() {
+    }
+    protected void afterPreviewRefresh() {
     }
     
 
