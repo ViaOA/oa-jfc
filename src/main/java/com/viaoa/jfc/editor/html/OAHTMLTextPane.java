@@ -600,7 +600,7 @@ public class OAHTMLTextPane extends JTextPane implements OAPrintable {
         this.pageFormat = pageFormat;
         bBeforeMethodCalled = true;
         if (pageFormat == null) throw new IllegalArgumentException("pageFormat can not be null");
-        setPrinting(true);
+        // setPrinting(true);
         bPreviewing = true;
         int w = (int) OAPrintUtil.convertPointsToPixels(pageFormat.getImageableWidth());
         int h = (int) OAPrintUtil.convertPointsToPixels(pageFormat.getImageableHeight());
