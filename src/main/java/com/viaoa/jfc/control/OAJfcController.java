@@ -1723,6 +1723,7 @@ public class OAJfcController extends HubListenerAdapter {
 				}
 			}
 		}
+
 		int i = 0;
 		for (Container cp = comp.getParent(); cp != null && i < 5; cp = cp.getParent(), i++) {
 			if (cp instanceof OAResizePanel) {
@@ -1737,7 +1738,9 @@ public class OAJfcController extends HubListenerAdapter {
 						b = tp.getSelectedComponent() == rp;
 					}
 					if (b) {
-						rp.setVisible(bVisible);
+						if (rp.getChildrenVisible() == bVisible) {
+							rp.setVisible(bVisible);
+						}
 					}
 				}
 				break;
