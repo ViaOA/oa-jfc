@@ -209,13 +209,14 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
         lastSelectedDate = new OADate(dx);
         vdCalendar.setValue(new OADate(dx));
         
-        final int month = bFromDayPanel ? alDayPanel.get(20).date.getMonth() :dx.getMonth(); 
+        final int month = bFromDayPanel ? alDayPanel.get(40).date.getMonth() :dx.getMonth(); 
         boolean bNewMonth;
         if (bFromDayPanel) {
             dx = dateLastBegin;
             bNewMonth = false;
         }
         else {
+            dx = (OADate) dx.addMonths(-1);
             dx.setDay(1);
             int dow = dx.getDayOfWeek();
             
@@ -229,13 +230,16 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
         int i = 0;
         boolean bVis = true;
         if (bNewMonth) {
+            
             for (DayPanel dp : alDayPanel) {
                 dp.date = dx;
                 dp.lbl.setText(dx.toString());
                 
+                /*qqqqqqqq was, when it only showed 7 weeks, now showing 16 weeks (3+ months)
                 if (i++ == 35) {
                     if (dx.getDay() < 20) bVis = false;
                 }
+                */
                 dp.setVisible(bVis);
                 dx = (OADate) dx.addDay();
 
@@ -300,7 +304,8 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
         
         // create daily lists
         alDayPanel = new ArrayList<>();
-        for (int i=0; i<42; i++) {  // 6 rows of 7 cols
+        for (int i=0; i<126; i++) {  // 18 rows of 7 cols
+            //was: for (int i=0; i<42; i++) {  // 6 rows of 7 cols
             final DayPanel dp = new DayPanel() {
                 @Override
                 protected void onMouseClick() {
@@ -337,7 +342,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                     
                     for (DayPanel dp : alDayPanel) {
                         if (!d.equals(dp.date)) continue;
-                        //was: qqqqqq dp.hubDetail.setAO(obj);
+                        //was: dp.hubDetail.setAO(obj);
                         dp.hubForList.setAO(obj);
                         break;
                     }
@@ -448,7 +453,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
         gc.weightx = gc.weighty = 1.0f;
         
         int pos = 0;
-        for (int r=0; r<6 ;r++) {
+        for (int r=0; r<18 ;r++) {
             for (int c=0; c<7 && pos < alDayPanel.size(); c++) {
                 DayPanel dp = alDayPanel.get(pos++);
                 if (c == 6) gc.gridwidth = gc.REMAINDER;

@@ -1725,23 +1725,20 @@ public class OAJfcController extends HubListenerAdapter {
 		}
 		int i = 0;
 		for (Container cp = comp.getParent(); cp != null && i < 5; cp = cp.getParent(), i++) {
-			if (cp instanceof OAResizePanel) {
-				OAResizePanel rp = (OAResizePanel) cp;
-				// 20200916
-				if (rp.isVisible() != bVisible) {
-					// was: if (rp.getMainComponent() == comp && rp.isVisible() != bVisible) {
-					// 20190328 could be in a tab
-					boolean b = true;
-					if (rp.getParent() instanceof JTabbedPane) {
-						JTabbedPane tp = (JTabbedPane) rp.getParent();
-						b = tp.getSelectedComponent() == rp;
-					}
-					if (b) {
-						rp.setVisible(bVisible);
-					}
+			if (!(cp instanceof OAResizePanel)) continue;
+			OAResizePanel rp = (OAResizePanel) cp;
+            boolean bRpVisible = rp.areAnyChildrenVisible();
+			if (bRpVisible != rp.isVisible()) {
+				boolean b = true;
+				if (rp.getParent() instanceof JTabbedPane) {
+					JTabbedPane tp = (JTabbedPane) rp.getParent();
+					b = tp.getSelectedComponent() == rp;
 				}
-				break;
+				if (b) {
+					rp.setVisible(bRpVisible);
+				}
 			}
+			break;
 		}
 		return bVisible;
 	}

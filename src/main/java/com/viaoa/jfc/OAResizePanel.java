@@ -356,4 +356,16 @@ public class OAResizePanel extends JPanel {
         return d;
     }
 
+    public boolean areAnyChildrenVisible() {
+        boolean b = comp1 == null ? false : comp1.isVisible();
+        if (!b && comps != null) {
+            for (Component comp : comps) {
+                if (comp.isVisible()) {
+                    b = true;
+                    break;
+                }
+            }
+        }
+        return b;
+    }    
 }
