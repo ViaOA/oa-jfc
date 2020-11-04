@@ -75,12 +75,15 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 	public static ButtonCommand HUBSEARCH = ButtonCommand.HubSearch;
 	public static ButtonCommand SEARCH = ButtonCommand.Search;
 	public static ButtonCommand SELECT = ButtonCommand.Select;
+	public static ButtonCommand OBJECT_METHOD = ButtonCommand.ObjectMethod;
+	public static ButtonCommand HUB_METHOD = ButtonCommand.HubMethod;
 
 	public enum ButtonCommand {
 		Other(false), Up(true), Down(true), Save(false), Cancel(false), First(true), Last(true),
 		Next(true), Previous(true), Delete(true), Remove(true), New(true), Insert(true), Add(true),
 		Cut(false), Copy(false), Paste(false),
-		NewManual(true), AddManual(true), ClearAO(true), GoTo(false), HubSearch(true), Search(false), Select(true);
+		NewManual(true), AddManual(true), ClearAO(true), GoTo(false), HubSearch(true), Search(false), Select(true), ObjectMethod(false),
+		HubMethod(false);
 
 		private boolean bSetsAO;
 
@@ -283,6 +286,12 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 			break;
 		case HubSearch:
 			enabledMode = ButtonEnabledMode.HubIsNotEmpty;
+			break;
+		case ObjectMethod:
+			enabledMode = ButtonEnabledMode.ActiveObjectNotNull;
+			break;
+		case HubMethod:
+			enabledMode = ButtonEnabledMode.HubIsValid;
 			break;
 		default:
 			enabledMode = ButtonEnabledMode.ActiveObjectNotNull;
