@@ -120,7 +120,7 @@ public class OAJfcController extends HubListenerAdapter {
 	protected String linkPropertyName;
 
 	protected boolean bUseLinkHub;
-	protected final boolean bUseEditQuery;
+	protected final boolean bUseObjectCallback;
 
 	protected HubChangeListener.Type hubChangeListenerType;
 
@@ -191,28 +191,28 @@ public class OAJfcController extends HubListenerAdapter {
 	 * Create new controller for Hub and Jfc component
 	 *
 	 * @param hub
-	 * @param object        if hub is null, then this object will be put in temp hub and made the AO
-	 * @param propertyPath  property used by component
-	 * @param bAoOnly       should controller listen to propChange for all objects in hub, or just AO.
+	 * @param object             if hub is null, then this object will be put in temp hub and made the AO
+	 * @param propertyPath       property used by component
+	 * @param bAoOnly            should controller listen to propChange for all objects in hub, or just AO.
 	 * @param comp
-	 * @param type          default type of change listener
-	 * @param bUseLinkHub   should setup also include setting up the link hub
-	 * @param bUseEditQuery use editQuery to determine enabled/visibl.
+	 * @param type               default type of change listener
+	 * @param bUseLinkHub        should setup also include setting up the link hub
+	 * @param bUseObjectCallback use oaObjectCallback to determine enabled/visible.
 	 */
 	public OAJfcController(Hub hub, Object object, String propertyPath, JComponent comp, HubChangeListener.Type type,
-			final boolean bUseLinkHub, final boolean bUseEditQuery) {
-		this(hub, object, propertyPath, true, comp, type, bUseLinkHub, bUseEditQuery);
+			final boolean bUseLinkHub, final boolean bUseObjectCallback) {
+		this(hub, object, propertyPath, true, comp, type, bUseLinkHub, bUseObjectCallback);
 	}
 
 	public OAJfcController(Hub hub, Object object, String propertyPath, boolean bAoOnly, JComponent comp, HubChangeListener.Type type,
-			final boolean bUseLinkHub, final boolean bUseEditQuery) {
+			final boolean bUseLinkHub, final boolean bUseObjectCallback) {
 		this.hub = hub;
 		this.hubObject = object;
 		this.propertyPath = propertyPath;
 		this.bAoOnly = bAoOnly;
 		this.component = comp;
 		this.bUseLinkHub = bUseLinkHub;
-		this.bUseEditQuery = bUseEditQuery;
+		this.bUseObjectCallback = bUseObjectCallback;
 		this.hubChangeListenerType = type;
 
 		reset();
@@ -324,14 +324,14 @@ public class OAJfcController extends HubListenerAdapter {
 		bDefaultFormat = false;
 
 		if (!bUseLinkHub) {
-			if (bUseEditQuery) {
+			if (bUseObjectCallback) {
 				Class cz = hub.getObjectClass();
 				String ppPrefix = "";
 				int cnt = 0;
 				for (String prop : properties) {
 					if (cnt == 0) {
-						addEnabledEditQueryCheck(hub, prop);
-						addVisibleEditQueryCheck(hub, prop);
+						addEnabledObjectCallbackCheck(hub, prop);
+						addVisibleObjectCallbackCheck(hub, prop);
 					} else {
 						OAObjectCallbackDelegate.addObjectCallbackChangeListeners(	hub, cz, prop, ppPrefix, getEnabledChangeListener(),
 																					true);
@@ -343,8 +343,8 @@ public class OAJfcController extends HubListenerAdapter {
 				}
 
 				if (cnt == 0) {
-					addEnabledEditQueryCheck(hub, null);
-					addVisibleEditQueryCheck(hub, null);
+					addEnabledObjectCallbackCheck(hub, null);
+					addVisibleObjectCallbackCheck(hub, null);
 				}
 			}
 		} else {
@@ -365,9 +365,9 @@ public class OAJfcController extends HubListenerAdapter {
 
 			if (hubLink != null) {
 				getEnabledChangeListener().add(hubLink, HubChangeListener.Type.AoNotNull);
-				if (bUseEditQuery) {
-					addEnabledEditQueryCheck(hubLink, linkPropertyName);
-					addVisibleEditQueryCheck(hubLink, linkPropertyName);
+				if (bUseObjectCallback) {
+					addEnabledObjectCallbackCheck(hubLink, linkPropertyName);
+					addVisibleObjectCallbackCheck(hubLink, linkPropertyName);
 				}
 			}
 		}
@@ -779,7 +779,7 @@ public class OAJfcController extends HubListenerAdapter {
 	 * @return null if no errors, else error message
 	 */
 	public String isValid(final Object obj, Object newValue) {
-		if (!bUseEditQuery) {
+		if (!bUseObjectCallback) {
 			return null;
 		}
 		if (!(obj instanceof OAObject)) {
@@ -852,7 +852,7 @@ public class OAJfcController extends HubListenerAdapter {
 			}
 		}
 
-		if (bUseEditQuery) {
+		if (bUseObjectCallback) {
 			Object objx = hub.getAO();
 			if (objx instanceof OAObject) {
 				String prop;
@@ -1344,6 +1344,10 @@ public class OAJfcController extends HubListenerAdapter {
 		return getEnabledChangeListener().addObjectCallbackEnabled(hub, propertyName);
 	}
 
+	public HubProp addEnabledObjectCallbackCheck(Hub hub, String propertyName) {
+		return getEnabledChangeListener().addObjectCallbackEnabled(hub, propertyName);
+	}
+
 	public HubProp addVisibleCheck(Hub hub, String pp) {
 		return getVisibleChangeListener().add(hub, pp);
 	}
@@ -1357,6 +1361,10 @@ public class OAJfcController extends HubListenerAdapter {
 	}
 
 	public HubProp addVisibleEditQueryCheck(Hub hub, String propertyName) {
+		return getVisibleChangeListener().addObjectCallbackVisible(hub, propertyName);
+	}
+
+	public HubProp addVisibleObjectCallbackCheck(Hub hub, String propertyName) {
 		return getVisibleChangeListener().addObjectCallbackVisible(hub, propertyName);
 	}
 
@@ -1577,7 +1585,7 @@ public class OAJfcController extends HubListenerAdapter {
 			lblThis.setText(text);
 
 			if (object != null) {
-				if (bUseEditQuery) {
+				if (bUseObjectCallback) {
 					try {
 						if (object instanceof OAObject) {
 							Object objx = object;
@@ -1726,9 +1734,11 @@ public class OAJfcController extends HubListenerAdapter {
 
 		int i = 0;
 		for (Container cp = comp.getParent(); cp != null && i < 5; cp = cp.getParent(), i++) {
-			if (!(cp instanceof OAResizePanel)) continue;
+			if (!(cp instanceof OAResizePanel)) {
+				continue;
+			}
 			OAResizePanel rp = (OAResizePanel) cp;
-            boolean bRpVisible = rp.areAnyChildrenVisible();
+			boolean bRpVisible = rp.areAnyChildrenVisible();
 			if (bRpVisible != rp.isVisible()) {
 				boolean b = true;
 				if (rp.getParent() instanceof JTabbedPane) {
