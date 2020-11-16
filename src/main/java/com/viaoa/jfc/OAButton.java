@@ -639,6 +639,14 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 		control.setConsoleProperty(prop);
 	}
 
+	public void setClearConsole(boolean b) {
+		control.setClearConsole(b);
+	}
+
+	public void getClearConsole() {
+		control.getClearConsole();
+	}
+
 	public String getConsoleProperty() {
 		return control.getConsoleProperty();
 	}

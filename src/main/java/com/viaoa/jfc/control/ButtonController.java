@@ -98,6 +98,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 	private String completedMessage;
 	private String returnMessage;
 	private String consoleProperty;
+	private boolean clearConsole; // automatically clear on each method call
 	private JComponent focusComponent; // comp to get focus after click
 	private String methodName;
 
@@ -226,6 +227,14 @@ public class ButtonController extends OAJfcController implements ActionListener 
 
 	public String getConsoleProperty() {
 		return consoleProperty;
+	}
+
+	public void setClearConsole(boolean b) {
+		clearConsole = b;
+	}
+
+	public boolean getClearConsole() {
+		return clearConsole;
 	}
 
 	public void setOpenFileChooser(JFileChooser fc) {
@@ -992,6 +1001,9 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			protected Boolean doInBackground() throws Exception {
 				publish("");
 				boolean b;
+				if (console != null && getClearConsole()) {
+					console.getHub().removeAll();
+				}
 				try {
 					b = onActionPerformed();
 				} catch (Exception e) {
