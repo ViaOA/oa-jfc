@@ -39,7 +39,7 @@ import com.viaoa.util.OAArray;
         gc.gridwidth = 1;
         gc.fill = gc.NONE;
 </code>
- * 
+ *
  * @author vvia Note: it will allow it to grow up to comp.maxSize example: txt = new OATextField(hubCalcPropertyDef, "toolTip", 14);
  *         txt.setMaximumColumns(80); gc.fill = GridBagConstraints.HORIZONTAL; gc.gridwidth = GridBagConstraints.REMAINDER; pan.add(new
  *         OAResizePanel(txt, 80), gc);
@@ -173,7 +173,7 @@ public class OAResizePanel extends JPanel {
 		setup(panel, percentage, bBoth);
 	}
 
-	/*was    
+	/*was
 	public OAResizePanel(ImageIcon icon, JComponent comp, JComponent comp2, int percentage, boolean bBoth) {
 	    JPanel panComp = new JPanel();
 	    BoxLayout box = new BoxLayout(panComp, BoxLayout.X_AXIS);
@@ -187,7 +187,7 @@ public class OAResizePanel extends JPanel {
 	    }
 	    panComp.add(comp);
 	    if (comp2 != null) panComp.add(comp2);
-	    setup(panComp, percentage, bBoth);        
+	    setup(panComp, percentage, bBoth);
 	}
 	*/
 	public OAResizePanel(JComponent comp, JComponent comp2, int percentage) {
@@ -309,12 +309,12 @@ public class OAResizePanel extends JPanel {
 		}
 	}
 
-	//qqqqqqqqqqqqqq    
-	//qqqqqqqqqqq revisit this, used by OATemplate apps    
+	//qqqqqqqqqqqqqq
+	//qqqqqqqqqqq revisit this, used by OATemplate apps
 
 	/**
 	 * Used when Window.pack is called so that preferred size is used.
-	 * 
+	 *
 	 * @see OAJfcUtil#pack(Window)
 	 */
 	public static void setPacking(Window window) {
@@ -377,16 +377,16 @@ public class OAResizePanel extends JPanel {
 		return false;
 	}
 
-    public boolean areAnyChildrenVisible() {
-        boolean b = comp1 == null ? false : comp1.isVisible();
-        if (!b && comps != null) {
-            for (Component comp : comps) {
-                if (comp.isVisible()) {
-                    b = true;
-                    break;
-                }
-            }
-        }
-        return b;
-    }    
+	public boolean areAnyChildrenVisible() {
+		boolean b = comp1 == null ? false : comp1.isVisible();
+		if (!b && comps != null) {
+			for (Component comp : comps) {
+				if (comp != null && comp.isVisible()) {
+					b = true;
+					break;
+				}
+			}
+		}
+		return b;
+	}
 }
