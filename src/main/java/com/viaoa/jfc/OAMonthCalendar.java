@@ -309,8 +309,9 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
             final DayPanel dp = new DayPanel() {
                 @Override
                 protected void onMouseClick() {
-                    setSelectedDate(this.date, true);
-                    onDaySelected(this.date, this.hub, this.hubForList);
+                    OADate dx = new OADate(this.date);
+                    setSelectedDate(dx, true);
+                    onDaySelected(dx, this.hub, this.hubForList);
                 }
             };
             alDayPanel.add(dp);
@@ -318,8 +319,9 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
             dp.hubForList.addHubListener(new HubListenerAdapter() {
                 public void afterChangeActiveObject(HubEvent e) {
                     if (dp.hub.getAO() != null && e.getObject() != null) {
-                        setSelectedDate(dp.date, true);
-                        onDaySelected(dp.date, dp.hub, dp.hubForList);
+                        OADate dx = new OADate(dp.date);
+                        setSelectedDate(dx, true);
+                        onDaySelected(dx, dp.hub, dp.hubForList);
                     }
                 }
             });
@@ -635,18 +637,18 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                     
                     OAObject obj = null;
                     
+                    final OADate dateOrig = new OADate(date);
                     OASelect sel = new OASelect(c);
-                    sel.select(OAMonthCalendar.this.datePropertyPaths[0] +" = ?", new Object[] {date});
+                    sel.select(OAMonthCalendar.this.datePropertyPaths[0] +" = ?", new Object[] {dateOrig});
                     obj = sel.next();
                     if (obj == null) {
                         obj = (OAObject) OAObjectReflectDelegate.createNewObject(c);
-                        obj.setProperty(OAMonthCalendar.this.datePropertyPaths[0], date);
+                        obj.setProperty(OAMonthCalendar.this.datePropertyPaths[0], dateOrig);
                         obj.save();
                     }                    
-                    
                     OAMonthCalendar.this.hub.add((F) obj);
-                    onDaySelected(date, hub, hubForList);
-                    setSelectedDate(date, true);
+                    onDaySelected(dateOrig, hub, hubForList);
+                    setSelectedDate(dateOrig, true);
                 }
             });
             OAButton.setup(cmd);
