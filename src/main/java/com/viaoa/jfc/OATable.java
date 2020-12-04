@@ -101,6 +101,7 @@ import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubAODelegate;
 import com.viaoa.hub.HubChangeListener;
 import com.viaoa.hub.HubDataDelegate;
+import com.viaoa.hub.HubDelegate;
 import com.viaoa.hub.HubDetailDelegate;
 import com.viaoa.hub.HubEvent;
 import com.viaoa.hub.HubEventDelegate;
@@ -4484,9 +4485,12 @@ class TableController extends OAJfcController implements ListSelectionListener {
 				if (getRunningValueChanged()) {
 					return;
 				}
-
+				if (!SwingUtilities.isEventDispatchThread()) {
+					SwingUtilities.invokeLater(() -> onNewList(e));
+					return;
+				}
 				table.myClearSelectionAndLeadAnchor1();
-				rebuildListSelectionModel();
+				rebuildListSelectionModel(true);
 				table.myClearSelectionAndLeadAnchor2();
 				if (table.chkSelection != null) {
 					table.repaint(100);
@@ -4499,7 +4503,30 @@ class TableController extends OAJfcController implements ListSelectionListener {
 
 	private AtomicInteger aiRebuildListSelectionModel = new AtomicInteger();
 
+	static int qqq;
+
+	private AtomicBoolean abRebuildListSelectionModel = new AtomicBoolean();
+
 	protected void rebuildListSelectionModel() {
+		rebuildListSelectionModel(false);
+	}
+
+	protected void rebuildListSelectionModel(boolean bRunNow) {
+		if (bRunNow) {
+			_rebuildListSelectionModel();
+			return;
+		}
+		if (!abRebuildListSelectionModel.compareAndSet(false, true)) {
+			return;
+		}
+
+		SwingUtilities.invokeLater(() -> {
+			abRebuildListSelectionModel.set(false);
+			_rebuildListSelectionModel();
+		});
+	}
+
+	private void _rebuildListSelectionModel() {
 		for (int i = 0; i < 3; i++) {
 			int cnt = aiRebuildListSelectionModel.incrementAndGet();
 			try {
@@ -4508,6 +4535,8 @@ class TableController extends OAJfcController implements ListSelectionListener {
 				break;
 			} catch (Exception e) {
 				// retry again
+				int qq = 4;
+				qq++;
 			} finally {
 				if (hubSelect != null && hubSelect.size() == 0) {
 					hub.setPos(-1); //20180605
@@ -4518,6 +4547,14 @@ class TableController extends OAJfcController implements ListSelectionListener {
 	}
 
 	private void _rebuildListSelectionModel(final int cnt) {
+
+		if (HubDelegate.getCurrentState(hubSelect, null, null) != HubDelegate.HubCurrentStateEnum.InSync) {
+			return;
+		}
+		if (HubDelegate.getCurrentState(table.hub, null, null) != HubDelegate.HubCurrentStateEnum.InSync) {
+			return;
+		}
+
 		ListSelectionModel lsm = table.getSelectionModel();
 		lsm.clearSelection();
 
@@ -4527,10 +4564,6 @@ class TableController extends OAJfcController implements ListSelectionListener {
 				lsm.addSelectionInterval(x, x);
 			}
 			return;
-		}
-		if (hubSelect.getMasterObject() != null) { // 20180225
-			// 20180521 need this, ex: Program.ecards = table.hubSelect
-			// return;
 		}
 
 		// update hubSelect, to see if objects are in table.hub
