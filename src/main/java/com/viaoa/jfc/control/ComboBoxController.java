@@ -10,435 +10,511 @@
 */
 package com.viaoa.jfc.control;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Component;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
-import javax.swing.*;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultListModel;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.ListCellRenderer;
+import javax.swing.SwingUtilities;
 
-import com.viaoa.hub.*;
-import com.viaoa.util.*;
-import com.viaoa.undo.*;
+import com.viaoa.hub.Hub;
+import com.viaoa.hub.HubAODelegate;
+import com.viaoa.hub.HubChangeListener;
+import com.viaoa.hub.HubEvent;
+import com.viaoa.hub.HubLinkDelegate;
 import com.viaoa.object.OAObject;
+import com.viaoa.undo.OAUndoManager;
+import com.viaoa.undo.OAUndoableEdit;
+import com.viaoa.util.OAConv;
+import com.viaoa.util.OANullObject;
+import com.viaoa.util.OAString;
 
 /**
  * Functionality for binding JComboBox to OA.
- * 
+ *
  * @author vvia
  */
 public class ComboBoxController extends OAJfcController implements FocusListener {
-    JComboBox comboBox;
-    final MyComboBoxModel myComboBoxModel = new MyComboBoxModel();
-    JList list;
+	JComboBox comboBox;
+	final MyComboBoxModel myComboBoxModel = new MyComboBoxModel();
+	JList list;
 
-    public ComboBoxController(Hub hub, JComboBox cb, String propertyPath) {
-        super(hub, null, propertyPath, cb, HubChangeListener.Type.HubValid, true, true); 
-        create(cb);
-    }
+	public ComboBoxController(Hub hub, JComboBox cb, String propertyPath) {
+		super(hub, null, propertyPath, cb, HubChangeListener.Type.HubValid, true, true);
+		create(cb);
+	}
 
-    public ComboBoxController(Object object, JComboBox cb, String propertyPath) {
-        super(null, object, propertyPath, cb, HubChangeListener.Type.HubValid, true, true); 
-        create(cb);
-    }
+	public ComboBoxController(Object object, JComboBox cb, String propertyPath) {
+		super(null, object, propertyPath, cb, HubChangeListener.Type.HubValid, true, true);
+		create(cb);
+	}
 
-    protected boolean isForThisHub(HubEvent e) {
-        Hub eHub = e.getHub();
-        Hub thisHub = getHub();
-        if (eHub == null || thisHub == null) return false;
-        if (eHub == thisHub) return true;
-        
-        return false;
-    }
+	protected boolean isForThisHub(HubEvent e) {
+		Hub eHub = e.getHub();
+		Hub thisHub = getHub();
+		if (eHub == null || thisHub == null) {
+			return false;
+		}
+		if (eHub == thisHub) {
+			return true;
+		}
 
-    @Override
-    protected void reset() {
-        super.reset();
-        if (comboBox != null) create(comboBox);
-    }
-    
-    protected void create(JComboBox cb) {
-        if (comboBox != null) comboBox.removeFocusListener(this);
-        if (comboBox != cb && cb != null) cb.setMaximumRowCount(12);
-        comboBox = cb;
+		return false;
+	}
 
-        if (getHub() == null) return;
-        myComboBoxModel.flag = true; // this will keep the activeObject
-                                     // from getting changed. JComboBox
-                                     // sets selectetPos to "0"
+	@Override
+	protected void reset() {
+		super.reset();
+		if (comboBox != null) {
+			create(comboBox);
+		}
+	}
 
-        comboBox.setModel(myComboBoxModel);
-        comboBox.setRenderer(new MyListCellRenderer());
-        myComboBoxModel.flag = false;
+	protected void create(JComboBox cb) {
+		if (comboBox != null) {
+			comboBox.removeFocusListener(this);
+		}
+		if (comboBox != cb && cb != null) {
+			cb.setMaximumRowCount(12);
+		}
+		comboBox = cb;
 
-        comboBox.addFocusListener(this);
-        // not needed? might need to be put in the addNotify() method
-        // comboBox.getUI().getList().setCellRenderer(new
-        // MyListCellRenderer());
-        afterChangeActiveObject(); // this will set selectedPos in  JComboBox
-        myComboBoxModel.fireChange(-1, -1); // hack: must initialize
-    }
+		if (getHub() == null) {
+			return;
+		}
+		myComboBoxModel.flag = true; // this will keep the activeObject
+										// from getting changed. JComboBox
+										// sets selectetPos to "0"
 
-    public void close() {
-        if (comboBox != null) comboBox.removeFocusListener(this);
-        super.close(); // this will call hub.removeHubListener()
-    }
+		comboBox.setModel(myComboBoxModel);
+		comboBox.setRenderer(new MyListCellRenderer());
+		myComboBoxModel.flag = false;
 
-    
-    @Override
-    public void afterAdd(HubEvent e) {
-        final Object obj = e.getObject();
+		comboBox.addFocusListener(this);
+		// not needed? might need to be put in the addNotify() method
+		// comboBox.getUI().getList().setCellRenderer(new
+		// MyListCellRenderer());
+		afterChangeActiveObject(); // this will set selectedPos in  JComboBox
+		myComboBoxModel.fireChange(-1, -1); // hack: must initialize
+	}
 
-        Hub h = getHub();
-        final int pos = h.getPos(obj);
+	public void close() {
+		if (comboBox != null) {
+			comboBox.removeFocusListener(this);
+		}
+		super.close(); // this will call hub.removeHubListener()
+	}
 
-        if (SwingUtilities.isEventDispatchThread()) {
-            myComboBoxModel.fireAdd(pos, pos);
-        }
-        else {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    myComboBoxModel.fireAdd(pos, pos);
-                }
-            });
-        }
-    }
-    @Override
-    public void afterRemove(HubEvent e) {
-        final int pos = e.getPos();
-        if (pos < 0) return;
-        if (SwingUtilities.isEventDispatchThread()) {
-            myComboBoxModel.fireRemove(pos, pos);
-        }
-        else {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    myComboBoxModel.fireRemove(pos, pos);
-                }
-            });
-        }
-    }
-    public @Override void onNewList(HubEvent e) {
-        if (!isForThisHub(e)) return;
-        if (myComboBoxModel == null) return;
-        final int size = getHub().getSize();
-        if (SwingUtilities.isEventDispatchThread()) {
-            myComboBoxModel.fireChange(0, size); // this includes nullObject!!!
-            afterChangeActiveObject(null);
-        }
-        else {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    myComboBoxModel.fireChange(0, size); // this includes nullObject
-                    afterChangeActiveObject(null);
-                }
-            });
-        }
-    }
+	@Override
+	public void afterAdd(HubEvent e) {
+		final Object obj = e.getObject();
 
-    /**
-     * Hub event to notify that Hub has been sorted. The ComboBox will be updated to show new list.
-     */
-    public @Override void afterSort(HubEvent e) {
-        onNewList(e);
-    }
-    
-    @Override
-    public void afterInsert(HubEvent e) {
-        final int pos = e.getPos();
-        if (SwingUtilities.isEventDispatchThread()) {
-            myComboBoxModel.fireChange(pos, pos);
-        }
-        else {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    myComboBoxModel.fireChange(pos, pos);
-                }
-            });
-        }
-    }
-    
-    @Override
-    protected void afterChangeActiveObject() {
-        Object oaObject = getHub().getActiveObject();
-        myComboBoxModel.flag = true;
-        comboBox.setSelectedItem(oaObject);
-        myComboBoxModel.flag = false;
+		Hub h = getHub();
+		final int pos = h.getPos(obj);
 
-        if (list != null) {
-            if (oaObject == null) oaObject = OANullObject.instance;
-            myComboBoxModel.flag = true;
-            try {
-                list.setSelectedValue(oaObject, true);
-            }
-            catch (Exception ex) {
-            }
-            myComboBoxModel.flag = false;
-        }
-        ComboBoxController.this.callUpdate();
-        ComboBoxController.this.comboBox.repaint();
-        super.afterChangeActiveObject();
-    }
-    public @Override void afterPropertyChange() {
-        super.afterPropertyChange();
-        ComboBoxController.this.comboBox.repaint();
-    }
-    
+		if (SwingUtilities.isEventDispatchThread()) {
+			myComboBoxModel.fireAdd(pos, pos);
+		} else {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					myComboBoxModel.fireAdd(pos, pos);
+				}
+			});
+		}
+	}
 
+	@Override
+	public void afterRemove(HubEvent e) {
+		final int pos = e.getPos();
+		if (pos < 0) {
+			return;
+		}
+		if (SwingUtilities.isEventDispatchThread()) {
+			myComboBoxModel.fireRemove(pos, pos);
+		} else {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					myComboBoxModel.fireRemove(pos, pos);
+				}
+			});
+		}
+	}
 
+	public @Override void onNewList(HubEvent e) {
+		if (!isForThisHub(e)) {
+			return;
+		}
+		if (myComboBoxModel == null) {
+			return;
+		}
+		final int size = getHub().getSize();
+		if (SwingUtilities.isEventDispatchThread()) {
+			myComboBoxModel.fireChange(0, size); // this includes nullObject!!!
+			afterChangeActiveObject(null);
+		} else {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					myComboBoxModel.fireChange(0, size); // this includes nullObject
+					afterChangeActiveObject(null);
+				}
+			});
+		}
+	}
 
-    // ==============================================================================
-    // note: these need to be ran in the AWT Thread, use
-    // SwingUtilities.invokeLater() to call these
-    class MyComboBoxModel extends DefaultListModel implements ComboBoxModel {
-        OANullObject empty = OANullObject.instance;
-        boolean flag;
+	/**
+	 * Hub event to notify that Hub has been sorted. The ComboBox will be updated to show new list.
+	 */
+	public @Override void afterSort(HubEvent e) {
+		onNewList(e);
+	}
 
-        public synchronized void fireChange(int index0, int index1) {
-            // this will set selection back to 0, so we need to set a flag so
-            // activeObject wont be changed
-            flag = true;
-            if (index0 >= 0) fireContentsChanged(comboBox, index0, index1);
-            flag = false;
-        }
+	@Override
+	public void afterInsert(HubEvent e) {
+		final int pos = e.getPos();
+		if (SwingUtilities.isEventDispatchThread()) {
+			myComboBoxModel.fireChange(pos, pos);
+		} else {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					myComboBoxModel.fireChange(pos, pos);
+				}
+			});
+		}
+	}
 
-        public synchronized void fireAdd(int index0, int index1) {
-            // this will set selection back to 0, so we need to set a flag so
-            // activeObject wont be changed
-            flag = true;
-            if (index0 >= 0) {
+	@Override
+	protected void afterChangeActiveObject() {
+		Object oaObject = getHub().getActiveObject();
+		myComboBoxModel.flag = true;
+		comboBox.setSelectedItem(oaObject);
+		myComboBoxModel.flag = false;
 
-                try {
-                    fireIntervalAdded(comboBox, index0, index1);
-                }
-                catch (Exception e) {
-                }
-            }
-            flag = false;
-        }
+		if (list != null) {
+			if (oaObject == null) {
+				oaObject = OANullObject.instance;
+			}
+			myComboBoxModel.flag = true;
+			try {
+				list.setSelectedValue(oaObject, true);
+			} catch (Exception ex) {
+			}
+			myComboBoxModel.flag = false;
+		}
+		ComboBoxController.this.callUpdate();
+		ComboBoxController.this.comboBox.repaint();
+		super.afterChangeActiveObject();
+	}
 
-        public synchronized void fireRemove(int index0, int index1) {
-            // this will set selection back to 0, so we need to set a flag so
-            // activeObject wont be changed
-            flag = true;
-            if (index0 >= 0) fireIntervalRemoved(comboBox, index0, index1);
-            flag = false;
-        }
+	public @Override void afterPropertyChange() {
+		super.afterPropertyChange();
+		ComboBoxController.this.comboBox.repaint();
+	}
 
-        public synchronized void setSelectedItem(Object obj) {
-            if (obj instanceof OANullObject) obj = null;
-            final Object objOrig = obj;
-            if (!flag && obj != getHub().getActiveObject()) {
-                Hub h = getHub();
-                Object activeObject = null;
-                Hub hubx = getHub().getLinkHub(true);
-                if (hubx != null) {
-                    activeObject = hubx.getAO();
-                }
-                if (HubLinkDelegate.getLinkedOnPos(h)) {
-                    obj = h.getPos(obj);
-                }
+	// ==============================================================================
+	// note: these need to be ran in the AWT Thread, use
+	// SwingUtilities.invokeLater() to call these
+	class MyComboBoxModel extends DefaultListModel implements ComboBoxModel {
+		OANullObject empty = OANullObject.instance;
+		boolean flag;
 
-                String msg = isValidHubChangeAO(obj);
-                if (msg != null) {
-                    JOptionPane.showMessageDialog(SwingUtilities.getRoot(comboBox), "Invalid selection\n" + msg, "Invalid selection",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-                else if (!confirmHubChangeAO(obj)) {
-                    // no-op
-                }
-                else {
-                    boolean b = getEnableUndo() && hub != null && hub.getLinkHub(true) != null;
-                    try {
-                        if (b) {
-                            OAUndoableEdit ue = OAUndoableEdit.createUndoablePropertyChange(
-                                "Change " + HubLinkDelegate.getLinkToProperty(hub), 
-                                activeObject, 
-                                HubLinkDelegate.getLinkToProperty(hub), 
-                                hub.getAO(), obj);
-                                
-                            OAUndoManager.add(ue);
-                            
-                            /* was
-                            OAUndoableEdit ue = OAUndoableEdit.createUndoableChangeAO(undoDescription, h, h.getAO(), obj);
-                            String s = undoDescription;
-                            if (s == null || s.length() == 0) s = ue.getPresentationName();
-                            OAUndoManager.startCompoundEdit(s);
-                            OAUndoManager.add(ue);
-                            */
-                        }
-                        getHub().setActiveObject(objOrig);
-                    }
-                    finally {
-                        if (b) {
-                            //was: OAUndoManager.endCompoundEdit();
-                        }
-                    }
-                    onItemSelected(getHub().getPos());
-                }
-            }
-        }
+		public synchronized void fireChange(int index0, int index1) {
+			// this will set selection back to 0, so we need to set a flag so
+			// activeObject wont be changed
+			flag = true;
+			if (index0 >= 0) {
+				fireContentsChanged(comboBox, index0, index1);
+			}
+			flag = false;
+		}
 
-        public Object getSelectedItem() {
-            Hub h = getHub();
-            Object obj = h.getActiveObject();
+		public synchronized void fireAdd(int index0, int index1) {
+			// this will set selection back to 0, so we need to set a flag so
+			// activeObject wont be changed
+			flag = true;
+			if (index0 >= 0) {
 
-            if (obj == null) {
-                obj = getLinkedToValue();
-            }
+				try {
+					fireIntervalAdded(comboBox, index0, index1);
+				} catch (Exception e) {
+				}
+			}
+			flag = false;
+		}
 
-            if (obj == null) {
-                obj = empty;
-            }
-            return obj;
-        }
+		public synchronized void fireRemove(int index0, int index1) {
+			// this will set selection back to 0, so we need to set a flag so
+			// activeObject wont be changed
+			flag = true;
+			if (index0 >= 0) {
+				fireIntervalRemoved(comboBox, index0, index1);
+			}
+			flag = false;
+		}
 
-        public Object getElementAt(int index) {
-            Hub h = getHub();
-            if (h == null) return empty;
-            Object obj = h.elementAt(index);
-            if (obj == null && index == h.getSize()) {
-                // 201207 might have a place holder for the linked to object that is not in this hub
-                obj = getLinkedToValue();
-                if (h.contains(obj)) obj = null;
-            }
+		public synchronized void setSelectedItem(Object obj) {
+			if (obj instanceof OANullObject) {
+				obj = null;
+			}
+			if (flag) {
+				return;
+			}
 
-            if (obj == null) obj = empty;
-            return obj;
-        }
+			final Object objOrig = obj;
+			Object oldValue = getHub().getActiveObject();
 
-        public int getSize() {
-            Hub h = getHub();
-            if (h == null) return (nullDescription == null) ? 0 : 1;
-            if (h.isMoreData()) h.loadAllData();
-            int x = h.getSize();
-            if (nullDescription != null) x++; // extra one for "blank" line
+			if (obj == oldValue) {
+				if (obj != null) {
+					return;
+				}
 
-            if (h.getAO() == null) {
-                if (getLinkedToValue() != null) x++;
-            }
+				oldValue = getLinkedToValue();
+				if (oldValue == null) {
+					return;
+				}
+			}
+			Hub h = getHub();
+			Object activeObject = null;
+			Hub hubx = getHub().getLinkHub(true);
+			if (hubx != null) {
+				activeObject = hubx.getAO();
+			}
+			if (HubLinkDelegate.getLinkedOnPos(h)) {
+				obj = h.getPos(obj);
+			}
 
-            return x;
-        }
-    }
+			String msg = isValidHubChangeAO(obj);
+			if (msg != null) {
+				JOptionPane.showMessageDialog(	SwingUtilities.getRoot(comboBox), "Invalid selection\n" + msg, "Invalid selection",
+												JOptionPane.ERROR_MESSAGE);
+			} else if (!confirmHubChangeAO(obj)) {
+				// no-op
+			} else {
+				boolean b = getEnableUndo() && hub != null && hub.getLinkHub(true) != null;
+				try {
+					if (b) {
+						OAUndoableEdit ue = OAUndoableEdit.createUndoablePropertyChange(
+																						"Change " + HubLinkDelegate.getLinkToProperty(hub),
+																						activeObject,
+																						HubLinkDelegate.getLinkToProperty(hub),
+																						oldValue, obj);
 
-    String match = ""; // string to match on incremental search
+						OAUndoManager.add(ue);
 
-    public void focusGained(FocusEvent e) {
-        match = "";
-    }
+						/* was
+						OAUndoableEdit ue = OAUndoableEdit.createUndoableChangeAO(undoDescription, h, h.getAO(), obj);
+						String s = undoDescription;
+						if (s == null || s.length() == 0) s = ue.getPresentationName();
+						OAUndoManager.startCompoundEdit(s);
+						OAUndoManager.add(ue);
+						*/
+					}
+					HubAODelegate.setActiveObjectForce(getHub(), objOrig);
+					//getHub().setActiveObject(objOrig);
+				} finally {
+					if (b) {
+						//was: OAUndoManager.endCompoundEdit();
+					}
+				}
+				onItemSelected(getHub().getPos());
+			}
+		}
 
-    public void focusLost(FocusEvent e) {
-    }
+		public Object getSelectedItem() {
+			Hub h = getHub();
+			Object obj = h.getActiveObject();
 
-    public void onItemSelected(int row) {
-    }
+			if (obj == null) {
+				obj = getLinkedToValue();
+			}
 
-    // 20120928 replaces method from 7/11, which was not getting the linked value correctly
-    protected Object getLinkedToValue() {
-        Hub h = getHub();
-        if (h == null) return null;
+			if (obj == null) {
+				obj = empty;
+			}
+			return obj;
+		}
 
-        /*Object obj = h.getAO(); if (obj != null) return obj; */
+		public Object getElementAt(int index) {
+			Hub h = getHub();
+			if (h == null) {
+				return empty;
+			}
+			Object obj = h.elementAt(index);
+			if (obj == null && index == h.getSize()) {
+				// 201207 might have a place holder for the linked to object that is not in this hub
+				obj = getLinkedToValue();
+				if (h.contains(obj)) {
+					obj = null;
+				}
+			}
 
-        Hub hx = h.getLinkHub(true);
-        if (hx == null) return null;
+			if (obj == null) {
+				obj = empty;
+			}
+			return obj;
+		}
 
-        Object objx = HubLinkDelegate.getPropertyValueInLinkedToHub(h, hx.getAO());
-        if (!(objx instanceof OAObject)) return null;
+		public int getSize() {
+			Hub h = getHub();
+			if (h == null) {
+				return (nullDescription == null) ? 0 : 1;
+			}
+			if (h.isMoreData()) {
+				h.loadAllData();
+			}
+			int x = h.getSize();
+			if (nullDescription != null) {
+				x++; // extra one for "blank" line
+			}
 
-        return objx;
-    }
+			if (h.getAO() == null) {
+				if (getLinkedToValue() != null) {
+					x++;
+				}
+			}
 
-    /* was: / ** 20120711 This is in case the value is not in the Hub. Need to get it from the linked to
-     * Hub / protected Object getRealValue() { Hub h = getHub(); if (h == null) return null; Object obj
-     * = h.getAO(); if (obj != null) return obj;
-     * 
-     * Hub hx = h.getLinkHub(); if (hx == null) return null;
-     * 
-     * Object objx = h.getMasterObject(); if (!(objx instanceof OAObject)) return null;
-     * 
-     * objx = OAObjectReflectDelegate.getProperty((OAObject) objx,
-     * HubDetailDelegate.getPropertyFromDetailToMaster(h));
-     * 
-     * return objx; } */
+			return x;
+		}
+	}
 
-    /** called by MyListCellRenderer.getListCellRendererComponent */
-    protected Component getRenderer(Component renderer, JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        boolean bDone = false;
-        String s = null;
+	String match = ""; // string to match on incremental search
 
-        if (index < 0 && value instanceof OANullObject) {
-            // 20120711 see if it needs to show the selected value (if it is not
-            // in the Hub)
-            Object objx = getLinkedToValue();
-            if (objx != null) value = objx;
-        }
+	public void focusGained(FocusEvent e) {
+		match = "";
+	}
 
-        if (value == null) s = null;
-        else if (value instanceof OANullObject) {
-            s = nullDescription;
-            if (hub != null && hub.getAO() != null) {
-                s = OAString.convert(s, "select", "clear current value");
-            }
-            // 20181211
-            if (hub == null || !hub.isValid()) s = "";
-        }
-        else if (value instanceof String) {
-            s = (String) value;
-        }
-        else {
-            // 20181004
-            if (renderer instanceof JLabel) {
-                update((JComponent) renderer, value, true);
-                bDone = true;
-            }
-            else {
-                Object obj = getValue(value);
-                // Object obj = OAReflect.getPropertyValue(value, getGetMethods());
-                s = OAConv.toString(obj, getFormat());
-                if (s == null) {
-                    s = getFormat();
-                    s = OAConv.toString(obj, s);
-                }
-            }
-        }
+	public void focusLost(FocusEvent e) {
+	}
 
-        if (s == null || s.length() == 0) s = " "; // if length == 0 then Jlist, wont show any
+	public void onItemSelected(int row) {
+	}
 
-        
-        if (renderer instanceof JLabel) {
-            JLabel lbl = (JLabel) renderer;
+	// 20120928 replaces method from 7/11, which was not getting the linked value correctly
+	protected Object getLinkedToValue() {
+		Hub h = getHub();
+		if (h == null) {
+			return null;
+		}
 
-            if (!isSelected) {
-                lbl.setBackground(list.getBackground());
-                lbl.setForeground(list.getForeground());
-            }
+		/*Object obj = h.getAO(); if (obj != null) return obj; */
 
-            if (!bDone) lbl.setText(s);  
-            
-            if (isSelected) {
-                lbl.setBackground(list.getSelectionBackground());
-                lbl.setForeground(list.getSelectionForeground());
-            }
-        }
-        return renderer;
-    }
+		Hub hx = h.getLinkHub(true);
+		if (hx == null) {
+			return null;
+		}
 
-    /**
-     * Default cell renderer.
-     */
-    class MyListCellRenderer extends JLabel implements ListCellRenderer {
-        public MyListCellRenderer() {
-            setOpaque(true);
-        }
+		Object objx = HubLinkDelegate.getPropertyValueInLinkedToHub(h, hx.getAO());
+		if (!(objx instanceof OAObject)) {
+			return null;
+		}
 
-        /**
-         * will either call OAComboBox.getRenderer() or Hub2ComboBox.getRenderer()
-         */
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            if (ComboBoxController.this.list == null) ComboBoxController.this.list = list;
+		return objx;
+	}
 
-            Component comp = ComboBoxController.this.getRenderer(this, list, value, index, isSelected, cellHasFocus);
-            return comp;
-        }
-    }
+	/* was: / ** 20120711 This is in case the value is not in the Hub. Need to get it from the linked to
+	 * Hub / protected Object getRealValue() { Hub h = getHub(); if (h == null) return null; Object obj
+	 * = h.getAO(); if (obj != null) return obj;
+	 *
+	 * Hub hx = h.getLinkHub(); if (hx == null) return null;
+	 *
+	 * Object objx = h.getMasterObject(); if (!(objx instanceof OAObject)) return null;
+	 *
+	 * objx = OAObjectReflectDelegate.getProperty((OAObject) objx,
+	 * HubDetailDelegate.getPropertyFromDetailToMaster(h));
+	 *
+	 * return objx; } */
+
+	/** called by MyListCellRenderer.getListCellRendererComponent */
+	protected Component getRenderer(Component renderer, JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+		boolean bDone = false;
+		String s = null;
+
+		if (index < 0 && value instanceof OANullObject) {
+			// 20120711 see if it needs to show the selected value (if it is not
+			// in the Hub)
+			Object objx = getLinkedToValue();
+			if (objx != null) {
+				value = objx;
+			}
+		}
+
+		if (value == null) {
+			s = null;
+		} else if (value instanceof OANullObject) {
+			s = nullDescription;
+			if (hub != null && hub.getAO() != null) {
+				s = OAString.convert(s, "select", "clear current value");
+			}
+			// 20181211
+			if (hub == null || !hub.isValid()) {
+				s = "";
+			}
+		} else if (value instanceof String) {
+			s = (String) value;
+		} else {
+			// 20181004
+			if (renderer instanceof JLabel) {
+				update((JComponent) renderer, value, true);
+				bDone = true;
+			} else {
+				Object obj = getValue(value);
+				// Object obj = OAReflect.getPropertyValue(value, getGetMethods());
+				s = OAConv.toString(obj, getFormat());
+				if (s == null) {
+					s = getFormat();
+					s = OAConv.toString(obj, s);
+				}
+			}
+		}
+
+		if (s == null || s.length() == 0) {
+			s = " "; // if length == 0 then Jlist, wont show any
+		}
+
+		if (renderer instanceof JLabel) {
+			JLabel lbl = (JLabel) renderer;
+
+			if (!isSelected) {
+				lbl.setBackground(list.getBackground());
+				lbl.setForeground(list.getForeground());
+			}
+
+			if (!bDone) {
+				lbl.setText(s);
+			}
+
+			if (isSelected) {
+				lbl.setBackground(list.getSelectionBackground());
+				lbl.setForeground(list.getSelectionForeground());
+			}
+		}
+		return renderer;
+	}
+
+	/**
+	 * Default cell renderer.
+	 */
+	class MyListCellRenderer extends JLabel implements ListCellRenderer {
+		public MyListCellRenderer() {
+			setOpaque(true);
+		}
+
+		/**
+		 * will either call OAComboBox.getRenderer() or Hub2ComboBox.getRenderer()
+		 */
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			if (ComboBoxController.this.list == null) {
+				ComboBoxController.this.list = list;
+			}
+
+			Component comp = ComboBoxController.this.getRenderer(this, list, value, index, isSelected, cellHasFocus);
+			return comp;
+		}
+	}
 }
