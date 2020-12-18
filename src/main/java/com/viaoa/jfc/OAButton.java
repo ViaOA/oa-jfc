@@ -51,39 +51,40 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 	public boolean DEBUG;
 	private OAButtonController control;
 
-	public static ButtonCommand OTHER = ButtonCommand.Other;
-	public static ButtonCommand UP = ButtonCommand.Up;
-	public static ButtonCommand DOWN = ButtonCommand.Down;
-	public static ButtonCommand SAVE = ButtonCommand.Save;
-	public static ButtonCommand CANCEL = ButtonCommand.Cancel;
-	public static ButtonCommand FIRST = ButtonCommand.First;
-	public static ButtonCommand LAST = ButtonCommand.Last;
-	public static ButtonCommand NEXT = ButtonCommand.Next;
-	public static ButtonCommand PREVIOUS = ButtonCommand.Previous;
-	public static ButtonCommand DELETE = ButtonCommand.Delete;
-	public static ButtonCommand REMOVE = ButtonCommand.Remove;
-	public static ButtonCommand NEW = ButtonCommand.New;
-	public static ButtonCommand INSERT = ButtonCommand.Insert;
-	public static ButtonCommand Add = ButtonCommand.Add;
-	public static ButtonCommand CUT = ButtonCommand.Cut;
-	public static ButtonCommand COPY = ButtonCommand.Copy;
-	public static ButtonCommand PASTE = ButtonCommand.Paste;
-	public static ButtonCommand NEW_MANUAL = ButtonCommand.NewManual;
-	public static ButtonCommand ADD_MANUAL = ButtonCommand.AddManual;
-	public static ButtonCommand CLEARAO = ButtonCommand.ClearAO;
-	public static ButtonCommand GOTO = ButtonCommand.GoTo;
-	public static ButtonCommand HUBSEARCH = ButtonCommand.HubSearch;
-	public static ButtonCommand SEARCH = ButtonCommand.Search;
-	public static ButtonCommand SELECT = ButtonCommand.Select;
-	public static ButtonCommand OBJECT_METHOD = ButtonCommand.ObjectMethod;
-	public static ButtonCommand HUB_METHOD = ButtonCommand.HubMethod;
+	public static final ButtonCommand OTHER = ButtonCommand.Other;
+	public static final ButtonCommand UP = ButtonCommand.Up;
+	public static final ButtonCommand DOWN = ButtonCommand.Down;
+	public static final ButtonCommand SAVE = ButtonCommand.Save;
+	public static final ButtonCommand CANCEL = ButtonCommand.Cancel;
+	public static final ButtonCommand FIRST = ButtonCommand.First;
+	public static final ButtonCommand LAST = ButtonCommand.Last;
+	public static final ButtonCommand NEXT = ButtonCommand.Next;
+	public static final ButtonCommand PREVIOUS = ButtonCommand.Previous;
+	public static final ButtonCommand DELETE = ButtonCommand.Delete;
+	public static final ButtonCommand REMOVE = ButtonCommand.Remove;
+	public static final ButtonCommand WIZARD_NEW = ButtonCommand.WizardNew;
+	public static final ButtonCommand NEW = ButtonCommand.New;
+	public static final ButtonCommand INSERT = ButtonCommand.Insert;
+	public static final ButtonCommand Add = ButtonCommand.Add;
+	public static final ButtonCommand CUT = ButtonCommand.Cut;
+	public static final ButtonCommand COPY = ButtonCommand.Copy;
+	public static final ButtonCommand PASTE = ButtonCommand.Paste;
+	public static final ButtonCommand NEW_MANUAL = ButtonCommand.NewManual;
+	public static final ButtonCommand ADD_MANUAL = ButtonCommand.AddManual;
+	public static final ButtonCommand CLEARAO = ButtonCommand.ClearAO;
+	public static final ButtonCommand GOTO = ButtonCommand.GoTo;
+	public static final ButtonCommand HUBSEARCH = ButtonCommand.HubSearch;
+	public static final ButtonCommand SEARCH = ButtonCommand.Search;
+	public static final ButtonCommand SELECT = ButtonCommand.Select;
+	public static final ButtonCommand OBJECT_METHOD = ButtonCommand.ObjectMethod;
+	public static final ButtonCommand HUB_METHOD = ButtonCommand.HubMethod;
 
 	public enum ButtonCommand {
 		Other(false), Up(true), Down(true), Save(false), Cancel(false), First(true), Last(true),
 		Next(true), Previous(true), Delete(true), Remove(true), New(true), Insert(true), Add(true),
 		Cut(false), Copy(false), Paste(false),
 		NewManual(true), AddManual(true), ClearAO(true), GoTo(false), HubSearch(true), Search(false), Select(true), ObjectMethod(false),
-		HubMethod(false);
+		HubMethod(false), WizardNew(true);
 
 		private boolean bSetsAO;
 
@@ -224,7 +225,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 					false);
 			//was: control = new OAButtonController(hub, OAButton.ButtonEnabledMode.ActiveObjectNotNull, command, HubChangeListener.Type.AoNotNull, false, false);
 			control.getEnabledChangeListener().add(hub, OAObjectDelegate.WORD_Changed, true);
-		} else if (command == ButtonCommand.New) {
+		} else if (command == ButtonCommand.New || command == ButtonCommand.WizardNew) {
 			control = new OAButtonController(hub, OAButton.ButtonEnabledMode.HubIsValid, command, HubChangeListener.Type.HubValid, true,
 					true);
 			control.getEnabledChangeListener().addNewEnabled(hub);
@@ -276,6 +277,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 			break;
 		case First:
 		case Last:
+		case WizardNew:
 		case New:
 		case Insert:
 		case Add:
