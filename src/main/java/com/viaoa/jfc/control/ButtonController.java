@@ -68,10 +68,12 @@ import com.viaoa.object.OALinkInfo;
 import com.viaoa.object.OAObject;
 import com.viaoa.object.OAObjectCallback;
 import com.viaoa.object.OAObjectCallbackDelegate;
+import com.viaoa.object.OAObjectDelegate;
 import com.viaoa.object.OAObjectDeleteDelegate;
 import com.viaoa.object.OAObjectInfo;
 import com.viaoa.object.OAObjectInfoDelegate;
 import com.viaoa.object.OAObjectReflectDelegate;
+import com.viaoa.object.OAThreadLocalDelegate;
 import com.viaoa.template.OATemplate;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
@@ -425,6 +427,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				msg = eq.getConfirmMessage();
 				title = eq.getConfirmTitle();
 				break;
+			case WizardNew:
 			case New:
 				eq = OAObjectCallbackDelegate.getAllowNewObjectCallback(getHub());
 				if (!eq.getAllowed()) {
@@ -608,6 +611,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			break;
 		case Add:
 		case Insert:
+		case WizardNew:
 		case New:
 			if (obj instanceof OAObject) {
 				eq = OAObjectCallbackDelegate.getVerifyAddObjectCallback(getHub(), (OAObject) obj, OAObjectCallback.CHECK_ALL);
@@ -1318,12 +1322,15 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				}
 				*/
 				break;
+			case WizardNew:
+				createNew(false, false);
+				break;
 			case New:
 			case Add:
-				createNew(false);
+				createNew(true, false);
 				break;
 			case Insert:
-				createNew(true);
+				createNew(true, true);
 				break;
 			case Up:
 				ho = hub.getActiveObject();
@@ -1608,14 +1615,27 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		return true;
 	}
 
-	protected void createNew(boolean insertFlag) {
+	protected void createNew(final boolean bAssignId, final boolean insertFlag) {
 		Object obj;
 		Class c = hub.getObjectClass();
 		if (c == null) {
 			return;
 		}
 
-		obj = OAObjectReflectDelegate.createNewObject(c);
+		try {
+			if (!bAssignId) {
+				OAThreadLocalDelegate.setLoading(true);
+			}
+			obj = OAObjectReflectDelegate.createNewObject(c);
+		} finally {
+			if (!bAssignId) {
+				OAThreadLocalDelegate.setLoading(false);
+			}
+		}
+		if (!bAssignId && obj instanceof OAObject) {
+			OAObjectDelegate.initializeAfterLoading((OAObject) obj, false, false);
+		}
+
 		if (!hub.contains(obj)) {
 			if (insertFlag) {
 				int pos = hub.getPos();
@@ -1926,6 +1946,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					//was: flag = ((OAObject)objx).canDelete();
 				}
 				break;
+			case WizardNew:
 			case New:
 			case Insert:
 			case Add:
