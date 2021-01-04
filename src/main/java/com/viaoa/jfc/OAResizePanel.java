@@ -389,4 +389,14 @@ public class OAResizePanel extends JPanel {
 		}
 		return b;
 	}
+
+	@Override
+	public void requestFocus() {
+		super.requestFocus();
+		if (comp1 != null) {
+			comp1.requestFocus();
+		} else if (comps != null && comps.length > 0) {
+			comps[0].requestFocus();
+		}
+	}
 }
