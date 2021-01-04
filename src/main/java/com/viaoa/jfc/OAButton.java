@@ -78,13 +78,16 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 	public static final ButtonCommand SELECT = ButtonCommand.Select;
 	public static final ButtonCommand OBJECT_METHOD = ButtonCommand.ObjectMethod;
 	public static final ButtonCommand HUB_METHOD = ButtonCommand.HubMethod;
+	public static final ButtonCommand OK = ButtonCommand.Ok;
 
 	public enum ButtonCommand {
-		Other(false), Up(true), Down(true), Save(false), Cancel(false), First(true), Last(true),
+		Other(false), Up(true), Down(true), Save(false),
+		Cancel(false), // cancel changes to AO
+		First(true), Last(true),
 		Next(true), Previous(true), Delete(true), Remove(true), New(true), Insert(true), Add(true),
 		Cut(false), Copy(false), Paste(false),
 		NewManual(true), AddManual(true), ClearAO(true), GoTo(false), HubSearch(true), Search(false), Select(true), ObjectMethod(false),
-		HubMethod(false), WizardNew(true);
+		HubMethod(false), WizardNew(true), Ok(false);
 
 		private boolean bSetsAO;
 
@@ -801,6 +804,11 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 				}
 				cmd.setBorderPainted(b);
 				cmd.setContentAreaFilled(b);
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				mouseExited(null);
 			}
 		});
 
