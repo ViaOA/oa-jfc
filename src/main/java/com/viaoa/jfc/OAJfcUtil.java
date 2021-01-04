@@ -107,6 +107,18 @@ public class OAJfcUtil {
 		return window;
 	}
 
+	public static JPopupMenu getPopupMenu(Component comp) {
+		if (comp == null) {
+			return null;
+		}
+		for (Container p = comp.getParent(); p != null; p = p.getParent()) {
+			if (p instanceof JPopupMenu) {
+				return (JPopupMenu) p;
+			}
+		}
+		return null;
+	}
+
 	//** ===========================
 	//      Static Helper methods
 
