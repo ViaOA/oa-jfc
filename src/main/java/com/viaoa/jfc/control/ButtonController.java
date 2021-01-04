@@ -1109,6 +1109,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 
 	public void setManual(boolean b) {
 		bManual = b;
+		callUpdate();
 	}
 
 	public boolean getManual() {
@@ -1897,7 +1898,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				if (obj == null) {
 					flag = false;
 				} else {
-					flag = (oaObj != null && (bAnyTime || oaObj.getChanged() || oaObj.getNew()));
+					flag = (oaObj != null && (bManual || bAnyTime || oaObj.getChanged() || oaObj.getNew()));
 				}
 				break;
 			case Remove:
