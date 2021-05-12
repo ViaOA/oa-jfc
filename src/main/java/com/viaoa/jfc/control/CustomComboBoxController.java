@@ -106,8 +106,18 @@ public class CustomComboBoxController extends OAJfcController {
             OAObject obj = (OAObject) h.getAO();
 	        if (obj != null) {
                 Object prev = getValue(obj);
+                
 	            // was; Object prev = obj.getProperty(getPropertyName());
 	            if (value != prev && (value == null || !value.equals(prev))) {
+
+	                String error = isValid(obj, value);
+	                if (OAString.isNotEmpty(error)) {
+	                    JOptionPane.showMessageDialog(comboBox, error, "Invalid", JOptionPane.WARNING_MESSAGE);
+	                }
+	                if (!confirmPropertyChange(obj, value)) {
+                        return;
+	                }
+	                
 	                if (getEnableUndo()) {
 	                    OAUndoManager.add(OAUndoableEdit.createUndoablePropertyChange(undoDescription, obj, endPropertyName, prev, value) );
 	                }

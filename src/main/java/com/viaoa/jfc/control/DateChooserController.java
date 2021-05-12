@@ -12,6 +12,8 @@ package com.viaoa.jfc.control;
 
 import java.beans.*;
 
+import javax.swing.JOptionPane;
+
 import com.viaoa.hub.*;
 import com.viaoa.undo.*;
 import com.viaoa.util.*;
@@ -90,8 +92,6 @@ public class DateChooserController extends OAJfcController implements PropertyCh
             setValue(obj, dateChooser.getDate());
         }
     }
-
-
 }
 
 
