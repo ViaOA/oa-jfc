@@ -1506,6 +1506,11 @@ public class OAHTMLTextPane extends JTextPane implements OAPrintable {
 		getController().createImageHandler(hub, byteArrayPropertyName, sourceNamePropertyName, idPropertyName);
 	}
 
+	public void createImageHandler(Hub<?> hub, String propertyPathToImageObject, String byteArrayPropertyName,
+			String sourceNamePropertyName, String idPropertyName) {
+		getController().createImageHandler(hub, propertyPathToImageObject, byteArrayPropertyName, sourceNamePropertyName, idPropertyName);
+	}
+
 	public void createImageHandler(Class<? extends OAObject> clazz, String byteArrayPropertyName, String sourceNamePropertyName,
 			String idPropertyName) {
 		getController().createImageHandler(clazz, byteArrayPropertyName, sourceNamePropertyName, idPropertyName);

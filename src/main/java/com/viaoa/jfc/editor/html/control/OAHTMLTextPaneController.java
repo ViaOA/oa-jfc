@@ -318,6 +318,11 @@ public class OAHTMLTextPaneController extends OATextController {
 		new Hub2ImageHandler(htmlEditor, hub, byteArrayPropertyName, sourceNamePropertyName, idPropertyName);
 	}
 
+	public void createImageHandler(Hub<?> hub, String ppToImageObject, String byteArrayPropertyName, String sourceNamePropertyName,
+			String idPropertyName) {
+		new Hub2ImageHandler(htmlEditor, hub, ppToImageObject, byteArrayPropertyName, sourceNamePropertyName, idPropertyName);
+	}
+
 	public void createImageHandler(Class<? extends OAObject> clazz, String byteArrayPropertyName, String sourceNamePropertyName,
 			String idPropertyName) {
 		new Class2ImageHandler(htmlEditor, clazz, byteArrayPropertyName, sourceNamePropertyName, idPropertyName);
@@ -2385,10 +2390,10 @@ public class OAHTMLTextPaneController extends OATextController {
 
 	/* this is used to insert a <div> that has a background image, scaled to match DPI differences
 	     this is used for printing certificate like documents
-
+	
 	    Example output:
 	    <div style="background-image:url(oaproperty://com.tmgsc.hifive.model.oa.ImageStore/Bytes?33&h=245&w=327); width:327; height:245; background-repeat:no-repeat">
-
+	
 	    This can then be used by "convert to PDF" to be the hi-res background image
 	       see gohifive project
 	*/
@@ -3411,28 +3416,28 @@ public class OAHTMLTextPaneController extends OATextController {
 			/*
 			        File file = inputFileName("Please enter image URL:", null);
 			        if (file == null) return;
-
+			
 			        //String url = inputURL("Please enter image URL:", null);
 			        //if (url == null) return;
-
+			
 			        String fname = file.getPath();
 			        String newName = fname;
 			        //was: String newName = "images/" + Application.getNextImageFileName();
 			        int x = fname.lastIndexOf('.');
 			        if (x >= 0) newName += fname.substring(x);
 			        newName = OAString.convertFileName(newName);
-
+			
 			        try {
 			// 2005/03/10 might need to resize picture
 			ImageIcon ic = new ImageIcon(fname);
 			/*
 			int w = ic.getIconWidth();
 			int h = ic.getIconHeight();
-
+			
 			double scW = 600.0/(double)w;
 			double scH = 600.0/(double)h;
 			double sc = Math.min(scW, scH);
-
+			
 			if (sc < 1.0) {
 			// System.out.println("Resizing picture from "+fname+"(w:"+w+",h:"+h+") to "+newName+"(w:"+(sc*w)+",h:"+(sc*h)+") scale="+sc);
 			    ImageResizer ir = new ImageResizer();
