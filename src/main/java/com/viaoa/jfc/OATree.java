@@ -133,7 +133,7 @@ import com.viaoa.util.OAString;
  * <p>
  * Example:<br>
  * Simple tree showing for listing Employees. Other examples are listed in the methods and also in OATreeNode
- * 
+ *
  * <pre>
 
  OATree tree = new OATree();
@@ -153,7 +153,7 @@ import com.viaoa.util.OAString;
  tree.setRowHeight(30);
  tree.setColumns(25);
 
- 
+
  // setting an active node based on oaObjects
  ItemCategory ic = getItemCategories().getAO();
  Object[] objs = null;
@@ -164,7 +164,7 @@ import com.viaoa.util.OAString;
  OATree t = getTitleTreeNode().getTree();
  t.setSelectedNode(objs);
  * </pre>
- * 
+ *
  * @see OATreeNode
  * @see OATreeTitleNode
  * @see Hub2TreeNode
@@ -240,7 +240,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 
 	/**
 	 * Create a new OATree that has a width based on character size.
-	 * 
+	 *
 	 * @param columns default width of tree based on average size of character.
 	 * @param rows    used to call setVisibleRowCount()
 	 */
@@ -304,7 +304,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 
 	/**
 	 * Flag to use the folder icon. Default is true
-	 * 
+	 *
 	 * @param b
 	 */
 	public void setUseIcon(boolean b) {
@@ -753,7 +753,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 					h2 = tn.hub;
 				} else if (tn.methodsToHub != null) {
 					// Temp Hack: 20101209 changed so that it will always get methods, since a treeNode could be reused (ex: recursive) and the methods could be wrong
-					//   this will be fixed later, when the method path is in the TreeNodeChild        
+					//   this will be fixed later, when the method path is in the TreeNodeChild
 					if (tn.methodsToHub != null) {
 						tn.methodsToHub = null;
 						tn.def.methodsToProperty = null;
@@ -1165,13 +1165,13 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 				});
 			}
 		}
-		// 20180526 replaced with OASplitPane        
+		// 20180526 replaced with OASplitPane
 		//        addNotify2();
 	}
 
 	// 20120711 need to set divider if in a splitpane
 	public void addNotify2() {
-		// 20180526 not called, replaced with OASplitPane        
+		// 20180526 not called, replaced with OASplitPane
 		Dimension d = this.getPreferredSize();
 		if (d == null) {
 			return;
@@ -1318,7 +1318,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 					}
 				}
 
-				// mouseover effect                
+				// mouseover effect
 				if (row == rowLastMouse2 && rowLastMouse2 >= 0) {
 					if (!selected) {
 						lbl.setBackground(OATable.COLOR_MouseOver);
@@ -1371,7 +1371,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 	 * assigned.
 	 * <p>
 	 * See OATreeNode for examples.
-	 * 
+	 *
 	 * @see #getRoot
 	 * @see OATreeNode#add(OATreeNode)
 	 */
@@ -1386,7 +1386,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 
 	/**
 	 * Same as calling add() to create a root node.
-	 * 
+	 *
 	 * @see #add(OATreeNode)
 	 */
 	public void setRoot(OATreeNode node) {
@@ -1442,7 +1442,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 	 * Calls nodeSelected(e) method, nodeSelected(node) and objectSelected()
 	 * <p>
 	 * Note: do not overwrite this method, use "nodeSelected(e)" instead.
-	 * 
+	 *
 	 * @see #nodeSelected(TreeSelectionEvent)
 	 * @see #nodeSelected(OATreeNode)
 	 * @see #objectSelected(Object)
@@ -1497,7 +1497,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 		    }
 		    protected Void _doInBackground() throws Exception {
 		        if (cnt != valueChangeCounter) return null;
-		
+
 		        TreePath tp = e.getNewLeadSelectionPath();
 		        if (tp != null) {
 		            Object[] objs = tp.getPath();
@@ -1585,7 +1585,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 	 * selected.
 	 * <p>
 	 * This is called by valueChanged()
-	 * 
+	 *
 	 * @see #valueChanged(TreeSelectionEvent)
 	 * @see #objectSelected
 	 * @see #nodeSelected(TreeSelectionEvent)
@@ -1600,7 +1600,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 	 * selected.
 	 * <p>
 	 * This is called by valueChanged()
-	 * 
+	 *
 	 * @see #valueChanged(TreeSelectionEvent)
 	 * @see #objectSelected
 	 * @see #nodeSelected(TreeSelectionEvent)
@@ -1628,7 +1628,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 	 * selected.
 	 * <p>
 	 * This is called by valueChanged()
-	 * 
+	 *
 	 * @see #valueChanged(TreeSelectionEvent)
 	 * @see #objectSelected
 	 * @see #nodeSelected(OATreeNodeData)
@@ -1640,7 +1640,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 	 * This will get called when a node double clicked This can be overwritten to "know" when a node is double clicked.
 	 * <p>
 	 * This is called by valueChanged()
-	 * 
+	 *
 	 * @see #valueChanged(TreeSelectionEvent)
 	 * @see #objectSelected
 	 * @see #nodeSelected(OATreeNodeData)
@@ -1706,7 +1706,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 		}
 	}
 
-	//qqqqqqqqqqqqqqqq    
+	//qqqqqqqqqqqqqqqq
 	private boolean bProcessingMousePressed;
 
 	public boolean isProcessingMousePressed() {
@@ -1821,7 +1821,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 	protected boolean downLastMouse;
 
 	protected OATreeNodeData updateCheckBox(Point pt) {
-		// 20101215 added try/catch - getRowForLocation is throw npe 
+		// 20101215 added try/catch - getRowForLocation is throw npe
 		for (int i = 0; i < 3; i++) {
 			try {
 				return _updateCheckBox(pt);
@@ -1891,16 +1891,16 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 	 * This is called by valueChanged() Also can be done by using the OATreeNode.addListener()
 	 * <p>
 	 * Example:<br>
-	 * 
+	 *
 	 * <pre>
 	 public void nodeSelected(TreeSelectionEvent e) {
 	     super.nodeSelected(e);
 	     TreePath tp = e.getNewLeadSelectionPath();
 	     if (tp == null) return;
-	
+
 	     Object[] objects = tp.getPath();  // OATreeNodeData objects
 	     if (objects.length == 0) return;
-	
+
 	     OATreeNodeData tnd = (OATreeNodeData) objects[objects.length-1];
 	     Hub h = tnd.getHub();
 	     if (h != null) {
@@ -1913,14 +1913,14 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 	         if (tn instanceof OATreeTitleNode) {
 	             OATreeTitleNode n = (OATreeTitleNode) tn;
 	             String title = n.getTitle();
-	
+
 	             if (title.equals(USER_TABNAME)) // do something
 	             else if (title.equals(SPECIES_TABNAME)) // do something
 	         }
 	     }
 	 }
 	 * </pre>
-	 * 
+	 *
 	 * @see #valueChanged(TreeSelectionEvent)
 	 * @see #nodeSelected(OATreeNodeData)
 	 * @see #objectSelected(Object)
@@ -2065,7 +2065,64 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 		OATreeNodeData tnd = (OATreeNodeData) lastSelection[lastSelection.length - 1];
 
 		setChildSharedHub(tnd, hsUpdateHub);
+
+		Object ao;
+		if (tnd.getHub() != null) {
+			ao = tnd.getHub().getAO();
+		} else {
+			ao = null;
+			for (int i = lastSelection.length - 2; i >= 0; i--) {
+				OATreeNodeData tndx = (OATreeNodeData) lastSelection[i];
+				if (tndx.getHub() != null) {
+					ao = tndx.getHub().getAO();
+				}
+			}
+		}
+		if (ao != null) {
+			setChildSharedHub(ao, tnd.node, hsUpdateHub);
+		}
+
 		clearChildNodeAO(tnd.node, null, hsUpdateHub);
+	}
+
+	// 20211008
+	protected void setChildSharedHub(Object ao, OATreeNode node, HashSet<Hub> hsHub) {
+
+		for (OATreeNode tnChild : node.getChildrenTreeNodes()) {
+
+			if (tnChild instanceof OATreeTitleNode) {
+				setChildSharedHub(ao, tnChild, hsHub);
+				continue;
+			}
+
+			Hub hx = tnChild.def.updateHub;
+			if (hx == null) {
+				continue;
+			}
+
+			if (hsHub.contains(hx)) {
+				continue;
+			}
+			hsHub.add(hx);
+
+			OALinkInfo li = HubDetailDelegate.getLinkInfoFromDetailToMaster(hx);
+
+			OALinkInfo liRev;
+			boolean b = true;
+
+			if (li != null) {
+				liRev = OAObjectInfoDelegate.getReverseLinkInfo(li);
+			} else {
+				liRev = HubDetailDelegate.getLinkInfoFromMasterHubToDetail(hx);
+			}
+			if (liRev != null && liRev.getType() == li.ONE) {
+				b = false;
+			}
+
+			if (b) {
+				hx.setSharedHub((Hub) liRev.getValue(ao), false);
+			}
+		}
 	}
 
 	// 20120228 update child nodes - this will allow a titleNode to be selected and have it's child node hubs updated
