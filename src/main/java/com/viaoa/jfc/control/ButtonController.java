@@ -1265,7 +1265,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 							if (bEnableUndo) {
 								OAUndoManager.add(OAUndoableEdit.createUndoableRemove(getUndoDescription(), hub, ho, hub.getPos()));
 							}
-							if (HubAddRemoveDelegate.isAllowAddRemove(getHub())) {
+							if (HubAddRemoveDelegate.isAllowRemove(getHub())) { // 20211211
 								getHub().remove(ho); // 20110215 remove first, so that cascading deletes are not so "noisy"
 							}
 
