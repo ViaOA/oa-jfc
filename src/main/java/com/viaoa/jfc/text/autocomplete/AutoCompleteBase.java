@@ -55,7 +55,7 @@ public abstract class AutoCompleteBase {
 
 	/**
 	 * Create an autoComplete that uses a text and popup component.
-	 * 
+	 *
 	 * @param txt             user input component that is used to work with popupMenu.
 	 * @param popupComponent  list/table/etc that is displayed with list of choices
 	 * @param bExactMatchOnly if true, then closest match is always selected.
@@ -171,7 +171,7 @@ public abstract class AutoCompleteBase {
 			@Override
 			public void focusGained(FocusEvent e) {
 				super.focusGained(e);
-				// 20181024 removed, wait for keyboard or mouse activity after focus        		
+				// 20181024 removed, wait for keyboard or mouse activity after focus
 				// if (!popup.isVisible()) showPopup();
 			}
 
@@ -232,15 +232,15 @@ public abstract class AutoCompleteBase {
 		if (d == null) return; // dont show
 		d.width += 7;  // include popup borders
 		d.width = Math.max(textComp.getSize().width-6, d.width);
-		
+
 		d.height += 7; // include popup borders
 		popup.setPopupSize(d);
-		
+
 		try {
 		    popup.show(textComp, 3, textComp.getHeight());
 		}
 		catch (Exception e) {
-		    
+
 		}
 		textComp.requestFocusInWindow();
 		*/
@@ -381,7 +381,7 @@ public abstract class AutoCompleteBase {
 
 	/**
 	 * Called when text has changed and list needs to be updated.
-	 * 
+	 *
 	 * @param offset caret position within the textField
 	 * @return perferred size to make the popupMenu
 	 */
@@ -403,7 +403,7 @@ public abstract class AutoCompleteBase {
 	/**
 	 * Called when user has pressed the "Enter" key, while the popup is visible. The popup component needs to replace the textField text
 	 * with the selected value from the popup component.
-	 * 
+	 *
 	 * @return true if something was selected and popup can be closed.
 	 */
 	protected abstract boolean onSelection();
@@ -439,6 +439,8 @@ public abstract class AutoCompleteBase {
 						dim = updateSelectionList(textComp.getText(), offset);
 						break;
 					} catch (Exception e) {
+						System.out.println("Exception: " + e);
+						e.printStackTrace();
 						if (i > 0) {
 							//qqqqq this is not in awtThread, so it there can be errors ... might need to initialize jcomponents beforehand
 							//System.out.println("Error in AutoCompleteBase, calling updateSelectionList, ex="+e);

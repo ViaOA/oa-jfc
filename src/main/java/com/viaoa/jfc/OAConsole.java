@@ -34,261 +34,291 @@ import com.viaoa.jfc.control.OAJfcController;
 import com.viaoa.object.OAObject;
 import com.viaoa.util.OAString;
 
-
 /**
- * Acts as a console to display and scroll changes to a property.
- * 
- * Ex:  Message.text, where each change to text will be added to the display. 
- * 
+ * Acts as a console to display and scroll changes to a property. Ex: Message.text, where each change to text will be added to the display.
+ *
  * @author vvia
  */
 public class OAConsole extends OATable implements FocusListener, MouseListener {
-    private final Hub hubListen;
-    private String property;
-    private String listenProperty;
-    private final WeakHashMap<OAObject, Hub<Console>> hmConsole = new WeakHashMap<OAObject, Hub<Console>>();
-    private int columns;
-    private HubListener hubListener;
-    private Hub hubFromMerger;
-    private int maxRows = 500;
-    
-    public OAConsole(Hub hub, String property, int columns) {
-        super(new Hub<Console>(Console.class));
-        this.hubListen = hub;
-        this.property = property;
-        this.columns = columns;
+	private final Hub hubListen;
+	private String property;
+	private String listenProperty;
+	private final WeakHashMap<OAObject, Hub<Console>> hmConsole = new WeakHashMap<OAObject, Hub<Console>>();
+	private int columns;
+	private HubListener hubListener;
+	private Hub hubFromMerger;
+	private int maxRows = 500;
 
-        setSelectHub(new Hub(Console.class));
+	public OAConsole(Hub hub, String property, int columns) {
+		super(new Hub<Console>(Console.class));
+		this.hubListen = hub;
+		this.property = property;
+		this.columns = columns;
 
-        setup();
-    }
-    
-    public void setLabel(JLabel lbl) {
-        if (lbl == null) return;
-        OAJfcController jc = new OAJfcController(hubListen, new JLabel(), property, null, HubChangeListener.Type.HubValid, false, false);
-        jc.setLabel(lbl);
-    }
-   
-    
-    @Override
-    public void setSelectHub(Hub hub) {
-        super.setSelectHub(hub);
-    }
+		setSelectHub(new Hub(Console.class));
 
-    public void setMaxRows(int x) {
-        this.maxRows = x;
-    }
-    public int getMaxRows() {
-        return maxRows;
-    }
-    
-    
-    public void close() {
-        if (hubListener != null && hubListen != null) {
-            hubListen.removeHubListener(hubListener);
-        }
-        if (hmConsole != null) hmConsole.clear();
-    }
+		setup();
+	}
 
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        close();
-    }
-    
-    public void setup() {
-        OALabel lbl;
-        // addColumn("xxx", 10, new OALabel(getHub(), Console.P_DateTime, 10));
-        addColumn("xxx", columns, new OALabel(getHub(), Console.P_Text, columns));
-        setPreferredSize(5, 1);
+	public void setLabel(JLabel lbl) {
+		if (lbl == null) {
+			return;
+		}
+		OAJfcController jc = new OAJfcController(hubListen, new JLabel(), property, null, HubChangeListener.Type.HubValid, false, false);
+		jc.setLabel(lbl);
+	}
 
-        setTableHeader(null);
-        setShowHorizontalLines(false);
-        setAllowDnD(false);
-        setAllowSorting(false);
-        setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        
-        hubListener = new HubListenerAdapter() {
-            @Override
-            public void afterPropertyChange(HubEvent e) {
-                if (listenProperty == null) return;
-                
-                String prop = e.getPropertyName();
-                if (prop == null) return;
-                if (!listenProperty.equalsIgnoreCase(prop)) return;
-                
-                if (getHub() == null) return;
-                Object obj = e.getObject();
-                if (obj == null) return;
-                
-                if (!(obj instanceof OAObject)) return;
-                OAObject oaObj = (OAObject) obj;
+	@Override
+	public void setSelectHub(Hub hub) {
+		super.setSelectHub(hub);
+	}
 
-                OAConsole.this.afterPropertyChange(oaObj, (String) e.getNewValue());
-            }
-            @Override
-            public void afterRemove(HubEvent e) {
-                Object obj = e.getObject();
-                if (obj == null) return;
-                if (!(obj instanceof OAObject)) return;
-                OAObject oaObj = (OAObject) obj;
-                hmConsole.remove(oaObj);
-            }
-        };
-        
-        HubListener hubListener2 = new HubListenerAdapter() {
-            @Override
-            public void afterChangeActiveObject(HubEvent e) {
-                Object obj = e.getObject();
-                if (!(obj instanceof OAObject)) {
-                    OAConsole.this.getHub().setSharedHub(null);
-                    return;
-                }
-                OAObject oaObj = (OAObject) obj;
-                OAConsole.this.makeActive(oaObj);
-            }
-            @Override
-            public void beforeRemoveAll(HubEvent e) {
-                hmConsole.clear();
-            }
-        };        
-        hubListen.addHubListener(hubListener2);
+	public void setMaxRows(int x) {
+		this.maxRows = x;
+	}
 
-        // initialize
-        OAObject oaObj = (OAObject) hubListen.getAO();
-        if (oaObj != null) {
-            makeActive(oaObj);
-            afterPropertyChange(oaObj, null);
-        }
-        
-        listenProperty = property;
-        if (property != null) {
-            String prop = property;
-            Hub h = hubListen;
-            
-            if (hubListen.getMasterHub() != null) {
-                h = hubListen.getMasterHub();
-                prop = HubDetailDelegate.getPropertyFromMasterToDetail(hubListen) + "." + property;
-            }
-            if (prop.indexOf('.') > 0) {
-                hubFromMerger = new Hub();
-                int dcnt = OAString.dcount(prop, '.');
-                String s = OAString.field(prop, ".", 1, dcnt-1);
-                new HubMerger(h, hubFromMerger, s, true);
-                listenProperty = OAString.field(prop, ".", dcnt);
-                hubFromMerger.addHubListener(hubListener, listenProperty, true);
-            }
-            else hubListen.addHubListener(hubListener, property, true);
-        }
-        
-        addFocusListener(this);
-        
-        addMouseListener(this);
-    }
+	public int getMaxRows() {
+		return maxRows;
+	}
 
-    protected void makeActive(OAObject oaObj) {
-        Hub<Console> h = hmConsole.get(oaObj);
-        if (h == null) {
-            h = new Hub<Console>(Console.class);
-            hmConsole.put(oaObj, h);
-        }
-        getHub().setSharedHub(h);
-    }
+	public void close() {
+		if (hubListener != null && hubListen != null) {
+			hubListen.removeHubListener(hubListener);
+		}
+		if (hmConsole != null) {
+			hmConsole.clear();
+		}
+	}
 
-    protected void afterPropertyChange(OAObject oaObj, String val) {
-        if (SwingUtilities.isEventDispatchThread()) {
-            _afterPropertyChange(oaObj, val);
-        }
-        else {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    _afterPropertyChange(oaObj, val);
-                }
-            });
-        }
-    }
-    protected void _afterPropertyChange(OAObject oaObj, String val) {
-        Hub<Console> hubx = hmConsole.get(oaObj);
-        if (hubx == null) {
-            hubx = new Hub<Console>(Console.class);
-            hmConsole.put(oaObj, hubx);
-        }
-  
-        if (val == null) {
-            val = oaObj.getPropertyAsString(listenProperty);
-            if (val == null) val = "";
-        }
-        
-        Console console = new Console();
-        console.setText(val);
-        if (hubx.getSize() > maxRows) {
-            hubx.remove(0);
-        }
-        hubx.add(console);
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+		close();
+	}
 
-        if (oaObj != hubListen.getAO()) return;
-        
-        if (!OAConsole.this.bHasFocus && !OAConsole.this.bHasMouse) {
-            boolean b;
-            if (hubFromMerger != null) b = hubFromMerger.contains(oaObj);
-            else b = (OAConsole.this.hubListen.getAO() == oaObj); 
-            if (b) {
-                int pos = OAConsole.this.getHub().getSize();
-                Rectangle rect = OAConsole.this.getCellRect(pos, 0, true);
-                try {
-                    OAConsole.this.scrollRectToVisible(rect);
-                }
-                catch (Exception ex) {}
-                OAConsole.this.repaint();
-            }
-        }
-    }
-    
-    
-    private volatile boolean bHasFocus;
-    @Override
-    public void focusGained(FocusEvent e) {
-        bHasFocus = true;
-    }
-    @Override
-    public void focusLost(FocusEvent e) {
-        bHasFocus = false;
-    }
+	public void setup() {
+		OALabel lbl;
+		// addColumn("xxx", 10, new OALabel(getHub(), Console.P_DateTime, 10));
+		addColumn("xxx", columns, new OALabel(getHub(), Console.P_Text, columns));
+		setPreferredSize(5, 1);
 
-    private volatile boolean bHasMouse;
-    @Override
-    public void mouseClicked(MouseEvent e) {
-    }
+		setTableHeader(null);
+		setShowHorizontalLines(false);
+		setAllowDnD(false);
+		setAllowSorting(false);
+		setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
-    @Override
-    public void mousePressed(MouseEvent e) {
-    }
+		hubListener = new HubListenerAdapter() {
+			@Override
+			public void afterPropertyChange(HubEvent e) {
+				if (listenProperty == null) {
+					return;
+				}
 
-    @Override
-    public void mouseReleased(MouseEvent e) {
-    }
+				String prop = e.getPropertyName();
+				if (prop == null) {
+					return;
+				}
+				if (!listenProperty.equalsIgnoreCase(prop)) {
+					return;
+				}
 
-    @Override
-    public void mouseEntered(MouseEvent e) {
-        bHasMouse = true;
-    }
+				if (getHub() == null) {
+					return;
+				}
+				Object obj = e.getObject();
+				if (obj == null) {
+					return;
+				}
 
-    @Override
-    public void mouseExited(MouseEvent e) {
-        bHasMouse = false;
-    }
+				if (!(obj instanceof OAObject)) {
+					return;
+				}
+				OAObject oaObj = (OAObject) obj;
 
-    @Override
-    public Dimension getPreferredSize() {
-        Dimension d = super.getPreferredSize();
-        return d;
-    }
+				OAConsole.this.afterPropertyChange(oaObj, (String) e.getNewValue());
+			}
 
-    protected boolean isVisible(boolean bIsCurrentlyVisible) {
-        return bIsCurrentlyVisible;
-    }
-    protected boolean isEnabled(boolean bIsCurrentlyEnabled) {
-        return bIsCurrentlyEnabled;
-    }
-    
+			@Override
+			public void afterRemove(HubEvent e) {
+				Object obj = e.getObject();
+				if (obj == null) {
+					return;
+				}
+				if (!(obj instanceof OAObject)) {
+					return;
+				}
+				OAObject oaObj = (OAObject) obj;
+				hmConsole.remove(oaObj);
+			}
+		};
+
+		HubListener hubListener2 = new HubListenerAdapter() {
+			@Override
+			public void afterChangeActiveObject(HubEvent e) {
+				Object obj = e.getObject();
+				if (!(obj instanceof OAObject)) {
+					OAConsole.this.getHub().setSharedHub(null);
+					return;
+				}
+				OAObject oaObj = (OAObject) obj;
+				OAConsole.this.makeActive(oaObj);
+			}
+
+			@Override
+			public void beforeRemoveAll(HubEvent e) {
+				hmConsole.clear();
+			}
+		};
+		hubListen.addHubListener(hubListener2);
+
+		// initialize
+		OAObject oaObj = (OAObject) hubListen.getAO();
+		if (oaObj != null) {
+			makeActive(oaObj);
+			afterPropertyChange(oaObj, null);
+		}
+
+		listenProperty = property;
+		if (property != null) {
+			String prop = property;
+			Hub h = hubListen;
+
+			if (hubListen.getMasterHub() != null) {
+				h = hubListen.getMasterHub();
+				prop = HubDetailDelegate.getPropertyFromMasterToDetail(hubListen) + "." + property;
+			}
+			if (prop.indexOf('.') > 0) {
+				hubFromMerger = new Hub();
+				int dcnt = OAString.dcount(prop, '.');
+				String s = OAString.field(prop, ".", 1, dcnt - 1);
+				new HubMerger(h, hubFromMerger, s, true);
+				listenProperty = OAString.field(prop, ".", dcnt);
+				hubFromMerger.addHubListener(hubListener, listenProperty, true);
+			} else {
+				hubListen.addHubListener(hubListener, property, true);
+			}
+		}
+
+		addFocusListener(this);
+
+		addMouseListener(this);
+	}
+
+	protected void makeActive(OAObject oaObj) {
+		Hub<Console> h = hmConsole.get(oaObj);
+		if (h == null) {
+			h = new Hub<Console>(Console.class);
+			hmConsole.put(oaObj, h);
+		}
+		getHub().setSharedHub(h);
+	}
+
+	protected void afterPropertyChange(OAObject oaObj, String val) {
+		if (SwingUtilities.isEventDispatchThread()) {
+			_afterPropertyChange(oaObj, val);
+		} else {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					_afterPropertyChange(oaObj, val);
+				}
+			});
+		}
+	}
+
+	protected void _afterPropertyChange(OAObject oaObj, String val) {
+		Hub<Console> hubx = hmConsole.get(oaObj);
+		if (hubx == null) {
+			hubx = new Hub<Console>(Console.class);
+			hmConsole.put(oaObj, hubx);
+		}
+
+		if (val == null) {
+			val = oaObj.getPropertyAsString(listenProperty);
+			if (val == null) {
+				hubx.clear();
+				val = "";
+			}
+		}
+
+		Console console = new Console();
+		console.setText(val);
+		if (hubx.getSize() > maxRows) {
+			hubx.remove(0);
+		}
+		hubx.add(console);
+
+		if (oaObj != hubListen.getAO()) {
+			return;
+		}
+
+		if (!OAConsole.this.bHasFocus && !OAConsole.this.bHasMouse) {
+			boolean b;
+			if (hubFromMerger != null) {
+				b = hubFromMerger.contains(oaObj);
+			} else {
+				b = (OAConsole.this.hubListen.getAO() == oaObj);
+			}
+			if (b) {
+				int pos = OAConsole.this.getHub().getSize();
+				Rectangle rect = OAConsole.this.getCellRect(pos, 0, true);
+				try {
+					OAConsole.this.scrollRectToVisible(rect);
+				} catch (Exception ex) {
+				}
+				OAConsole.this.repaint();
+			}
+		}
+	}
+
+	private volatile boolean bHasFocus;
+
+	@Override
+	public void focusGained(FocusEvent e) {
+		bHasFocus = true;
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+		bHasFocus = false;
+	}
+
+	private volatile boolean bHasMouse;
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		bHasMouse = true;
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		bHasMouse = false;
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension d = super.getPreferredSize();
+		return d;
+	}
+
+	protected boolean isVisible(boolean bIsCurrentlyVisible) {
+		return bIsCurrentlyVisible;
+	}
+
+	protected boolean isEnabled(boolean bIsCurrentlyEnabled) {
+		return bIsCurrentlyEnabled;
+	}
+
 }
