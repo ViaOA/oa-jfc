@@ -22,4 +22,4 @@ Visit [OA-Jfc Javadoc](http://viaoa.github.io/oa-jfc/docs/index.html)
 Current release on Maven Central: 
     Group Id: com.viaoa
     Artifact Id: oa-jfc
-    Version: 3.5.56
+    Version: 3.7.1
