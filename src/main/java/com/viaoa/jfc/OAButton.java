@@ -79,6 +79,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 	public static final ButtonCommand OBJECT_METHOD = ButtonCommand.ObjectMethod;
 	public static final ButtonCommand HUB_METHOD = ButtonCommand.HubMethod;
 	public static final ButtonCommand OK = ButtonCommand.Ok;
+	public static final ButtonCommand REFRESH = ButtonCommand.Refresh;
 
 	public enum ButtonCommand {
 		Other(false), Up(true), Down(true), Save(false),
@@ -87,7 +88,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 		Next(true), Previous(true), Delete(true), Remove(true), New(true), Insert(true), Add(true),
 		Cut(false), Copy(false), Paste(false),
 		NewManual(true), AddManual(true), ClearAO(true), GoTo(false), HubSearch(true), Search(false), Select(true), ObjectMethod(false),
-		HubMethod(false), WizardNew(true), Ok(false);
+		HubMethod(false), WizardNew(true), Ok(false), Refresh(true);
 
 		private boolean bSetsAO;
 
@@ -261,6 +262,10 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 			control = new OAButtonController(hub, OAButton.ButtonEnabledMode.HubIsValid, command, HubChangeListener.Type.HubValid, false,
 					true);
 			control.getEnabledChangeListener().addPasteEnabled(hub);
+		} else if (command == ButtonCommand.Refresh) {
+			control = new OAButtonController(hub, OAButton.ButtonEnabledMode.HubIsValid, command, HubChangeListener.Type.HubValid, true,
+					true);
+			control.getEnabledChangeListener().addPasteEnabled(hub);
 		} else {
 			control = new OAButtonController(hub, enabledMode, command);
 		}
@@ -283,6 +288,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 		case WizardNew:
 		case New:
 		case Insert:
+		case Refresh:
 		case Add:
 		case NewManual:
 		case AddManual:

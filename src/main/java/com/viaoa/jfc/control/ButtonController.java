@@ -1479,6 +1479,12 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				}
 				((OAObject) objx).setProperty(propx, objSearch);
 				break;
+
+			case Refresh:
+				// 20220304
+				Object ao = hub.getAO();
+				hub.refresh();
+				hub.setAO(ao);
 			}
 
 			//qqqqqqqqqq review this qqqqqqqqq
