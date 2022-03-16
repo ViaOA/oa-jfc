@@ -1481,13 +1481,10 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				break;
 
 			case Refresh:
-				// 20220304
-				Object ao = hub.getAO();
 				hub.refresh();
-				hub.setAO(ao);
+				break;
 			}
 
-			//qqqqqqqqqq review this qqqqqqqqq
 			if (methodName != null) {
 				// Method[] method = OAReflect.getMethods(hub.getObjectClass(), methodName);
 

@@ -265,7 +265,6 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 		} else if (command == ButtonCommand.Refresh) {
 			control = new OAButtonController(hub, OAButton.ButtonEnabledMode.HubIsValid, command, HubChangeListener.Type.HubValid, true,
 					true);
-			control.getEnabledChangeListener().addPasteEnabled(hub);
 		} else {
 			control = new OAButtonController(hub, enabledMode, command);
 		}
