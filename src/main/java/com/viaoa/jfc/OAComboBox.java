@@ -40,6 +40,7 @@ import javax.swing.plaf.metal.MetalComboBoxButton;
 import javax.swing.table.TableCellEditor;
 
 import com.viaoa.hub.Hub;
+import com.viaoa.hub.HubChangeListener.Type;
 import com.viaoa.hub.HubLinkDelegate;
 import com.viaoa.jfc.control.ComboBoxController;
 import com.viaoa.jfc.table.OAComboBoxTableCellEditor;
@@ -76,7 +77,7 @@ public class OAComboBox extends JComboBox implements OATableComponent, OAJfcComp
 
 	/**
 	 * Create ComboBox that is bound to a property for the active object in a Hub.
-	 * 
+	 *
 	 * @param columns is width of list using character width size.
 	 */
 	public OAComboBox(Hub hub, String propertyPath, int columns) {
@@ -144,7 +145,7 @@ public class OAComboBox extends JComboBox implements OATableComponent, OAJfcComp
 
 	/**
 	 * Description to use for Undo and Redo presentation names.
-	 * 
+	 *
 	 * @see OAUndoableEdit#setPresentationName
 	 */
 	public String getUndoDescription() {
@@ -353,7 +354,7 @@ public class OAComboBox extends JComboBox implements OATableComponent, OAJfcComp
 
 	/**
 	 * Root directory where images are stored.
-	 * 
+	 *
 	 * @see #getImageProperty
 	 */
 	public String getImagePath() {
@@ -490,7 +491,7 @@ public class OAComboBox extends JComboBox implements OATableComponent, OAJfcComp
 	public String getPropertyPath() {
 		return control.getPropertyPath();
 	}
-	/*    
+	/*
 	public String getEndPropertyName() {
 	    return control.getEndPropertyName();
 	}
@@ -742,7 +743,7 @@ public class OAComboBox extends JComboBox implements OATableComponent, OAJfcComp
 
 	/**
 	 * This is a callback method that can be overwritten to determine if the component should be visible or not.
-	 * 
+	 *
 	 * @return null if no errors, else error message
 	 */
 	public String isValid(Object object, Object value) {
@@ -825,7 +826,7 @@ public class OAComboBox extends JComboBox implements OATableComponent, OAJfcComp
 		}
 		final int textLen = text.length();
 
-		// resize based on size of text        
+		// resize based on size of text
 		int cols = getController().getCalcColumns();
 		int maxCols = getMaximumColumns();
 		if (cols < 1 && maxCols < 1) {
@@ -883,7 +884,7 @@ public class OAComboBox extends JComboBox implements OATableComponent, OAJfcComp
 		}
 		final int textLen = text.length();
 
-		// resize based on size of text        
+		// resize based on size of text
 		int cols = getController().getCalcColumns();
 		int maxCols = getMaximumColumns();
 		if (cols < 1 && maxCols < 1) {
@@ -988,6 +989,10 @@ public class OAComboBox extends JComboBox implements OATableComponent, OAJfcComp
 
 	public void addEnabledCheck(Hub hub, String propPath, Object compareValue) {
 		control.getEnabledChangeListener().add(hub, propPath, compareValue);
+	}
+
+	public void addEnabledOnlyIfNew() {
+		control.getEnabledChangeListener().add(control.getHub(), Type.AoNew);
 	}
 
 	protected boolean isEnabled(boolean defaultValue) {

@@ -38,6 +38,7 @@ import javax.swing.table.TableCellEditor;
 
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubChangeListener;
+import com.viaoa.hub.HubChangeListener.Type;
 import com.viaoa.hub.HubDetailDelegate;
 import com.viaoa.jfc.control.ButtonController;
 import com.viaoa.jfc.dialog.OAPasswordDialog;
@@ -1017,6 +1018,10 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 
 	public void addEnabledCheck(Hub hub, String propPath, Object compareValue) {
 		control.getEnabledChangeListener().add(hub, propPath, compareValue);
+	}
+
+	public void addEnabledOnlyIfNew() {
+		control.getEnabledChangeListener().add(control.getHub(), Type.AoNew);
 	}
 
 	/*

@@ -10,472 +10,550 @@
 */
 package com.viaoa.jfc;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Insets;
 
-import com.viaoa.object.*;
-import com.viaoa.util.OADate;
-import com.viaoa.util.OAString;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.TableCellEditor;
+
 import com.viaoa.converter.OAConverterNumber;
-import com.viaoa.hub.*;
-import com.viaoa.jfc.control.*;
-import com.viaoa.jfc.table.*;
+import com.viaoa.hub.Hub;
+import com.viaoa.hub.HubChangeListener.Type;
+import com.viaoa.jfc.control.TextFieldController;
+import com.viaoa.jfc.table.OATableComponent;
+import com.viaoa.jfc.table.OATextFieldTableCellEditor;
+import com.viaoa.object.OAObject;
+import com.viaoa.util.OADate;
 
 public class OATextField extends JTextField implements OATableComponent, OAJfcComponent {
-    protected TextFieldController control; // 20110408 was OATextFieldController (internally defined)
-    private OATable table;
-    private String heading = "";
+	protected TextFieldController control; // 20110408 was OATextFieldController (internally defined)
+	private OATable table;
+	private String heading = "";
 
-    public OATextField() {
-        control = new OATextFieldController();
-        setDisabledTextColor(Color.gray);
-        initialize();
-    }
-    
-    
-    public OATextField(TextFieldController control) {
-        this.control = control;
-        setDisabledTextColor(Color.gray);
-        initialize();
-    }
+	public OATextField() {
+		control = new OATextFieldController();
+		setDisabledTextColor(Color.gray);
+		initialize();
+	}
 
-    /**
-        Create TextField that is bound to a property path in a Hub.
-        @param propertyPath path from Hub, used to find bound property.
-    */
-    public OATextField(Hub hub, String propertyPath) {
-        control = new OATextFieldController(hub, propertyPath);
-        setDisabledTextColor(Color.gray);
-        initialize();
-    }
+	public OATextField(TextFieldController control) {
+		this.control = control;
+		setDisabledTextColor(Color.gray);
+		initialize();
+	}
 
-    /**
-        Create TextField that is bound to a property path in a Hub.
-        @param propertyPath path from Hub, used to find bound property.
-        @param cols is the width
-    */
-    public OATextField(Hub hub, String propertyPath, int cols) {
-        control = new OATextFieldController(hub, propertyPath);
-        setColumns(cols);
-        setDisabledTextColor(Color.gray);
-        initialize();
-    }
+	/**
+	 * Create TextField that is bound to a property path in a Hub.
+	 *
+	 * @param propertyPath path from Hub, used to find bound property.
+	 */
+	public OATextField(Hub hub, String propertyPath) {
+		control = new OATextFieldController(hub, propertyPath);
+		setDisabledTextColor(Color.gray);
+		initialize();
+	}
 
-    /**
-        Create TextField that is bound to a property path in a Hub.
-        @param propertyPath path from Hub, used to find bound property.
-    */
-    public OATextField(OAObject hubObject, String propertyPath) {
-        control = new OATextFieldController(hubObject, propertyPath);
-        setDisabledTextColor(Color.gray);
-        initialize();
-    }
+	/**
+	 * Create TextField that is bound to a property path in a Hub.
+	 *
+	 * @param propertyPath path from Hub, used to find bound property.
+	 * @param cols         is the width
+	 */
+	public OATextField(Hub hub, String propertyPath, int cols) {
+		control = new OATextFieldController(hub, propertyPath);
+		setColumns(cols);
+		setDisabledTextColor(Color.gray);
+		initialize();
+	}
 
-    /**
-        Create TextArea that is bound to a property path in an Object.
-        @param propertyPath path from Hub, used to find bound property.
-        @param cols is the width
-    */
-    public OATextField(OAObject hubObject, String propertyPath, int cols) {
-        control = new OATextFieldController(hubObject, propertyPath);
-        setColumns(cols);
-        setDisabledTextColor(Color.gray);
-        initialize();
-    }
+	/**
+	 * Create TextField that is bound to a property path in a Hub.
+	 *
+	 * @param propertyPath path from Hub, used to find bound property.
+	 */
+	public OATextField(OAObject hubObject, String propertyPath) {
+		control = new OATextFieldController(hubObject, propertyPath);
+		setDisabledTextColor(Color.gray);
+		initialize();
+	}
 
-    @Override
-    public void initialize() {
-    }
-    
-    public TextFieldController getController() {
-        return control;
-    }
+	/**
+	 * Create TextArea that is bound to a property path in an Object.
+	 *
+	 * @param propertyPath path from Hub, used to find bound property.
+	 * @param cols         is the width
+	 */
+	public OATextField(OAObject hubObject, String propertyPath, int cols) {
+		control = new OATextFieldController(hubObject, propertyPath);
+		setColumns(cols);
+		setDisabledTextColor(Color.gray);
+		initialize();
+	}
 
-    public void setLabel(JLabel lbl, boolean bAlwaysMatchEnabled) {
-        getController().setLabel(lbl, bAlwaysMatchEnabled);
-    }
-    public void setLabel(JLabel lbl) {
-        getController().setLabel(lbl);
-    }
-    public JLabel getLabel() {
-        if (getController() == null) return null;
-        return getController().getLabel();
-    }
-    
-    /**
-        Format used to display this property.  Used to format Date, Times and Numbers.
-        @see OADate
-        @see OAConverterNumber
-    */
-    public void setFormat(String fmt) {
-        control.setFormat(fmt);
-    }
+	@Override
+	public void initialize() {
+	}
 
-    /**
-        Format used to display this property.  Used to format Date, Times and Numbers.
-        @see OADate
-        @see OAConverterNumber
-    */
-    public String getFormat() {
-        return control.getFormat();
-    }
+	public TextFieldController getController() {
+		return control;
+	}
 
+	public void setLabel(JLabel lbl, boolean bAlwaysMatchEnabled) {
+		getController().setLabel(lbl, bAlwaysMatchEnabled);
+	}
 
-    /** might want to use (and test) this later
-    boolean addNotifyFlag;
-    public void addNotify() {
-        super.addNotify();
-        if (!addNotifyFlag) {
-            addNotifyFlag = true;
-            control.initialize(this);
-        }
-    }
-    ***/
+	public void setLabel(JLabel lbl) {
+		getController().setLabel(lbl);
+	}
 
-    public void addNotify() {
-        super.addNotify();
-        control.onAddNotify();
-    }
+	public JLabel getLabel() {
+		if (getController() == null) {
+			return null;
+		}
+		return getController().getLabel();
+	}
 
-    // ----- OATableComponent Interface methods -----------------------
-    public Hub getHub() {
-        return control.getHub();
-    }
-    public void setTable(OATable table) {
-        this.table = table;
-    }
-    public OATable getTable() {
-        return table;
-    }
-    public void setColumns(int x) {
-        super.setColumns(x);
-        getController().setColumns(x);
-        invalidate();
-    }
+	/**
+	 * Format used to display this property. Used to format Date, Times and Numbers.
+	 *
+	 * @see OADate
+	 * @see OAConverterNumber
+	 */
+	public void setFormat(String fmt) {
+		control.setFormat(fmt);
+	}
 
-    public String getPropertyPath() {
-        return control.getPropertyPath();
-    }
-    public String getTableHeading() { //zzzzz
-        return heading;
-    }
-    public void setTableHeading(String heading) { //zzzzz
-        this.heading = heading;
-        if (table != null) table.setColumnHeading(table.getColumnIndex(this),heading);
-    }
+	/**
+	 * Format used to display this property. Used to format Date, Times and Numbers.
+	 *
+	 * @see OADate
+	 * @see OAConverterNumber
+	 */
+	public String getFormat() {
+		return control.getFormat();
+	}
 
-    public void setText(String s) {
-        try {
-            super.setText(s);
-            if (control != null) control.saveText();
-            revalidate();
-        }
-        catch (Exception e) {
-        }
-    }
+	/**
+	 * might want to use (and test) this later boolean addNotifyFlag; public void addNotify() { super.addNotify(); if (!addNotifyFlag) {
+	 * addNotifyFlag = true; control.initialize(this); } }
+	 ***/
 
-    public void setText(String s, boolean bSaveChanges) {
-        super.setText(s);
-        if (control != null && bSaveChanges) {
-            control.saveText();
-        }
-        revalidate();
-    }
+	public void addNotify() {
+		super.addNotify();
+		control.onAddNotify();
+	}
 
+	// ----- OATableComponent Interface methods -----------------------
+	public Hub getHub() {
+		return control.getHub();
+	}
 
-    /** called by getTableCellRendererComponent */
-    public Component getTableRenderer(JLabel renderer, JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (control == null) return renderer;
-        control.getTableRenderer(renderer, table, value, isSelected, hasFocus, row, column);
-        if (row == -1 && renderer != null) { // header
-            renderer.setText(getText());
-        }
-        return renderer;
-    }
-    
-    protected OATextFieldTableCellEditor tableCellEditor;
-    public TableCellEditor getTableCellEditor() {
-        if (tableCellEditor == null) {
-            tableCellEditor = new OATextFieldTableCellEditor(this);
-        }
-        return tableCellEditor;
-    }
+	public void setTable(OATable table) {
+		this.table = table;
+	}
 
-    @Override
-    public boolean allowEdit() {
-        return isEnabled();
-    }
-    
-    public void addEnabledCheck(Hub hub) {
-        control.getEnabledChangeListener().add(hub);
-    }
-    public void addEnabledCheck(Hub hub, String propPath) {
-        control.getEnabledChangeListener().addPropertyNotNull(hub, propPath);
-    }
-    public void addEnabledCheck(Hub hub, String propPath, Object compareValue) {
-        control.getEnabledChangeListener().add(hub, propPath, compareValue);
-    }
-    protected boolean isEnabled(boolean defaultValue) {
-        return defaultValue;
-    }
-    public void addVisibleCheck(Hub hub) {
-        control.getVisibleChangeListener().add(hub);
-    }
-    public void addVisibleCheck(Hub hub, String propPath) {
-        control.getVisibleChangeListener().addPropertyNotNull(hub, propPath);
-    }
-    public void addVisibleCheck(Hub hub, String propPath, Object compareValue) {
-        control.getVisibleChangeListener().add(hub, propPath, compareValue);
-    }
-    protected boolean isVisible(boolean defaultValue) {
-        return defaultValue;
-    }
-    
+	public OATable getTable() {
+		return table;
+	}
 
-    /**
-     * This is a callback method that can be overwritten to determine if the component should be visible or not.
-     * @return null if no errors, else error message
-     */
-    protected String isValidCallback(Object object, Object value) {
-        return null;
-    }
+	public void setColumns(int x) {
+		super.setColumns(x);
+		getController().setColumns(x);
+		invalidate();
+	}
 
-    
-    /**
-     * 'U'ppercase, 
-     * 'L'owercase, 
-     * 'T'itle, 
-     * 'J'ava identifier
-     * 'E'ncrpted password/encrypt
-     * 'S'HA password
-     */
-    public void setConversion(char conv) {
-        getController().setConversion(conv);
-    }
-    public char getConversion() {
-        return getController().getConversion();
-    }
+	public String getPropertyPath() {
+		return control.getPropertyPath();
+	}
 
-    @Override
-    public String getTableToolTipText(JTable table, int row, int col, String defaultValue) {
-        Object obj = ((OATable) table).getObjectAt(row, col);
-        defaultValue = getToolTipText(obj, row, defaultValue);
-        return defaultValue;
-    }
-    @Override
-    public void customizeTableRenderer(JLabel lbl, JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column,boolean wasChanged, boolean wasMouseOver) {
-        Object obj = ((OATable) table).getObjectAt(row, column);
-        customizeRenderer(lbl, obj, value, isSelected, hasFocus, row, wasChanged, wasMouseOver);
-    }
+	public String getTableHeading() { //zzzzz
+		return heading;
+	}
 
-    @Override
-    protected int getColumnWidth() {
-        return OAJfcUtil.getCharWidth();
-    }
+	public void setTableHeading(String heading) { //zzzzz
+		this.heading = heading;
+		if (table != null) {
+			table.setColumnHeading(table.getColumnIndex(this), heading);
+		}
+	}
 
-    /**
-     * Max columns to be displayed, used when calculating max size.
-     */
-    public void setMaxInput(int x) {
-        control.setMaxInput(x);
-    }
-    public int getMaxInput() {
-        return control.getCalcMaxInput();
-    }
-    
-    
-    /**
-     * Max columns to be displayed, used when calculating max size.
-     */
-    public void setMaxCols(int x) {
-        setMaximumColumns(x);
-    }
-    public void setMaxColumns(int x) {
-        setMaximumColumns(x);
-    }
-    public void setMaximumColumns(int x) {
-        control.setMaximumColumns(x);
-        invalidate();
-    }
-    public int getMaxColumns() {
-        return control.getMaximumColumns();
-    }
-    public int getMaximumColumns() {
-        return control.getMaximumColumns();
-    }
-    public void setMinimumColumns(int x) {
-        control.setMinimumColumns(x);
-        invalidate();
-    }
-    public int getMinimumColumns() {
-        return control.getMinimumColumns();
-    }
-    public void setMinColumns(int x) {
-        control.setMinimumColumns(x);
-        invalidate();
-    }
-    public int getMinColumns() {
-        return control.getMinimumColumns();
-    }
- 
-    
-    @Override
-    public void setSize(Dimension d) {
-        super.setSize(d);
-    }
-        
-    
-    // 20181120
-    @Override
-    public Dimension getPreferredSize() {
-        Dimension d = super.getPreferredSize();
-        if (isPreferredSizeSet()) return d;
+	public void setText(String s) {
+		try {
+			super.setText(s);
+			if (control != null) {
+				control.saveText();
+			}
+			revalidate();
+		} catch (Exception e) {
+		}
+	}
 
-        String text = getText();
-        if (text == null) text = "";
-        final int textLen = text.length();
-        
-        // resize based on size of text        
-        int cols = getController().getCalcColumns();
-        int maxCols = getMaximumColumns();
-        if (cols < 1 && maxCols < 1) return d;
-        if (maxCols < 1) maxCols = cols;
-        else if (cols < 1) cols = 0;
-        
-        if (textLen >= cols && textLen > 0) {
-            FontMetrics fm = getFontMetrics(getFont());
-            if (textLen > maxCols) text = text.substring(0, maxCols);
-            d.width = fm.stringWidth(text) + 8;
-        }
-        else {
-            d.width = OAJfcUtil.getCharWidth(cols);
-        }
+	public void setText(String s, boolean bSaveChanges) {
+		super.setText(s);
+		if (control != null && bSaveChanges) {
+			control.saveText();
+		}
+		revalidate();
+	}
 
-        d.height = OATextField.getStaticPreferredHeight(); 
-        
-        Insets ins = getInsets();
-        if (ins != null) d.width += ins.left + ins.right;
-        return d;
-    }
-    @Override
-    public Dimension getMaximumSize() {
-        Dimension d = super.getMaximumSize();
-        if (isMaximumSizeSet()) return d;
+	/** called by getTableCellRendererComponent */
+	public Component getTableRenderer(JLabel renderer, JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+			int column) {
+		if (control == null) {
+			return renderer;
+		}
+		control.getTableRenderer(renderer, table, value, isSelected, hasFocus, row, column);
+		if (row == -1 && renderer != null) { // header
+			renderer.setText(getText());
+		}
+		return renderer;
+	}
 
-        String text = getText();
-        if (text == null) text = "";
-        final int textLen = text.length();
-        
-        // resize based on size of text        
-        int cols = getController().getCalcColumns();
-        int maxCols = getMaximumColumns();
-        if (cols < 1 && maxCols < 1) return d;
-        if (maxCols < 1) maxCols = cols;
-        else if (cols < 1) cols = 0;
+	protected OATextFieldTableCellEditor tableCellEditor;
 
-        if (textLen >= cols && textLen > 0) {
-            FontMetrics fm = getFontMetrics(getFont());
-            if (textLen > maxCols) text = text.substring(0, maxCols);
-            d.width = fm.stringWidth(text) + 8;
-        }
-        else d.width = OAJfcUtil.getCharWidth(cols);
+	public TableCellEditor getTableCellEditor() {
+		if (tableCellEditor == null) {
+			tableCellEditor = new OATextFieldTableCellEditor(this);
+		}
+		return tableCellEditor;
+	}
 
-        d.height = getStaticPreferredHeight()+2; 
-        
-        Insets ins = getInsets();
-        if (ins != null) d.width += ins.left + ins.right;
-        return d;
-    }
-    
-    private static int preferredHeight;
-    protected static int getStaticPreferredHeight() {
-        if (preferredHeight == 0) {
-            JTextField jtxt = new JTextField("XxUIgpy");
-            preferredHeight = jtxt.getPreferredSize().height;
-        }
-        return preferredHeight;
-    }
-    
-    
-    public Dimension getMinimumSize() {
-        Dimension d = super.getMinimumSize();
-        if (isMinimumSizeSet()) return d;
-        int cols = getMinimumColumns();
+	@Override
+	public boolean allowEdit() {
+		return isEnabled();
+	}
 
-        if (cols < 1) return d;
-        d.width = OAJfcUtil.getCharWidth(cols);
-        return d;
-    }
+	public void addEnabledCheck(Hub hub) {
+		control.getEnabledChangeListener().add(hub);
+	}
 
-    class OATextFieldController extends TextFieldController {
-        public OATextFieldController() {
-            super(OATextField.this);
-            setColumns(OATextField.this.getColumns());
-        }
-        public OATextFieldController(Hub hub, String propertyPath) {
-            super(hub, OATextField.this, propertyPath);
-            setColumns(OATextField.this.getColumns());
-        }
-        public OATextFieldController(OAObject hubObject, String propertyPath) {
-            super(hubObject, OATextField.this, propertyPath);
-            setColumns(OATextField.this.getColumns());
-        }        
-        
-        @Override
-        public void afterPropertyChange() {
-            super.afterPropertyChange();
-            revalidate();
-        }
-        
-        @Override
-        protected boolean isEnabled(boolean bIsCurrentlyEnabled) {
-            bIsCurrentlyEnabled = super.isEnabled(bIsCurrentlyEnabled);
-            return OATextField.this.isEnabled(bIsCurrentlyEnabled);
-        }
-        @Override
-        protected boolean isVisible(boolean bIsCurrentlyVisible) {
-            bIsCurrentlyVisible = super.isVisible(bIsCurrentlyVisible);
-            return OATextField.this.isVisible(bIsCurrentlyVisible);
-        }
-        @Override
-        public String isValid(Object object, Object value) {
-            String msg = OATextField.this.isValidCallback(object, value);
-            if (msg == null) msg = super.isValid(object, value);
-            return msg;
-        }
-        @Override
-        public void update(JComponent comp, Object object, boolean bIncudeToolTip) {
-            OATextField.this.beforeUpdate();
-            super.update(comp, object, bIncudeToolTip);
-            OATextField.this.afterUpdate();
-        }
-    }
-    
-    public void beforeUpdate() {
-    }
-    public void afterUpdate() {
-    }
-    
-    public void setConfirmMessage(String msg) {
-        getController().setConfirmMessage(msg);
-    }
-    public String getConfirmMessage() {
-        return getController().getConfirmMessage();
-    }
+	public void addEnabledCheck(Hub hub, String propPath) {
+		control.getEnabledChangeListener().addPropertyNotNull(hub, propPath);
+	}
 
-    public void setDisplayTemplate(String s) {
-        this.control.setDisplayTemplate(s);
-    }
-    public String getDisplayTemplate() {
-        return this.control.getDisplayTemplate();
-    }
-    public void setToolTipTextTemplate(String s) {
-        this.control.setToolTipTextTemplate(s);
-    }
-    public String getToolTipTextTemplate() {
-        return this.control.getToolTipTextTemplate();
-    }
-    
+	public void addEnabledCheck(Hub hub, String propPath, Object compareValue) {
+		control.getEnabledChangeListener().add(hub, propPath, compareValue);
+	}
+
+	protected boolean isEnabled(boolean defaultValue) {
+		return defaultValue;
+	}
+
+	public void addEnabledOnlyIfNew() {
+		control.getEnabledChangeListener().add(control.getHub(), Type.AoNew);
+	}
+
+	public void addVisibleCheck(Hub hub) {
+		control.getVisibleChangeListener().add(hub);
+	}
+
+	public void addVisibleCheck(Hub hub, String propPath) {
+		control.getVisibleChangeListener().addPropertyNotNull(hub, propPath);
+	}
+
+	public void addVisibleCheck(Hub hub, String propPath, Object compareValue) {
+		control.getVisibleChangeListener().add(hub, propPath, compareValue);
+	}
+
+	protected boolean isVisible(boolean defaultValue) {
+		return defaultValue;
+	}
+
+	/**
+	 * This is a callback method that can be overwritten to determine if the component should be visible or not.
+	 *
+	 * @return null if no errors, else error message
+	 */
+	protected String isValidCallback(Object object, Object value) {
+		return null;
+	}
+
+	/**
+	 * 'U'ppercase, 'L'owercase, 'T'itle, 'J'ava identifier 'E'ncrpted password/encrypt 'S'HA password
+	 */
+	public void setConversion(char conv) {
+		getController().setConversion(conv);
+	}
+
+	public char getConversion() {
+		return getController().getConversion();
+	}
+
+	@Override
+	public String getTableToolTipText(JTable table, int row, int col, String defaultValue) {
+		Object obj = ((OATable) table).getObjectAt(row, col);
+		defaultValue = getToolTipText(obj, row, defaultValue);
+		return defaultValue;
+	}
+
+	@Override
+	public void customizeTableRenderer(JLabel lbl, JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column,
+			boolean wasChanged, boolean wasMouseOver) {
+		Object obj = ((OATable) table).getObjectAt(row, column);
+		customizeRenderer(lbl, obj, value, isSelected, hasFocus, row, wasChanged, wasMouseOver);
+	}
+
+	@Override
+	protected int getColumnWidth() {
+		return OAJfcUtil.getCharWidth();
+	}
+
+	/**
+	 * Max columns to be displayed, used when calculating max size.
+	 */
+	public void setMaxInput(int x) {
+		control.setMaxInput(x);
+	}
+
+	public int getMaxInput() {
+		return control.getCalcMaxInput();
+	}
+
+	/**
+	 * Max columns to be displayed, used when calculating max size.
+	 */
+	public void setMaxCols(int x) {
+		setMaximumColumns(x);
+	}
+
+	public void setMaxColumns(int x) {
+		setMaximumColumns(x);
+	}
+
+	public void setMaximumColumns(int x) {
+		control.setMaximumColumns(x);
+		invalidate();
+	}
+
+	public int getMaxColumns() {
+		return control.getMaximumColumns();
+	}
+
+	public int getMaximumColumns() {
+		return control.getMaximumColumns();
+	}
+
+	public void setMinimumColumns(int x) {
+		control.setMinimumColumns(x);
+		invalidate();
+	}
+
+	public int getMinimumColumns() {
+		return control.getMinimumColumns();
+	}
+
+	public void setMinColumns(int x) {
+		control.setMinimumColumns(x);
+		invalidate();
+	}
+
+	public int getMinColumns() {
+		return control.getMinimumColumns();
+	}
+
+	@Override
+	public void setSize(Dimension d) {
+		super.setSize(d);
+	}
+
+	// 20181120
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension d = super.getPreferredSize();
+		if (isPreferredSizeSet()) {
+			return d;
+		}
+
+		String text = getText();
+		if (text == null) {
+			text = "";
+		}
+		final int textLen = text.length();
+
+		// resize based on size of text
+		int cols = getController().getCalcColumns();
+		int maxCols = getMaximumColumns();
+		if (cols < 1 && maxCols < 1) {
+			return d;
+		}
+		if (maxCols < 1) {
+			maxCols = cols;
+		} else if (cols < 1) {
+			cols = 0;
+		}
+
+		if (textLen >= cols && textLen > 0) {
+			FontMetrics fm = getFontMetrics(getFont());
+			if (textLen > maxCols) {
+				text = text.substring(0, maxCols);
+			}
+			d.width = fm.stringWidth(text) + 8;
+		} else {
+			d.width = OAJfcUtil.getCharWidth(cols);
+		}
+
+		d.height = OATextField.getStaticPreferredHeight();
+
+		Insets ins = getInsets();
+		if (ins != null) {
+			d.width += ins.left + ins.right;
+		}
+		return d;
+	}
+
+	@Override
+	public Dimension getMaximumSize() {
+		Dimension d = super.getMaximumSize();
+		if (isMaximumSizeSet()) {
+			return d;
+		}
+
+		String text = getText();
+		if (text == null) {
+			text = "";
+		}
+		final int textLen = text.length();
+
+		// resize based on size of text
+		int cols = getController().getCalcColumns();
+		int maxCols = getMaximumColumns();
+		if (cols < 1 && maxCols < 1) {
+			return d;
+		}
+		if (maxCols < 1) {
+			maxCols = cols;
+		} else if (cols < 1) {
+			cols = 0;
+		}
+
+		if (textLen >= cols && textLen > 0) {
+			FontMetrics fm = getFontMetrics(getFont());
+			if (textLen > maxCols) {
+				text = text.substring(0, maxCols);
+			}
+			d.width = fm.stringWidth(text) + 8;
+		} else {
+			d.width = OAJfcUtil.getCharWidth(cols);
+		}
+
+		d.height = getStaticPreferredHeight() + 2;
+
+		Insets ins = getInsets();
+		if (ins != null) {
+			d.width += ins.left + ins.right;
+		}
+		return d;
+	}
+
+	private static int preferredHeight;
+
+	protected static int getStaticPreferredHeight() {
+		if (preferredHeight == 0) {
+			JTextField jtxt = new JTextField("XxUIgpy");
+			preferredHeight = jtxt.getPreferredSize().height;
+		}
+		return preferredHeight;
+	}
+
+	public Dimension getMinimumSize() {
+		Dimension d = super.getMinimumSize();
+		if (isMinimumSizeSet()) {
+			return d;
+		}
+		int cols = getMinimumColumns();
+
+		if (cols < 1) {
+			return d;
+		}
+		d.width = OAJfcUtil.getCharWidth(cols);
+		return d;
+	}
+
+	class OATextFieldController extends TextFieldController {
+		public OATextFieldController() {
+			super(OATextField.this);
+			setColumns(OATextField.this.getColumns());
+		}
+
+		public OATextFieldController(Hub hub, String propertyPath) {
+			super(hub, OATextField.this, propertyPath);
+			setColumns(OATextField.this.getColumns());
+		}
+
+		public OATextFieldController(OAObject hubObject, String propertyPath) {
+			super(hubObject, OATextField.this, propertyPath);
+			setColumns(OATextField.this.getColumns());
+		}
+
+		@Override
+		public void afterPropertyChange() {
+			super.afterPropertyChange();
+			revalidate();
+		}
+
+		@Override
+		protected boolean isEnabled(boolean bIsCurrentlyEnabled) {
+			bIsCurrentlyEnabled = super.isEnabled(bIsCurrentlyEnabled);
+			return OATextField.this.isEnabled(bIsCurrentlyEnabled);
+		}
+
+		@Override
+		protected boolean isVisible(boolean bIsCurrentlyVisible) {
+			bIsCurrentlyVisible = super.isVisible(bIsCurrentlyVisible);
+			return OATextField.this.isVisible(bIsCurrentlyVisible);
+		}
+
+		@Override
+		public String isValid(Object object, Object value) {
+			String msg = OATextField.this.isValidCallback(object, value);
+			if (msg == null) {
+				msg = super.isValid(object, value);
+			}
+			return msg;
+		}
+
+		@Override
+		public void update(JComponent comp, Object object, boolean bIncudeToolTip) {
+			OATextField.this.beforeUpdate();
+			super.update(comp, object, bIncudeToolTip);
+			OATextField.this.afterUpdate();
+		}
+	}
+
+	public void beforeUpdate() {
+	}
+
+	public void afterUpdate() {
+	}
+
+	public void setConfirmMessage(String msg) {
+		getController().setConfirmMessage(msg);
+	}
+
+	public String getConfirmMessage() {
+		return getController().getConfirmMessage();
+	}
+
+	public void setDisplayTemplate(String s) {
+		this.control.setDisplayTemplate(s);
+	}
+
+	public String getDisplayTemplate() {
+		return this.control.getDisplayTemplate();
+	}
+
+	public void setToolTipTextTemplate(String s) {
+		this.control.setToolTipTextTemplate(s);
+	}
+
+	public String getToolTipTextTemplate() {
+		return this.control.getToolTipTextTemplate();
+	}
+
 }
-
