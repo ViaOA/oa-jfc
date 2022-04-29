@@ -321,6 +321,11 @@ public class OACheckBox extends JCheckBox implements OATableComponent, OAJfcComp
 					int h = d.height / 2;
 					g.fillRect(w - 2, h - 1, 5, 3);
 				}
+
+				@Override
+				public void setBackground(Color bg) {
+					super.setBackground(bg);
+				}
 			};
 			chkRenderer.setOpaque(true);
 			chkRenderer.setHorizontalAlignment(JLabel.CENTER);
@@ -346,15 +351,7 @@ public class OACheckBox extends JCheckBox implements OATableComponent, OAJfcComp
 
 		chkRenderer.setText(null);
 		control.update(chkRenderer, obj, false);
-
 		chkRenderer.setSelected(tf);
-
-		if (hasFocus) {
-			chkRenderer.setBorderPainted(true);
-			chkRenderer.setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
-		} else {
-			chkRenderer.setBorder(null);
-		}
 
 		if (isSelected || hasFocus) {
 			chkRenderer.setForeground(UIManager.getColor("Table.selectionForeground"));

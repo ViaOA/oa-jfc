@@ -10,431 +10,504 @@
 */
 package com.viaoa.jfc;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.Hashtable;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
-
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
+import javax.swing.MenuSelectionManager;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.plaf.ComboBoxUI;
 import javax.swing.plaf.basic.ComboPopup;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 
 //import com.sun.java.swing.plaf.motif.MotifComboBoxUI;
 //import com.sun.java.swing.plaf.windows.WindowsComboBoxUI;
-
-import com.viaoa.hub.*;
-import com.viaoa.util.*;
+import com.viaoa.hub.Hub;
 
 public class OAColorComboBox extends OACustomComboBox {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-        Create a ColorComboBox that is bound to a property for the active object in a Hub.
-        @param hub is Hub that used to display and edit color property in active object
-        @param propertyPath is color property to display/edit
-        @param columns is width to use, using average character width
-    */
-    public OAColorComboBox(Hub hub, String propertyPath, int columns) {
-        super(hub, propertyPath, columns, false);
-        setupRenderer();
-        initialize();
-    }
+	/**
+	 * Create a ColorComboBox that is bound to a property for the active object in a Hub.
+	 *
+	 * @param hub          is Hub that used to display and edit color property in active object
+	 * @param propertyPath is color property to display/edit
+	 * @param columns      is width to use, using average character width
+	 */
+	public OAColorComboBox(Hub hub, String propertyPath, int columns) {
+		super(hub, propertyPath, columns, false);
+		setupRenderer();
+		initialize();
+	}
 
-    /**
-        Create a ColorComboBox that is bound to a property for the active object in a Hub.
-        @param hub is Hub that used to display and edit color property in active object
-        @param propertyPath is color property to display/edit
-    */
-    public OAColorComboBox(Hub hub, String propertyPath) {
-        super(hub, propertyPath, false);
-        setupRenderer();
-        initialize();
-    }
+	/**
+	 * Create a ColorComboBox that is bound to a property for the active object in a Hub.
+	 *
+	 * @param hub          is Hub that used to display and edit color property in active object
+	 * @param propertyPath is color property to display/edit
+	 */
+	public OAColorComboBox(Hub hub, String propertyPath) {
+		super(hub, propertyPath, false);
+		setupRenderer();
+		initialize();
+	}
 
-    /**
-        Create a ColorComboBox that is bound to a property for an object.
-        @param obj is object to be bound to
-        @param propertyPath is color property to display/edit
-        @param columns is width to use, using average character width
-    */
-    public OAColorComboBox(Object obj, String propertyPath, int columns) {
-        super(obj, propertyPath, columns, false);
-        setupRenderer();
-        initialize();
-    }
+	/**
+	 * Create a ColorComboBox that is bound to a property for an object.
+	 *
+	 * @param obj          is object to be bound to
+	 * @param propertyPath is color property to display/edit
+	 * @param columns      is width to use, using average character width
+	 */
+	public OAColorComboBox(Object obj, String propertyPath, int columns) {
+		super(obj, propertyPath, columns, false);
+		setupRenderer();
+		initialize();
+	}
 
-    /**
-        Create a ColorComboBox that is bound to a property for an object.
-        @param obj is object to be bound to
-        @param propertyPath is color property to display/edit
-    */
-    public OAColorComboBox(Object obj, String propertyPath) {
-        super(obj, propertyPath, false);
-        setupRenderer();
-        initialize();
-    }
+	/**
+	 * Create a ColorComboBox that is bound to a property for an object.
+	 *
+	 * @param obj          is object to be bound to
+	 * @param propertyPath is color property to display/edit
+	 */
+	public OAColorComboBox(Object obj, String propertyPath) {
+		super(obj, propertyPath, false);
+		setupRenderer();
+		initialize();
+	}
 
-    @Override
-    public void initialize() {
-    }
-    
-    public void setSelectedItem(Object item) {
-        super.setSelectedItem(item);
-        repaint();  // since there is not a model
-    }
+	@Override
+	public void initialize() {
+	}
 
-    
-    private MyListCellRenderer lblRenderer;
-    protected void setupRenderer() {
-        lblRenderer = new MyListCellRenderer();
-        setRenderer(lblRenderer);
-    }
-    
-    class MyListCellRenderer extends JLabel implements ListCellRenderer {
-        int qq;
-        Color validColor;
-        public MyListCellRenderer() {
-        }
-        public Component getListCellRendererComponent(JList list,Object value,int index,boolean isSelected,boolean cellHasFocus) {
-            validColor = getColor();
-            setBackground(validColor);
-            
-            if (index == -1 && value instanceof String) {
-                // see super.OACustomComboBox.setColumns(x), which sets protoType value to use to get calc preferred size
-                setText(value+"");  
-            }
-            else setText("");
-            
-            /*
-            String s = "";
-            if (validColor != null) {
-                s = "Color is (RGB)" + validColor.getRed() + ", " + validColor.getGreen() + ", " + validColor.getBlue();
-            }
-            OAColorComboBox.this.setToolTipText(s);
-            */
-            
-            return this;
-        }
-        public void setBackground(Color c) {
-            if (validColor != null) {
-                setOpaque(true);
-                super.setBackground(validColor);
-            }
-            else {
-                setOpaque(false);
-            }
-        }
-    }
+	public void setSelectedItem(Object item) {
+		super.setSelectedItem(item);
+		repaint(); // since there is not a model
+	}
 
-    public void setText(String s) {
-        if (lblRenderer != null) lblRenderer.setText(s);
-    }
+	private MyListCellRenderer lblRenderer;
 
-    private MyTableLabel lblRendererTable;
-    class MyTableLabel extends JLabel {
-        Color color;
-        public void paintComponent(Graphics g) {
-            Dimension d = getSize();
-            if (color != null) {
-                g.setColor(color);
-                int w = d.width;
-                int h = d.height;
-                if (w > 6) w -= 6;
-                if (h > 6) h -= 6;
-                g.fillRect(3,3,w,h);
-            }
-        }
-    }
-    
-    /** 
-        Used to supply the renderer when this component is used in the column of an OATable.
-        Can be overwritten to customize the rendering.
-    */
-    @Override
-    public Component getTableRenderer(JLabel lbl, JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (lblRendererTable == null) {
-            lblRendererTable = new MyTableLabel();
-            lblRendererTable.setText("  ");
-        }
+	protected void setupRenderer() {
+		lblRenderer = new MyListCellRenderer();
+		setRenderer(lblRenderer);
+	}
 
-        super.getTableRenderer(lblRendererTable, table, value, isSelected, hasFocus, row, column);
-        return lblRendererTable;
-    }
-    @Override
-    public void customizeTableRenderer(JLabel lbl, JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column,boolean wasChanged, boolean wasMouseOver) {
-        super.customizeTableRenderer(lbl, table, value, isSelected, hasFocus, row, column, wasChanged, wasMouseOver);
-        lbl.setText("  ");
-        Color color = null;
-        Hub h = ((OATable) table).getHub();
-        if (h != null) {
-            Object obj = h.elementAt(row);
-            obj = control.getValue(obj);
-            //was:  obj = OAReflect.getPropertyValue(obj, control.getGetMethods());
-            if (obj instanceof Color) color = (Color) obj;
-        }
-        if (lblRendererTable == null) {
-            lblRendererTable = new MyTableLabel();
-            lblRendererTable.setText("  ");
-        }
-        lblRendererTable.color = color;
-        Object obj = ((OATable) table).getObjectAt(row, column);
-        customizeRenderer(lbl, obj, value, isSelected, hasFocus, row, wasChanged, wasMouseOver);
-    }
-    @Override
-    public String getTableToolTipText(JTable table, int row, int col, String defaultValue) {
-        Object obj = ((OATable) table).getObjectAt(row, col);
-        getToolTipText(obj, row, defaultValue);
-        return defaultValue;
-    }
+	class MyListCellRenderer extends JLabel implements ListCellRenderer {
+		int qq;
+		Color validColor;
 
-    
+		public MyListCellRenderer() {
+		}
 
-    /**
-        Returns the color that is currently selected.
-    */
-    public Color getColor() {
-        Object obj = getSelectedItem();
-        Color c = null;
-        if (obj instanceof Color) c = (Color) obj;
-        else {
-            if (obj != null && obj.getClass().equals(control.getHub().getObjectClass())) {
-                obj = control.getValue(obj);
-            	//was: obj = OAReflect.getPropertyValue(obj, control.getGetMethods());
-                if (obj instanceof Color) c = (Color) obj;
-            }
-        }
-        return c;
-    }
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			validColor = getColor();
+			setBackground(validColor);
 
-    /**
-        the color that is currently selected.
-    */
-    public void setColor(Color color) {
-        setSelectedItem(color);
-    }
+			if (index == -1 && value instanceof String) {
+				// see super.OACustomComboBox.setColumns(x), which sets protoType value to use to get calc preferred size
+				setText(value + "");
+			} else {
+				setText("");
+			}
 
-    /**
-        override to create popup calendar
-    */
-    public void updateUI() {
-	    ComboBoxUI cui = (ComboBoxUI) UIManager.getUI(this);
-/*	20200304 windows only options    
-	    if (cui instanceof MotifComboBoxUI) {
-	        cui = new MotifComboBoxUI() {
-	            protected ComboPopup createPopup() {
-	                return new CBColorPopup( (OAColorComboBox)comboBox );
-	            }
-	        };
-	    }
-	    else if (cui instanceof WindowsComboBoxUI) {
-	        cui = new WindowsComboBoxUI() {
-	            protected ComboPopup createPopup() {
-	                return new CBColorPopup( (OAColorComboBox)comboBox );
-	            }
-	        };
-	    }
-	    else cui = new MetalComboBoxUI() {
-	        protected ComboPopup createPopup() {
-	            return new CBColorPopup( (OAColorComboBox)comboBox );
-	        }
-	    };
-*/	    
-        cui = new MetalComboBoxUI() {
-            protected ComboPopup createPopup() {
-                return new CBColorPopup( (OAColorComboBox)comboBox );
-            }
-        };
-        setUI(cui);
-    }
+			/*
+			String s = "";
+			if (validColor != null) {
+			    s = "Color is (RGB)" + validColor.getRed() + ", " + validColor.getGreen() + ", " + validColor.getBlue();
+			}
+			OAColorComboBox.this.setToolTipText(s);
+			*/
 
-    @Override
-    public String getPropertyPath() {
-        return control.getPropertyPath();
-    }
-/*    
-    public String getEndPropertyName() {
-        return control.getEndPropertyName();
-    }
-*/
+			return this;
+		}
+
+		public void setBackground(Color c) {
+			if (validColor != null) {
+				setOpaque(true);
+				super.setBackground(validColor);
+			} else {
+				setOpaque(false);
+			}
+		}
+	}
+
+	public void setText(String s) {
+		if (lblRenderer != null) {
+			lblRenderer.setText(s);
+		}
+	}
+
+	private MyTableLabel lblRendererTable;
+
+	class MyTableLabel extends JLabel {
+		Color color;
+
+		public void paintComponent(Graphics g) {
+			Dimension d = getSize();
+			int w = d.width;
+			int h = d.height;
+
+			Color c = getBackground();
+			g.setColor(c);
+			g.fillRect(0, 0, w, h);
+
+			if (color != null) {
+				g.setColor(color);
+				if (w > 6) {
+					w -= 6;
+				}
+				if (h > 6) {
+					h -= 6;
+				}
+				g.fillRect(3, 3, w, h);
+			}
+		}
+	}
+
+	/**
+	 * Used to supply the renderer when this component is used in the column of an OATable. Can be overwritten to customize the rendering.
+	 */
+	@Override
+	public Component getTableRenderer(JLabel lbl, JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+		if (lblRendererTable == null) {
+			lblRendererTable = new MyTableLabel();
+			lblRendererTable.setText("  ");
+		}
+
+		super.getTableRenderer(lblRendererTable, table, value, isSelected, hasFocus, row, column);
+		return lblRendererTable;
+	}
+
+	@Override
+	public void customizeTableRenderer(JLabel lbl, JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column,
+			boolean wasChanged, boolean wasMouseOver) {
+		super.customizeTableRenderer(lbl, table, value, isSelected, hasFocus, row, column, wasChanged, wasMouseOver);
+		lbl.setText("  ");
+		Color color = null;
+		Hub h = ((OATable) table).getHub();
+		if (h != null) {
+			Object obj = h.elementAt(row);
+			obj = control.getValue(obj);
+			//was:  obj = OAReflect.getPropertyValue(obj, control.getGetMethods());
+			if (obj instanceof Color) {
+				color = (Color) obj;
+			}
+		}
+		if (lblRendererTable == null) {
+			lblRendererTable = new MyTableLabel();
+			lblRendererTable.setText("  ");
+		}
+		lblRendererTable.color = color;
+
+		if (isSelected && !hasFocus) {
+			lbl.setBackground(UIManager.getColor("Table.selectionBackground"));
+		}
+
+		Object obj = ((OATable) table).getObjectAt(row, column);
+		customizeRenderer(lbl, obj, value, isSelected, hasFocus, row, wasChanged, wasMouseOver);
+	}
+
+	@Override
+	public String getTableToolTipText(JTable table, int row, int col, String defaultValue) {
+		Object obj = ((OATable) table).getObjectAt(row, col);
+		getToolTipText(obj, row, defaultValue);
+		return defaultValue;
+	}
+
+	/**
+	 * Returns the color that is currently selected.
+	 */
+	public Color getColor() {
+		Object obj = getSelectedItem();
+		Color c = null;
+		if (obj instanceof Color) {
+			c = (Color) obj;
+		} else {
+			if (obj != null && obj.getClass().equals(control.getHub().getObjectClass())) {
+				obj = control.getValue(obj);
+				//was: obj = OAReflect.getPropertyValue(obj, control.getGetMethods());
+				if (obj instanceof Color) {
+					c = (Color) obj;
+				}
+			}
+		}
+		return c;
+	}
+
+	/**
+	 * the color that is currently selected.
+	 */
+	public void setColor(Color color) {
+		setSelectedItem(color);
+	}
+
+	/**
+	 * override to create popup calendar
+	 */
+	public void updateUI() {
+		ComboBoxUI cui = (ComboBoxUI) UIManager.getUI(this);
+		/*	20200304 windows only options
+		if (cui instanceof MotifComboBoxUI) {
+		    cui = new MotifComboBoxUI() {
+		        protected ComboPopup createPopup() {
+		            return new CBColorPopup( (OAColorComboBox)comboBox );
+		        }
+		    };
+		}
+		else if (cui instanceof WindowsComboBoxUI) {
+		    cui = new WindowsComboBoxUI() {
+		        protected ComboPopup createPopup() {
+		            return new CBColorPopup( (OAColorComboBox)comboBox );
+		        }
+		    };
+		}
+		else cui = new MetalComboBoxUI() {
+		    protected ComboPopup createPopup() {
+		        return new CBColorPopup( (OAColorComboBox)comboBox );
+		    }
+		};
+		*/
+		cui = new MetalComboBoxUI() {
+			protected ComboPopup createPopup() {
+				return new CBColorPopup((OAColorComboBox) comboBox);
+			}
+		};
+		setUI(cui);
+	}
+
+	@Override
+	public String getPropertyPath() {
+		return control.getPropertyPath();
+	}
+	/*
+	public String getEndPropertyName() {
+	    return control.getEndPropertyName();
+	}
+	*/
 }
-
 
 class CBColorPopup implements ComboPopup, MouseMotionListener, MouseListener, KeyListener, PopupMenuListener {
 	protected JPopupMenu popup;
-    private OAColorComboBox comboBox;
-    private MyColorPanel colorPanel;
+	private OAColorComboBox comboBox;
+	private MyColorPanel colorPanel;
 
 	public CBColorPopup(final OAColorComboBox comboBox) {
-	    this.comboBox = comboBox;
+		this.comboBox = comboBox;
 
-	    popup = new JPopupMenu();
-	    popup.setBorder(BorderFactory.createLineBorder(Color.black));
-	    popup.setLayout(new BorderLayout());
-	    popup.addPopupMenuListener(this);
+		popup = new JPopupMenu();
+		popup.setBorder(BorderFactory.createLineBorder(Color.black));
+		popup.setLayout(new BorderLayout());
+		popup.addPopupMenuListener(this);
 
-	    colorPanel = new MyColorPanel() {
-        	public void setColor(Color c) {
-        	    CBColorPopup.this.setColor(c);
-        	    super.setColor(c);
-        	}
-	    };
-	    
-	    popup.add(colorPanel, BorderLayout.NORTH);
-	    
-	    JPanel pan = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-	    JButton cmd = new JButton("Clear");
-	    cmd.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    	    CBColorPopup.this.setColor(null);
-	    	}
-	    });
-	    OAButton.setup(cmd);
-	    pan.add(cmd);
+		colorPanel = new MyColorPanel() {
+			public void setColor(Color c) {
+				CBColorPopup.this.setColor(c);
+				super.setColor(c);
+			}
+		};
 
-	    cmd = new JButton("More ...");
-	    cmd.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		popup.setVisible(false);
-	    		Color c = JColorChooser.showDialog(comboBox, "Select Color", getColor());
-	    		if (c != null) CBColorPopup.this.setColor(c);
-	    	}
-	    });
-	    OAButton.setup(cmd);
-	    pan.add(cmd);
+		popup.add(colorPanel, BorderLayout.NORTH);
 
-	    popup.add(pan, BorderLayout.SOUTH);
-	    
-	    popup.pack();
+		JPanel pan = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+		JButton cmd = new JButton("Clear");
+		cmd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CBColorPopup.this.setColor(null);
+			}
+		});
+		OAButton.setup(cmd);
+		pan.add(cmd);
+
+		cmd = new JButton("More ...");
+		cmd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				popup.setVisible(false);
+				Color c = JColorChooser.showDialog(comboBox, "Select Color", getColor());
+				if (c != null) {
+					CBColorPopup.this.setColor(c);
+				}
+			}
+		});
+		OAButton.setup(cmd);
+		pan.add(cmd);
+
+		popup.add(pan, BorderLayout.SOUTH);
+
+		popup.pack();
 	}
-	
-    private boolean bSettingColor;
-    public void setColor(Color color) {
-        if (bSettingColor) return;
-        bSettingColor = true;
-        comboBox.setSelectedItem(color);
-        colorPanel.setColor(color);
-        comboBox.control.updatePropertyValue(color);
-        bSettingColor = false;
-    }
-    
-    public Color getColor() {
-        return colorPanel.getColor();
-    }
 
-    public void show() {
-        bSettingColor = true;
-        colorPanel.setColor(comboBox.getColor());
-        bSettingColor = false;
-	    popup.show(comboBox, 0, comboBox.getHeight());
-    }
+	private boolean bSettingColor;
+
+	public void setColor(Color color) {
+		if (bSettingColor) {
+			return;
+		}
+		bSettingColor = true;
+		comboBox.setSelectedItem(color);
+		colorPanel.setColor(color);
+		comboBox.control.updatePropertyValue(color);
+		bSettingColor = false;
+	}
+
+	public Color getColor() {
+		return colorPanel.getColor();
+	}
+
+	public void show() {
+		bSettingColor = true;
+		colorPanel.setColor(comboBox.getColor());
+		bSettingColor = false;
+		popup.show(comboBox, 0, comboBox.getHeight());
+	}
 
 	public void hide() {
-	    popup.setVisible(false);
+		popup.setVisible(false);
 	}
 
 	protected JList list = new JList();
+
 	public JList getList() {
-	    return list;
+		return list;
 	}
 
 	public MouseListener getMouseListener() {
-	    return this;
+		return this;
 	}
 
 	public MouseMotionListener getMouseMotionListener() {
-	    return this;
+		return this;
 	}
 
 	public KeyListener getKeyListener() {
-	    return this;
+		return this;
 	}
 
 	public boolean isVisible() {
-	    return popup.isVisible();
+		return popup.isVisible();
 	}
 
 	public void uninstallingUI() {
-	    popup.removePopupMenuListener(this);
+		popup.removePopupMenuListener(this);
 	}
-
 
 	// MouseListener
-	public void mousePressed( MouseEvent e ) {
+	public void mousePressed(MouseEvent e) {
 		doPopup(e); // 20080515
 	}
-    public void mouseReleased( MouseEvent e ) {
-    }
-    
+
+	public void mouseReleased(MouseEvent e) {
+	}
 
 	// something else registered for MousePressed
 	public void mouseClicked(MouseEvent e) {
 		// 20080515 was: doPopup(e);
 	}
-	protected void doPopup(MouseEvent e) {
-        if (!SwingUtilities.isLeftMouseButton(e)) return;
-        if (!comboBox.isEnabled()) return;
 
-	    if (comboBox.isEditable() ) { 
-	    	comboBox.getEditor().getEditorComponent().requestFocus();
-	    } 
-	    else {
-	    	comboBox.requestFocus();
-	    }
-	    togglePopup();
+	protected void doPopup(MouseEvent e) {
+		if (!SwingUtilities.isLeftMouseButton(e)) {
+			return;
+		}
+		if (!comboBox.isEnabled()) {
+			return;
+		}
+
+		if (comboBox.isEditable()) {
+			comboBox.getEditor().getEditorComponent().requestFocus();
+		} else {
+			comboBox.requestFocus();
+		}
+		togglePopup();
 	}
 
 	protected boolean mouseInside = false;
+
 	public void mouseEntered(MouseEvent e) {
-	    mouseInside = true;
+		mouseInside = true;
 	}
+
 	public void mouseExited(MouseEvent e) {
-	    mouseInside = false;
+		mouseInside = false;
 	}
 
 	// MouseMotionListener
-	public void mouseDragged(MouseEvent e) {}
-	public void mouseMoved(MouseEvent e) {}
+	public void mouseDragged(MouseEvent e) {
+	}
+
+	public void mouseMoved(MouseEvent e) {
+	}
 
 	// KeyListener
-	public void keyPressed(KeyEvent e) {}
-	public void keyTyped(KeyEvent e) {}
-	public void keyReleased( KeyEvent e ) {
-	    if ( e.getKeyCode() == KeyEvent.VK_SPACE ||
-		 e.getKeyCode() == KeyEvent.VK_ENTER ) {
-		togglePopup();
-	    }
+	public void keyPressed(KeyEvent e) {
+	}
+
+	public void keyTyped(KeyEvent e) {
+	}
+
+	public void keyReleased(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_SPACE ||
+				e.getKeyCode() == KeyEvent.VK_ENTER) {
+			togglePopup();
+		}
 	}
 
 	/**
-	 * Variables hideNext and mouseInside are used to
-	 * hide the popupMenu by clicking the mouse in the JComboBox
+	 * Variables hideNext and mouseInside are used to hide the popupMenu by clicking the mouse in the JComboBox
 	 */
-	public void popupMenuCanceled(PopupMenuEvent e) {}
-	protected boolean hideNext = false;
-	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-//System.out.println("popupMenuWillBecomeInvisible");//qqqq
-	    hideNext = mouseInside;
+	public void popupMenuCanceled(PopupMenuEvent e) {
 	}
+
+	protected boolean hideNext = false;
+
+	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+		//System.out.println("popupMenuWillBecomeInvisible");//qqqq
+		hideNext = mouseInside;
+	}
+
 	public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
 	}
 
-
 	protected void togglePopup() {
 		//20080515 was:	    if ( isVisible() || hideNext ) {
-	    if ( isVisible() ) {
+		if (isVisible()) {
 
-		hide();
-	    } else {
+			hide();
+		} else {
 
-		show();
-	    }
-	    hideNext = false;
+			show();
+		}
+		hideNext = false;
 	}
 }
-
 
 class MyColorPanel extends JPanel {
 	protected Border m_unselectedBorder;
@@ -443,172 +516,205 @@ class MyColorPanel extends JPanel {
 	protected Border m_255Border;
 	protected Hashtable m_panes;
 	protected ColorPane m_selected;
-    
+
 	public MyColorPanel() {
 		m_unselectedBorder = new CompoundBorder(
-			new MatteBorder(1, 1, 1, 1, getBackground()),
-			new BevelBorder(BevelBorder.LOWERED,
-			Color.white, Color.gray));
+				new MatteBorder(1, 1, 1, 1, getBackground()),
+				new BevelBorder(BevelBorder.LOWERED,
+						Color.white, Color.gray));
 		m_selectedBorder = new CompoundBorder(
-			new MatteBorder(2, 2, 2, 2, Color.red),
-			new MatteBorder(1, 1, 1, 1, getBackground()));
+				new MatteBorder(2, 2, 2, 2, Color.red),
+				new MatteBorder(1, 1, 1, 1, getBackground()));
 		m_activeBorder = new CompoundBorder(
-			new MatteBorder(2, 2, 2, 2, Color.blue),
-			new MatteBorder(1, 1, 1, 1, getBackground()));
+				new MatteBorder(2, 2, 2, 2, Color.blue),
+				new MatteBorder(1, 1, 1, 1, getBackground()));
 		m_255Border = new CompoundBorder(
-			new MatteBorder(1, 1, 1, 1, Color.darkGray),
-			new MatteBorder(2, 2, 2, 2, getBackground()));
+				new MatteBorder(1, 1, 1, 1, Color.darkGray),
+				new MatteBorder(2, 2, 2, 2, getBackground()));
 
-
-	    int[] valuesA = new int[] { 0, 128, 192, 220  };  // values used for rows
-	    int[] values = new int[] { 0, 128, 255 };         // values used for columns (for each RGB)
+		int[] valuesA = new int[] { 0, 128, 192, 220 }; // values used for rows
+		int[] values = new int[] { 0, 128, 255 }; // values used for columns (for each RGB)
 
 		JPanel panel = new JPanel();
 		panel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		panel.setLayout(new BorderLayout());
 
-		int cols = (values.length-1) * 6;
+		int cols = (values.length - 1) * 6;
 		int rows = (valuesA.length * 2) - 2;
-		
+
 		JPanel p = new JPanel();
 		p.setLayout(new GridLayout(rows, cols));
 		panel.add(p);
 
 		m_panes = new Hashtable();
 
-        for (int xx=0; xx<2; xx++) {
-            boolean bDown = (xx == 0);
-            int row = 0;
-            if (!bDown) row = 1;
-            
-            for ( ; row < valuesA.length-(bDown?0:1); row++) {
-                int zero = 0;
-                int max = 255;
-                if (bDown) zero = valuesA[valuesA.length-1-row];
-                else max = valuesA[valuesA.length-1-row];
-                
-                // red=255  blue=255-0
-                for (int b=0; b<values.length; b++) {
-		            int blue = values[values.length-1-b];
-                    if (bDown) {
-    		            if (blue < zero) blue = zero;
-    		        }
-    		        else {
-    		            if (blue > max) blue = max;
-    		        }
-		            Color c = new Color(max, zero, blue);
-		            ColorPane pn = new ColorPane(c);
-		            p.add(pn);
-		            m_panes.put(c, pn);
-                }
+		for (int xx = 0; xx < 2; xx++) {
+			boolean bDown = (xx == 0);
+			int row = 0;
+			if (!bDown) {
+				row = 1;
+			}
 
-                // red=255  green=0-255
-                for (int g=1; g<values.length; g++) {
-		            int green = values[g];
-                    if (bDown) {
-    		            if (green < zero) green = zero;
-    		        }
-    		        else {
-    		            if (green > max) green = max;
-    		        }
-		            Color c = new Color(max, green, zero);
-		            ColorPane pn = new ColorPane(c);
-		            p.add(pn);
-		            m_panes.put(c, pn);
-                }
-                // green=255  red=255-0
-                for (int r=1; r<values.length; r++) {
-		            int red = values[values.length-1-r];
-                    if (bDown) {
-    		            if (red < zero) red = zero;
-    		        }
-    		        else {
-    		            if (red > max) red = max;
-    		        }
-		            Color c = new Color(red, max, zero);
-		            ColorPane pn = new ColorPane(c);
-		            p.add(pn);
-		            m_panes.put(c, pn);
-                }
-                // green=255  blue=0-255
-                for (int b=1; b<values.length; b++) {
-		            int blue = values[b];
-		            if (bDown) {
-    		            if (blue < zero) blue = zero;
-    		        }
-    		        else {
-    		            if (blue > max) blue = max;
-    		        }
-		            Color c = new Color(zero, max, blue);
-		            ColorPane pn = new ColorPane(c);
-		            p.add(pn);
-		            m_panes.put(c, pn);
-                }
-                // blue=255  green=255-0
-                for (int g=1; g<values.length; g++) {
-		            int green = values[values.length-1-g];
-                    if (bDown) {
-    		            if (green < zero) green = zero;
-    		        }
-    		        else {
-    		            if (green > max) green = max;
-    		        }
-		            Color c = new Color(zero, green, max);
-		            ColorPane pn = new ColorPane(c);
-		            p.add(pn);
-		            m_panes.put(c, pn);
-                }
-                // blue=255  red=0-255
-                for (int r=1; r<values.length-1; r++) {
-		            int red = values[r];
-		            if (bDown) {
-    		            if (red < zero) red = zero;
-    		        }
-    		        else {
-    		            if (red > max) red = max;
-    		        }
-		            Color c = new Color(red, zero, max);
-		            ColorPane pn = new ColorPane(c);
-		            p.add(pn);
-		            m_panes.put(c, pn);
-                }
-            }
-        }
+			for (; row < valuesA.length - (bDown ? 0 : 1); row++) {
+				int zero = 0;
+				int max = 255;
+				if (bDown) {
+					zero = valuesA[valuesA.length - 1 - row];
+				} else {
+					max = valuesA[valuesA.length - 1 - row];
+				}
+
+				// red=255  blue=255-0
+				for (int b = 0; b < values.length; b++) {
+					int blue = values[values.length - 1 - b];
+					if (bDown) {
+						if (blue < zero) {
+							blue = zero;
+						}
+					} else {
+						if (blue > max) {
+							blue = max;
+						}
+					}
+					Color c = new Color(max, zero, blue);
+					ColorPane pn = new ColorPane(c);
+					p.add(pn);
+					m_panes.put(c, pn);
+				}
+
+				// red=255  green=0-255
+				for (int g = 1; g < values.length; g++) {
+					int green = values[g];
+					if (bDown) {
+						if (green < zero) {
+							green = zero;
+						}
+					} else {
+						if (green > max) {
+							green = max;
+						}
+					}
+					Color c = new Color(max, green, zero);
+					ColorPane pn = new ColorPane(c);
+					p.add(pn);
+					m_panes.put(c, pn);
+				}
+				// green=255  red=255-0
+				for (int r = 1; r < values.length; r++) {
+					int red = values[values.length - 1 - r];
+					if (bDown) {
+						if (red < zero) {
+							red = zero;
+						}
+					} else {
+						if (red > max) {
+							red = max;
+						}
+					}
+					Color c = new Color(red, max, zero);
+					ColorPane pn = new ColorPane(c);
+					p.add(pn);
+					m_panes.put(c, pn);
+				}
+				// green=255  blue=0-255
+				for (int b = 1; b < values.length; b++) {
+					int blue = values[b];
+					if (bDown) {
+						if (blue < zero) {
+							blue = zero;
+						}
+					} else {
+						if (blue > max) {
+							blue = max;
+						}
+					}
+					Color c = new Color(zero, max, blue);
+					ColorPane pn = new ColorPane(c);
+					p.add(pn);
+					m_panes.put(c, pn);
+				}
+				// blue=255  green=255-0
+				for (int g = 1; g < values.length; g++) {
+					int green = values[values.length - 1 - g];
+					if (bDown) {
+						if (green < zero) {
+							green = zero;
+						}
+					} else {
+						if (green > max) {
+							green = max;
+						}
+					}
+					Color c = new Color(zero, green, max);
+					ColorPane pn = new ColorPane(c);
+					p.add(pn);
+					m_panes.put(c, pn);
+				}
+				// blue=255  red=0-255
+				for (int r = 1; r < values.length - 1; r++) {
+					int red = values[r];
+					if (bDown) {
+						if (red < zero) {
+							red = zero;
+						}
+					} else {
+						if (red > max) {
+							red = max;
+						}
+					}
+					Color c = new Color(red, zero, max);
+					ColorPane pn = new ColorPane(c);
+					p.add(pn);
+					m_panes.put(c, pn);
+				}
+			}
+		}
 
 		p = new JPanel();
-		p.setBorder(new EmptyBorder(5, 0,0,0));
+		p.setBorder(new EmptyBorder(5, 0, 0, 0));
 		p.setLayout(new GridLayout(1, cols));
-		
+
 		panel.add(p, BorderLayout.SOUTH);
 
-        // white to black
-        int x = (int) 256/cols;
-        for (int i=0; i<cols; i++) {
-            int c = (cols - i) * x;
-            
-            if (i == 0) c = 255;
-            if (i+1 == cols) c = 0;
-            
-            Color color = new Color(c,c,c);
-		    ColorPane pn = new ColorPane(color);
-		    p.add(pn);
-		    m_panes.put(color, pn);
-        }
+		// white to black
+		int x = (int) 256 / cols;
+		for (int i = 0; i < cols; i++) {
+			int c = (cols - i) * x;
+
+			if (i == 0) {
+				c = 255;
+			}
+			if (i + 1 == cols) {
+				c = 0;
+			}
+
+			Color color = new Color(c, c, c);
+			ColorPane pn = new ColorPane(color);
+			p.add(pn);
+			m_panes.put(color, pn);
+		}
 		add(panel);
 	}
 
 	public void setColor(Color c) {
-        if (c == null) c = Color.black;
+		if (c == null) {
+			c = Color.black;
+		}
 		Object obj = m_panes.get(c);
-		if (m_selected != null) m_selected.setSelected(false);
-		m_selected = (ColorPane)obj;
-        if (obj == null) return;
+		if (m_selected != null) {
+			m_selected.setSelected(false);
+		}
+		m_selected = (ColorPane) obj;
+		if (obj == null) {
+			return;
+		}
 		m_selected.setSelected(true);
 	}
 
 	public Color getColor() {
-		if (m_selected == null)
+		if (m_selected == null) {
 			return null;
+		}
 		return m_selected.getColor();
 	}
 
@@ -618,14 +724,14 @@ class MyColorPanel extends JPanel {
 		boolean b255;
 
 		public ColorPane(Color c) {
-            int r = c.getRed();
-            int g = c.getGreen();
-            int b = c.getBlue();
-		    this.b255 = (r==0||r==255) && (g==0||g==255) && (b==0||b==255);
+			int r = c.getRed();
+			int g = c.getGreen();
+			int b = c.getBlue();
+			this.b255 = (r == 0 || r == 255) && (g == 0 || g == 255) && (b == 0 || b == 255);
 			m_c = c;
 			setBackground(c);
 			setBorder(b255 ? m_255Border : m_unselectedBorder);
-			String msg = "R "+r+", G "+g+", B "+b;
+			String msg = "R " + r + ", G " + g + ", B " + b;
 			setToolTipText(msg);
 			addMouseListener(this);
 		}
@@ -648,11 +754,14 @@ class MyColorPanel extends JPanel {
 
 		public void setSelected(boolean selected) {
 			m_selected = selected;
-			if (m_selected)
+			if (m_selected) {
 				setBorder(m_selectedBorder);
-			else {
-				if (b255) setBorder(m_255Border);
-				else setBorder(m_unselectedBorder);
+			} else {
+				if (b255) {
+					setBorder(m_255Border);
+				} else {
+					setBorder(m_unselectedBorder);
+				}
 			}
 		}
 
@@ -660,9 +769,11 @@ class MyColorPanel extends JPanel {
 			return m_selected;
 		}
 
-		public void mousePressed(MouseEvent e) {}
+		public void mousePressed(MouseEvent e) {
+		}
 
-		public void mouseClicked(MouseEvent e) {}
+		public void mouseClicked(MouseEvent e) {
+		}
 
 		public void mouseReleased(MouseEvent e) {
 			setColor(m_c);
@@ -674,8 +785,7 @@ class MyColorPanel extends JPanel {
 		}
 
 		public void mouseExited(MouseEvent e) {
-			setBorder(m_selected ? m_selectedBorder :
-				b255 ? m_255Border : m_unselectedBorder);
+			setBorder(m_selected ? m_selectedBorder : b255 ? m_255Border : m_unselectedBorder);
 		}
 	}
 }

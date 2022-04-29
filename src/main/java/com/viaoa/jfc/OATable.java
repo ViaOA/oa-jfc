@@ -4198,6 +4198,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 			}
 			lbl.setIcon(iconFake);
 			lbl.setText("xqz");
+			lbl.setBackground(comp.getBackground());
 		} else {
 			lbl = (JLabel) comp;
 		}
@@ -4254,8 +4255,11 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		// 20181004
 		final Object objx = getObjectAt(row, column);
 		if (oacomp instanceof OAJfcComponent) {
-			if (oacomp instanceof JLabel) { // 20190919
-				((OAJfcComponent) oacomp).getController().update(lbl, objx, false); // was: lbl
+			if (oacomp instanceof JLabel) {
+				// 20220429
+				((OAJfcComponent) oacomp).getController().update((JComponent) oacomp, objx, false); // was: lbl
+				//was:
+				// ((OAJfcComponent) oacomp).getController().update(lbl, objx, false); // was: lbl
 			} else {
 				((OAJfcComponent) oacomp).getController().update((JComponent) oacomp, objx, false); // was: lbl
 			}
