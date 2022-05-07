@@ -747,7 +747,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				}
 				ex = (Exception) t;
 			}
-			afterActionPerformedFailure("Command error: " + OAString.fmt(ex.getMessage(), "100L.").trim(), ex);
+			afterActionPerformedFailure("Command error: " + OAString.fmt(ex.getMessage(), "200L.").trim(), ex);
 		} else {
 			if (b) {
 				afterActionPerformed();
