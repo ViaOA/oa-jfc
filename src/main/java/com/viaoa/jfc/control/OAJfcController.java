@@ -54,6 +54,7 @@ import com.viaoa.hub.HubChangeListener;
 import com.viaoa.hub.HubChangeListener.HubProp;
 import com.viaoa.hub.HubDetailDelegate;
 import com.viaoa.hub.HubEvent;
+import com.viaoa.hub.HubLinkDelegate;
 import com.viaoa.hub.HubListenerAdapter;
 import com.viaoa.hub.HubTemp;
 import com.viaoa.image.ColorIcon;
@@ -522,6 +523,9 @@ public class OAJfcController extends HubListenerAdapter {
 			return fromObject;
 		}
 		if (!(fromObject instanceof OAObject)) {
+			return fromObject;
+		}
+		if (!OAObject.class.isAssignableFrom(getHub().getObjectClass())) {
 			return fromObject;
 		}
 
@@ -1545,7 +1549,7 @@ public class OAJfcController extends HubListenerAdapter {
 			}
 		}
 
-		if (lblThis != null && (getPropertyPath() != null || object instanceof String)) {
+		if (lblThis != null && (getPropertyPath() != null || object instanceof String) && !HubLinkDelegate.getLinkedOnPos(hub)) {
 			String text;
 			if (object == null) {
 				text = "";
