@@ -533,16 +533,24 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 			setDefaultText();
 		}
 		if (bToolTip) {
-			String s = cmd.name();
-			if (cmd == ButtonCommand.Other) {
-				s = "";
-			} else if (s.indexOf("Manual") > 0) {
-				s = s.substring(0, s.length() - 6);
-			}
+			String s = "";
 			if (getHub() != null) {
-				String s2 = getHub().getObjectClass().getSimpleName();
-				s2 = com.viaoa.util.OAString.convertHungarian(s2);
-				s += " " + s2;
+				s = getHub().getObjectClass().getSimpleName();
+				s = com.viaoa.util.OAString.convertHungarian(s);
+			}
+
+			if (cmd == ButtonCommand.ObjectMethod) {
+				String s2 = control.getMethodName();
+				if (OAString.isEmpty(s2)) {
+					s = null;
+				} else {
+					s += " " + s2;
+				}
+			} else {
+				String s2 = cmd.name();
+				s2 = OAString.convert(s2, "Manual", "");
+				s += " ";
+				s = cmd.name() + " " + s;
 			}
 			setToolTipText(s);
 		}
