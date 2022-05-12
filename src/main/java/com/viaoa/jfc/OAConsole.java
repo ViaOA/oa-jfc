@@ -234,11 +234,9 @@ public class OAConsole extends OATable implements FocusListener, MouseListener {
 		}
 
 		if (val == null) {
-			val = oaObj.getPropertyAsString(listenProperty);
-			if (val == null) {
-				hubx.clear();
-				val = "";
-			}
+			// val = oaObj.getPropertyAsString(listenProperty);
+			hubx.clear();
+			return;
 		}
 
 		Console console = new Console();
