@@ -343,7 +343,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 
 	public boolean default_confirmActionPerformed() {
 		OAObject obj = updateObject;
-		if (obj == null && hub != null) {
+		if (obj == null && hub != null && hub.isOAObject()) {
 			obj = (OAObject) hub.getAO();
 		}
 
@@ -663,7 +663,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		}
 
 		OAObject obj = updateObject;
-		if (obj == null && hub != null) {
+		if (obj == null && hub != null && hub.isOAObject()) {
 			obj = (OAObject) hub.getAO();
 		}
 
@@ -769,7 +769,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		boolean bUsedCompletedMsg = false;
 		if (completedMessage != null) {
 			Hub h = getHub();
-			if (h != null) {
+			if (h != null && h.isOAObject()) {
 				Object obj = h.getAO();
 				if (completedMessage != null && completedMessage.indexOf("<%=") >= 0 && obj instanceof OAObject) {
 					OATemplate temp = new OATemplate(completedMessage);
@@ -915,7 +915,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 
 	protected boolean runActionPerformed2() throws Exception {
 		Hub mhub = getSelectHub();
-		if (command == OAButton.ButtonCommand.Delete) {
+		if (command == OAButton.ButtonCommand.Delete && hub.isOAObject()) {
 			OAObject currentAO = (OAObject) hub.getAO();
 			if (currentAO != null) {
 				OALinkInfo[] lis = OAObjectDeleteDelegate.getMustBeEmptyBeforeDelete(currentAO);
@@ -1640,7 +1640,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			OAObjectDelegate.initializeAfterLoading((OAObject) obj, false, false);
 		}
 
-		if (!hub.contains(obj)) {
+		if (!hub.contains(obj) || !hub.isOAObject()) {
 			if (insertFlag) {
 				int pos = hub.getPos();
 				if (pos < 0) {
