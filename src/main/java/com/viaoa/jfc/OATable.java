@@ -182,7 +182,7 @@ import com.viaoa.util.OAString;
 public class OATable extends JTable implements DragGestureListener, DropTargetListener {
 	private static Logger LOG = Logger.getLogger(OATable.class.getName());
 
-	protected int prefCols = 1, prefRows = 5;
+	protected int prefCols = 1, prefRows = 5, prefMaxRows;
 	protected Hub hub;
 	protected Hub hubFilterMaster;
 	protected HubFilter hubFilter;
@@ -1213,6 +1213,13 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 	}
 
 	/**
+	 * Number of display rows that this table can grow to.
+	 */
+	public void setPreferredMaxRows(int rows) {
+		prefMaxRows = rows;
+	}
+
+	/**
 	 * Used to have JTable.getCellRenderer(row, column) call OATable.getRenderer()
 	 */
 	class MyTableCellRenderer implements TableCellRenderer {
@@ -1528,7 +1535,11 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		// was: int h = getIntercellSpacing().height + getRowHeight();
 		// 20101027 rowHeight includes spacing
 		int h = getRowHeight();
-		h *= prefRows;
+
+		int hx = Math.max(prefRows, Math.min(getHub().size(), prefMaxRows));
+
+		h *= hx;
+
 		if (w < 20) {
 			w = 20;
 		}
@@ -5046,6 +5057,9 @@ class TableController extends OAJfcController implements ListSelectionListener {
 		if (table.hubSelect == null) {
 			setSelectedRow(row);
 		}
+		if (table.prefMaxRows > 0) {
+			table.calcPreferredSize();
+		}
 	}
 
 	protected void insertInvoker(final int pos, final boolean bIsAdd) {
@@ -5091,6 +5105,9 @@ class TableController extends OAJfcController implements ListSelectionListener {
 	public @Override void afterInsert(HubEvent e) {
 		// super.afterInsert(e);
 		insertInvoker(e.getPos(), false);
+		if (table.prefMaxRows > 0) {
+			table.calcPreferredSize();
+		}
 	}
 
 	public @Override void afterAdd(HubEvent e) {
@@ -5098,6 +5115,9 @@ class TableController extends OAJfcController implements ListSelectionListener {
 		if (getHub() != null) {
 			insertInvoker(e.getPos(), true);
 			table.setChanged(e.getPos(), -1);
+		}
+		if (table.prefMaxRows > 0) {
+			table.calcPreferredSize();
 		}
 	}
 }
