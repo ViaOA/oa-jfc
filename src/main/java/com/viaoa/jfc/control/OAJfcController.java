@@ -1882,6 +1882,8 @@ public class OAJfcController extends HubListenerAdapter {
 
 	/**
 	 * Label that is used with component, so that enabled and visible will be applied.
+	 *
+	 * @see #setLabel(JLabel, boolean) to be able to set flag that will have the label disabled when this component is disabled.
 	 */
 	public void setLabel(JLabel lbl) {
 		setLabel(lbl, false, null);

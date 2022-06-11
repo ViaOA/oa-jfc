@@ -587,12 +587,24 @@ public abstract class OACustomComboBox extends JComboBox implements OATableCompo
 		control.getEnabledChangeListener().add(hub);
 	}
 
+	public void addEnabledIfTrue(Hub hub, String propPath) {
+		control.getEnabledChangeListener().add(hub, propPath, true);
+	}
+
+	public void addEnabledIfEqual(Hub hub, String propPath, Object equalValue) {
+		control.getEnabledChangeListener().add(hub, propPath, equalValue);
+	}
+
 	public void addEnabledCheck(Hub hub, String propPath) {
 		control.getEnabledChangeListener().addPropertyNotNull(hub, propPath);
 	}
 
 	public void addEnabledCheck(Hub hub, String propPath, Object compareValue) {
 		control.getEnabledChangeListener().add(hub, propPath, compareValue);
+	}
+
+	public void addEnabledOnlyIfNew() {
+		control.getEnabledChangeListener().add(control.getHub(), Type.AoNew);
 	}
 
 	protected boolean isEnabled(boolean defaultValue) {
@@ -603,16 +615,24 @@ public abstract class OACustomComboBox extends JComboBox implements OATableCompo
 		control.getVisibleChangeListener().add(hub);
 	}
 
-	public void addEnabledOnlyIfNew() {
-		control.getEnabledChangeListener().add(control.getHub(), Type.AoNew);
+	public void addVisibleIfTrue(Hub hub, String propPath) {
+		control.getVisibleChangeListener().add(hub, propPath, true);
 	}
 
-	public void addVisibleCheck(Hub hub, String propPath) {
-		control.getVisibleChangeListener().addPropertyNotNull(hub, propPath);
+	public void addVisibleIfEqual(Hub hub, String propPath, Object equalValue) {
+		control.getVisibleChangeListener().add(hub, propPath, equalValue);
 	}
 
 	public void addVisibleCheck(Hub hub, String propPath, Object compareValue) {
 		control.getVisibleChangeListener().add(hub, propPath, compareValue);
+	}
+
+	public void addVisibleOnlyIfNew() {
+		control.getVisibleChangeListener().add(control.getHub(), Type.AoNew);
+	}
+
+	public void addVisibleCheck(Hub hub, String propPath) {
+		control.getVisibleChangeListener().addPropertyNotNull(hub, propPath);
 	}
 
 	protected boolean isVisible(boolean defaultValue) {
