@@ -297,7 +297,7 @@ public class OAJfcController extends HubListenerAdapter {
 		}
 
 		// 20190112
-		if (oaPropertyPath.isLastPropertyLinkInfo() && properties != null && properties.length == 1) {
+		if (oaPropertyPath.getEndLinkInfo() != null && properties != null && properties.length == 1) {
 			OAOne oaOne = oaPropertyPath.getOAOneAnnotation();
 			if (oaOne != null) {
 				if (OAString.isNotEmpty(oaOne.defaultPropertyPath())) {
