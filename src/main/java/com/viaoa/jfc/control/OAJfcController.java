@@ -2509,7 +2509,11 @@ public class OAJfcController extends HubListenerAdapter {
 				}
 				if (newHubProp.propertyPath.indexOf('.') < 0) {
 					if (newHubProp.hub.getOAObjectInfo().getCalcInfo(newHubProp.propertyPath) == null) {
-						return true;
+						// 20221011
+						OALinkInfo lix = newHubProp.hub.getOAObjectInfo().getLinkInfo(newHubProp.propertyPath);
+						if (lix == null || lix.getType() == OALinkInfo.ONE) {
+							return true;
+						}
 					}
 				}
 				if (newHubProp.propertyPath.equalsIgnoreCase(OAJfcController.this.propertyPath)) {
