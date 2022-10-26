@@ -204,6 +204,8 @@ public class OAResizePanel extends JPanel {
 		return compMain;
 	}
 
+	public boolean bThisDebug = DEBUG; 
+
 	private void setup(JComponent comp, int percentage, boolean bBoth) {
 		compMain = comp;
 		if (comp instanceof JScrollPane) {

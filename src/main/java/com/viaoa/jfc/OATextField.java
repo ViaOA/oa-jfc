@@ -114,7 +114,7 @@ public class OATextField extends JTextField implements OATableComponent, OAJfcCo
 
 	/**
 	 * Attach a label to this component.
-	 * 
+	 *
 	 * @see #setLabel(JLabel, boolean) to be able to set flag that will have the label disabled when this component is disabled.
 	 */
 	public void setLabel(JLabel lbl) {
