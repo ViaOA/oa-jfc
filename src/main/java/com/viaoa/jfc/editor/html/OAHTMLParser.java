@@ -32,7 +32,6 @@ public class OAHTMLParser {
 
 
     public OAHTMLParser() {
-        tokenManager = new HTMLTokenManager();
     }
 
     public boolean isMicrosoft(String code) {
@@ -139,10 +138,13 @@ public class OAHTMLParser {
         ignores bogus attribute names
     */
     public String convert(String code, boolean bStrict) {
+        if (code == null) return null;
         code = convertBadChars(code, bStrict);
         // 20120505 added bStrict
         StringBuffer sb = new StringBuffer(code.length());
+        tokenManager = new HTMLTokenManager();
         tokenManager.setCode(code);
+        token = null;
 
         for (;;) {
             if (token != null && token.type == EOF) break;
@@ -170,16 +172,16 @@ public class OAHTMLParser {
             }
             
             if (bStrict) {
-            if (token.type != VARIABLE || (token.value != null && token.value.equalsIgnoreCase("SPAN"))) {
-                // bad tag name - find ending GT
-                for (;;) {
-                    nextToken();
-                    if (token == null) break;
-                    if (token.type == GT) break;
-                    if (token.type == EOF) break;
+                if (token.type != VARIABLE || (token.value != null && token.value.equalsIgnoreCase("SPAN"))) {
+                    // bad tag name - find ending GT
+                    for (;;) {
+                        nextToken();
+                        if (token == null) break;
+                        if (token.type == GT) break;
+                        if (token.type == EOF) break;
+                    }
+                    continue;
                 }
-                continue;
-            }
             }
             sb.append("<");
             if (bSlash) sb.append("/");
@@ -241,6 +243,43 @@ public class OAHTMLParser {
         return new String(sb);
     }
 
+    /**
+     * Remove  html tags to get plain text;
+     */
+    public String convertToPlainText(String code) {
+        if (code == null) return null;
+        StringBuffer sb = new StringBuffer(code.length());
+        tokenManager = new HTMLTokenManager();
+        tokenManager.setCode(code);
+        token = null;
+
+        for (;;) {
+            if (token != null && token.type == EOF) break;
+            nextToken();
+            if (token.type == EOF) break;
+
+            if (token.whitespace != null) sb.append(token.whitespace);
+            
+            if (token.type != LT) {
+                if (token.type == COMMENT) continue;
+                if (token.type == SQ) sb.append("'");
+                else if (token.type == DQ) sb.append("\"");
+                sb.append(token.value);
+                if (token.type == SQ) sb.append("'");
+                else if (token.type == DQ) sb.append("\"");
+                continue;
+            }
+            
+            for (;;) { 
+                nextToken();
+                if (token.type == GT) break;
+                if (token.type == EOF) break;
+            }
+        }
+        return new String(sb);
+    }
+    
+    
     protected String convertBadChars(String code, boolean bStrict) {
         int len = code.length();
         StringBuilder sb = new StringBuilder(len);

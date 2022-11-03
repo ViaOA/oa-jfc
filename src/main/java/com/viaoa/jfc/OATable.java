@@ -3607,7 +3607,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 			OATableComponent tcomp = tc.getOATableComponent();
 			if (tcomp instanceof OAJfcComponent) {
 				OAJfcComponent jc = (OAJfcComponent) tcomp;
-				jc.getController().getToolTipText(null, s);
+				s = jc.getController().getToolTipText(null, s);
 			}
 
 			String s2 = tc.getToolTipText();
