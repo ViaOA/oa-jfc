@@ -602,6 +602,16 @@ public class OAJfcUtil {
 		}
 	}
 
+	public static void initializeCalcTextField(OATextField txt) {
+		if (txt == null) {
+			return;
+		}
+		txt.getController().getEnabledChangeListener().addAlwaysFalse();
+		Border border = txt.getBorder();
+		border = new CompoundBorder(new CustomLineBorder(0, 3, 0, 0, colorBackgroundDarker), border);
+		txt.setBorder(border);
+	}
+
 	private static Window window;
 
 	public static void setMainWindow(Window win) {
