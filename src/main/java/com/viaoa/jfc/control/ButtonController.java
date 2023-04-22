@@ -1490,7 +1490,6 @@ public class ButtonController extends OAJfcController implements ActionListener 
 
 				String msg = null;
 				if (mhub != null && mhub.getSize() > 0) {
-
 					// see if there is a static method for the mhub
 					Method method = OAReflect.getMethod(hub.getObjectClass(), methodName, new Object[] { mhub });
 					if (method != null) {
@@ -1519,6 +1518,19 @@ public class ButtonController extends OAJfcController implements ActionListener 
 								msg = "processed " + objs.length;
 							}
 						}
+					}
+				} else if (command == OAButton.STATIC_OBJECT_METHOD) {
+					Method method = OAReflect.getMethod(hub.getObjectClass(), methodName, new Object[] { hub });
+					if (method != null) {
+						try {
+							objx = method.invoke(null, hub);
+						} catch (Exception e) {
+							String msgx = "Error calling Method " + method + ", using hub=" + hub;
+							throw new RuntimeException(msgx, e);
+						}
+					} else {
+						String msgx = "Static method named " + methodName + " not found";
+						throw new RuntimeException(msgx);
 					}
 				} else {
 					objx = OAReflect.executeMethod(hub.getAO(), methodName);

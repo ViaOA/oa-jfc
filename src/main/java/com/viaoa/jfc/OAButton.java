@@ -81,6 +81,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 	public static final ButtonCommand HUB_METHOD = ButtonCommand.HubMethod;
 	public static final ButtonCommand OK = ButtonCommand.Ok;
 	public static final ButtonCommand REFRESH = ButtonCommand.Refresh;
+	public static final ButtonCommand STATIC_OBJECT_METHOD = ButtonCommand.StaticObjectMethod;
 
 	public enum ButtonCommand {
 		Other(false), Up(true), Down(true), Save(false),
@@ -89,7 +90,11 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 		Next(true), Previous(true), Delete(true), Remove(true), New(true), Insert(true), Add(true),
 		Cut(false), Copy(false), Paste(false),
 		NewManual(true), AddManual(true), ClearAO(true), GoTo(false), HubSearch(true), Search(false), Select(true), ObjectMethod(false),
-		HubMethod(false), WizardNew(true), Ok(false), Refresh(true);
+		// call a method on Hub
+		HubMethod(false),
+		WizardNew(true), Ok(false), Refresh(true),
+		// call static method in OAObject
+		StaticObjectMethod(false);
 
 		private boolean bSetsAO;
 
@@ -302,6 +307,9 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 			enabledMode = ButtonEnabledMode.ActiveObjectNotNull;
 			break;
 		case HubMethod:
+			enabledMode = ButtonEnabledMode.HubIsValid;
+			break;
+		case StaticObjectMethod:
 			enabledMode = ButtonEnabledMode.HubIsValid;
 			break;
 		default:
@@ -539,7 +547,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 				s = com.viaoa.util.OAString.convertHungarian(s);
 			}
 
-			if (cmd == ButtonCommand.ObjectMethod) {
+			if (cmd == ButtonCommand.ObjectMethod || cmd == ButtonCommand.HubMethod) {
 				String s2 = control.getMethodName();
 				if (OAString.isEmpty(s2)) {
 					s = null;
