@@ -288,6 +288,7 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 			if (HubLinkDelegate.getLinkedOnPos(h)) {
 				obj = h.getPos(obj);
 			}
+			final boolean wasChanged = (activeObject instanceof OAObject) && ((OAObject) activeObject).getChanged();
 
 			String msg = isValidHubChangeAO(obj);
 			if (msg != null) {
@@ -303,7 +304,7 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 																						"Change " + HubLinkDelegate.getLinkToProperty(hub),
 																						activeObject,
 																						HubLinkDelegate.getLinkToProperty(hub),
-																						oldValue, obj);
+																						oldValue, obj, wasChanged);
 
 						OAUndoManager.add(ue);
 

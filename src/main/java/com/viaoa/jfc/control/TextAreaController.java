@@ -40,7 +40,7 @@ import com.viaoa.util.OAString;
 
 /**
  * Controller for binding OA to JTextArea.
- * 
+ *
  * @author vvia
  */
 public class TextAreaController extends OAJfcController implements FocusListener, MouseListener {
@@ -57,7 +57,7 @@ public class TextAreaController extends OAJfcController implements FocusListener
 
 	/**
 	 * Create TextArea that is bound to a property path in a Hub.
-	 * 
+	 *
 	 * @param propertyPath path from Hub, used to find bound property.
 	 */
 	public TextAreaController(Hub hub, JTextArea ta, String propertyPath) {
@@ -67,7 +67,7 @@ public class TextAreaController extends OAJfcController implements FocusListener
 
 	/**
 	 * Create TextArea that is bound to a property path in a Hub.
-	 * 
+	 *
 	 * @param propertyPath path from Hub, used to find bound property.
 	 */
 	public TextAreaController(Object object, JTextArea ta, String propertyPath) {
@@ -227,7 +227,7 @@ public class TextAreaController extends OAJfcController implements FocusListener
 		}
 		callUpdate();
 		focusActiveObject = null;
-		//was: update(); 
+		//was: update();
 	}
 
 	@Override
@@ -286,6 +286,7 @@ public class TextAreaController extends OAJfcController implements FocusListener
 				return;
 			}
 
+			final boolean wasChanged = (activeObject instanceof OAObject) && ((OAObject) activeObject).getChanged();
 			prevText = text;
 			Object prevValue = getValue(activeObject);
 
@@ -310,7 +311,7 @@ public class TextAreaController extends OAJfcController implements FocusListener
 			}
 			if (getEnableUndo()) {
 				OAUndoManager.add(OAUndoableEdit.createUndoablePropertyChange(	undoDescription, activeObject, endPropertyName, prevValue,
-																				getValue(activeObject)));
+																				getValue(activeObject), wasChanged));
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(	SwingUtilities.getRoot(textArea),

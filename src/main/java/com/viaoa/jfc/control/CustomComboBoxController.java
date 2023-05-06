@@ -35,7 +35,7 @@ import com.viaoa.util.OAString;
 
 /**
  * Functionality for binding a custom JComboBox to OA.
- * 
+ *
  * @author vvia
  */
 public class CustomComboBoxController extends OAJfcController {
@@ -138,7 +138,9 @@ public class CustomComboBoxController extends OAJfcController {
 					}
 
 					if (getEnableUndo()) {
-						OAUndoManager.add(OAUndoableEdit.createUndoablePropertyChange(undoDescription, obj, endPropertyName, prev, value));
+						final boolean wasChanged = (obj instanceof OAObject) && ((OAObject) obj).getChanged();
+						OAUndoManager.add(OAUndoableEdit.createUndoablePropertyChange(	undoDescription, obj, endPropertyName, prev, value,
+																						wasChanged));
 					}
 					try {
 						setValue(obj, value);

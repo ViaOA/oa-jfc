@@ -36,6 +36,7 @@ import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubChangeListener;
 import com.viaoa.jfc.OAPlainDocument;
 import com.viaoa.jfc.OATextField;
+import com.viaoa.object.OAObject;
 import com.viaoa.object.OAObjectInfo;
 import com.viaoa.object.OAObjectInfoDelegate;
 import com.viaoa.object.OAPropertyInfo;
@@ -48,7 +49,7 @@ import com.viaoa.util.OAString;
 
 /**
  * Controller for binding OA to JTextField.
- * 
+ *
  * @author vvia
  */
 public class TextFieldController extends OAJfcController implements FocusListener, ActionListener, KeyListener, MouseListener {
@@ -73,7 +74,7 @@ public class TextFieldController extends OAJfcController implements FocusListene
 
 	/**
 	 * Create TextField that is bound to a property path in a Hub.
-	 * 
+	 *
 	 * @param propertyPath path from Hub, used to find bound property.
 	 */
 	public TextFieldController(Hub hub, JTextField tf, String propertyPath) {
@@ -83,7 +84,7 @@ public class TextFieldController extends OAJfcController implements FocusListene
 
 	/**
 	 * Create TextField that is bound to a property path in a Hub.
-	 * 
+	 *
 	 * @param propertyPath path from Hub, used to find bound property.
 	 */
 	public TextFieldController(Object object, JTextField tf, String propertyPath) {
@@ -492,6 +493,7 @@ public class TextFieldController extends OAJfcController implements FocusListene
 				return;
 			}
 
+			final boolean wasChanged = (activeObject instanceof OAObject) && ((OAObject) activeObject).getChanged();
 			prevText = text;
 			Object prevValue = getValue(activeObject);
 
@@ -508,7 +510,7 @@ public class TextFieldController extends OAJfcController implements FocusListene
 
 			if (getEnableUndo()) {
 				OAUndoableEdit ue = OAUndoableEdit.createUndoablePropertyChange(undoDescription, activeObject, endPropertyName, prevValue,
-																				getValue(activeObject));
+																				getValue(activeObject), wasChanged);
 				OAUndoManager.add(ue);
 			}
 		} catch (Throwable t) {
@@ -542,7 +544,7 @@ public class TextFieldController extends OAJfcController implements FocusListene
 			textField.selectAll();
 		} else if (e.getKeyCode() == KeyEvent.VK_SPACE && ((e.getModifiers() & Event.CTRL_MASK) > 0)) {
 			// could be invoking insert-field (see InsertFieldTextController)
-			//..qqqqqqqqqqqqqqqq    	    
+			//..qqqqqqqqqqqqqqqq
 			bMousePressed = true;
 		}
 	}

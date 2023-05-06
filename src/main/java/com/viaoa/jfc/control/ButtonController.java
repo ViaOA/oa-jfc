@@ -1406,9 +1406,10 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						if (bEnableUndo) {
 							if (hub.getMasterObject() != null) {
 								String propx = HubDetailDelegate.getPropertyFromDetailToMaster(hub);
+								final boolean wasChanged = (obj instanceof OAObject) && ((OAObject) obj).getChanged();
 								OAUndoManager.add(OAUndoableEdit
 										.createUndoablePropertyChange(	"Paste " + (hub.getOAObjectInfo().getDisplayName()), obj,
-																		propx, obj.getProperty(propx), hub.getMasterObject()));
+																		propx, obj.getProperty(propx), hub.getMasterObject(), wasChanged));
 							} else {
 								OAUndoManager.add(OAUndoableEdit.createUndoableAdd(	"Paste " + (hub.getOAObjectInfo().getDisplayName()), hub,
 																					obj));
