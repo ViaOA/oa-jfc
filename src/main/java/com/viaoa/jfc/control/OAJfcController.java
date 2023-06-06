@@ -1769,7 +1769,7 @@ public class OAJfcController extends HubListenerAdapter {
 
 	public int getColumns() {
 		if (component instanceof JTextField) {
-			((JTextField) component).getColumns();
+			return ((JTextField) component).getColumns();
 		}
 		return this.columns;
 	}
