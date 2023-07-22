@@ -107,8 +107,6 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 		}
 	}
 
-	public static ButtonEnabledMode ALWAYS = ButtonEnabledMode.Always;
-
 	public enum ButtonEnabledMode {
 		UsesIsEnabled(HubChangeListener.Type.AlwaysTrue),
 		Always(HubChangeListener.Type.AlwaysTrue),
@@ -133,6 +131,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 		}
 	}
 
+    public static ButtonEnabledMode ALWAYS = ButtonEnabledMode.Always;
 	public static ButtonEnabledMode UsesIsEnabled = ButtonEnabledMode.UsesIsEnabled;
 	public static ButtonEnabledMode Always = ButtonEnabledMode.Always;
 	public static ButtonEnabledMode ActiveObjectNotNull = ButtonEnabledMode.ActiveObjectNotNull;

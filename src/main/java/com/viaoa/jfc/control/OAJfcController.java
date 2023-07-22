@@ -223,7 +223,7 @@ public class OAJfcController extends HubListenerAdapter {
 	private Hub hubLast;
 	private Object hubObjectLast;
 	private HubChangeListener.HubProp hubChangeListenerTypeLast;
-	private boolean bIgnoreUpdate;
+	private volatile boolean bIgnoreUpdate;
 
 	protected void reset() {
 		try {
@@ -2565,7 +2565,6 @@ public class OAJfcController extends HubListenerAdapter {
 			}
 			return false;
 		}
-
 	}
 
 }
