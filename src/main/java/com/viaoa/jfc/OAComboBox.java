@@ -1000,7 +1000,7 @@ public class OAComboBox extends JComboBox implements OATableComponent, OAJfcComp
 	}
 
 	public void addVisibleCheck(Hub hub) {
-		control.getVisibleChangeListener().add(hub);
+	    control.getVisibleChangeListener().add(hub);
 	}
 
 	public void addVisibleCheck(Hub hub, String propPath) {
