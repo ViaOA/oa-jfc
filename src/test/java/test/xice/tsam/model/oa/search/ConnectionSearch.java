@@ -6,7 +6,6 @@ import com.viaoa.object.*;
 import com.viaoa.hub.*;
 import com.viaoa.util.*;
 
-import test.xice.tsam.model.*;
 import test.xice.tsam.model.oa.ServerInfo;
 
 @OAClass(addToCache=false, initialize=true, useDataSource=false, localOnly=true)

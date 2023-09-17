@@ -11,16 +11,29 @@
 package com.viaoa.jfc;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.WeakHashMap;
+import java.awt.datatransfer.StringSelection;
 
-import javax.swing.JLabel;
+import javax.swing.*;
+import javax.swing.JPopupMenu;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubChangeListener;
@@ -31,6 +44,7 @@ import com.viaoa.hub.HubListenerAdapter;
 import com.viaoa.hub.HubMerger;
 import com.viaoa.jfc.console.Console;
 import com.viaoa.jfc.control.OAJfcController;
+import com.viaoa.jfc.dnd.OATransferable;
 import com.viaoa.object.OAObject;
 import com.viaoa.util.OAString;
 
@@ -58,6 +72,7 @@ public class OAConsole extends OATable implements FocusListener, MouseListener {
 		setSelectHub(new Hub(Console.class));
 
 		setup();
+		setupMenu();
 	}
 
 	public void setLabel(JLabel lbl) {
@@ -205,6 +220,81 @@ public class OAConsole extends OATable implements FocusListener, MouseListener {
 		addMouseListener(this);
 	}
 
+	
+//qqqqqqqqqqqqqqqqq	
+	protected void setupMenu() {
+        final JPopupMenu pmenu = new JPopupMenu();
+        JMenuItem mi;
+        ActionListener al;
+        
+        mi = new JMenuItem("Copy to clipboard");
+        pmenu.add(mi);
+        al = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				StringBuilder sb = new StringBuilder();
+				for (Console c : (Hub<Console>) getHub()) {
+					sb.append(c.getDateTime().toString("HH:mm:ss.SSS")+" " + c.getText() + "\n");
+				}
+				
+		        Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+		        StringSelection selection = new StringSelection(sb.toString());				
+		        cb.setContents(selection, null);
+			}
+		};
+		mi.addActionListener(al);
+
+		pmenu.addSeparator();
+		
+        mi = new JMenuItem("Clear console");
+        pmenu.add(mi);
+        al = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				getHub().removeAll();
+			}
+		};
+		mi.addActionListener(al);
+		
+		
+
+        pmenu.addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+            }
+        });
+
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    Point pt = e.getPoint();
+                    pmenu.show(OAConsole.this, pt.x, pt.y);
+                }
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    Point pt = e.getPoint();
+                    pmenu.show(OAConsole.this, pt.x, pt.y);
+                }
+                super.mouseReleased(e);
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+	}
+	
 	protected void makeActive(OAObject oaObj) {
 		Hub<Console> h = hmConsole.get(oaObj);
 		if (h == null) {

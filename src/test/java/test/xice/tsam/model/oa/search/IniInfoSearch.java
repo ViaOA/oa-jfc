@@ -6,8 +6,6 @@ import com.viaoa.object.*;
 import com.viaoa.hub.*;
 import com.viaoa.util.*;
 
-import test.xice.tsam.model.*;
-
 @OAClass(addToCache=false, initialize=true, useDataSource=false, localOnly=true)
 public class IniInfoSearch extends OAObject {
     private static final long serialVersionUID = 1L;

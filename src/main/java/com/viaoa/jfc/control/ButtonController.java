@@ -1650,7 +1650,8 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			}
 		}
 		if (!bAssignId && obj instanceof OAObject) {
-			OAObjectDelegate.initializeAfterLoading((OAObject) obj, false, false);
+			// dont assign Id yet
+			OAObjectDelegate.initializeAfterLoading((OAObject) obj, false, true, false);
 		}
 
 		if (!hub.contains(obj) || !hub.isOAObject()) {
