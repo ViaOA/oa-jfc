@@ -750,7 +750,7 @@ public class OAMenuItem extends JMenuItem implements OAJfcComponent {
 	}
 
 	/** This is where the "real" work is done when actionPerformed is called. */
-	protected boolean onActionPerformed() {
+	protected boolean onActionPerformed() throws Exception {
 		if (control == null) {
 			return false;
 		}
@@ -820,7 +820,7 @@ public class OAMenuItem extends JMenuItem implements OAJfcComponent {
 		}
 
 		@Override
-		protected boolean onActionPerformed() {
+		protected boolean onActionPerformed() throws Exception {
 			return OAMenuItem.this.onActionPerformed();
 		}
 

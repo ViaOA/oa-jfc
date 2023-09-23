@@ -1108,7 +1108,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 	}
 
 	/** This is where the "real" work is done when actionPerformed is called. */
-	protected boolean onActionPerformed() {
+	protected boolean onActionPerformed() throws Exception {
 		if (control == null) {
 			return false;
 		}
@@ -1181,7 +1181,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 		}
 
 		@Override
-		protected boolean onActionPerformed() {
+		protected boolean onActionPerformed() throws Exception {
 			return OAButton.this.onActionPerformed();
 		}
 

@@ -1119,17 +1119,17 @@ public class ButtonController extends OAJfcController implements ActionListener 
 	/**
 	 * This is where the actual action is handled.
 	 */
-	protected boolean onActionPerformed() {
+	protected boolean onActionPerformed() throws Exception {
 		return default_onActionPerformed();
 	}
 
-	public boolean default_onActionPerformed() {
+	public boolean default_onActionPerformed() throws Exception {
 		boolean b = false;
 		b = _default_onActionPerformed();
 		return b;
 	}
 
-	private boolean _default_onActionPerformed() {
+	private boolean _default_onActionPerformed() throws Exception {
 		Object ho = null;
 		Hub hub = getHub();
 		if (hub == null) {
