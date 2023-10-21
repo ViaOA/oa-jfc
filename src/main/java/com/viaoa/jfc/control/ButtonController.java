@@ -536,7 +536,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			if (!em.getAllowed()) {
 				result = em.getDisplayResponse();
 				if (OAString.isEmpty(result)) {
-					result = "invalid value";
+					result = "command is disabled";
 				}
 			}
 		}
