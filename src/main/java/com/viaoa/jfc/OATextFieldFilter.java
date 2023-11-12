@@ -11,26 +11,17 @@
 package com.viaoa.jfc;
 
 import java.awt.Component;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
+import java.util.*;
 
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 
-import com.viaoa.filter.OAGreaterFilter;
-import com.viaoa.filter.OAGreaterOrEqualFilter;
-import com.viaoa.filter.OALessFilter;
-import com.viaoa.filter.OALessOrEqualFilter;
-import com.viaoa.filter.OALikeFilter;
-import com.viaoa.filter.OANotLikeFilter;
+import com.viaoa.filter.*;
 import com.viaoa.hub.Hub;
-import com.viaoa.jfc.table.OATableCellEditor;
-import com.viaoa.jfc.table.OATableFilterComponent;
+import com.viaoa.jfc.table.*;
 import com.viaoa.object.OAObject;
-import com.viaoa.util.OAFilter;
-import com.viaoa.util.OAString;
+import com.viaoa.util.*;
 
 /**
 */
@@ -153,7 +144,38 @@ public class OATextFieldFilter<T extends OAObject> extends JTextField implements
 			};
 			return filter;
 		}
-		;
+
+		if (text.equalsIgnoreCase("dups")) {
+		    Map<Object, Object> hm1 = new HashMap();
+		    Set<Object> hm2 = new HashSet();
+		    
+		    Hub h = getTable().getMasterFilterHub();
+		    
+		    for (Object obj : h) {
+    	        Object val = ((OAObject) obj).getProperty(propertyPath);
+    	        if (val == null) continue;
+    	        
+    	        Object obj2 = hm1.get(val);
+    	        if (obj2 != null) {
+    	            hm2.add(obj2);
+    	            hm2.add(obj);
+    	        }
+    	        else {
+    	            hm1.put(val, obj);
+    	        }
+		    }
+		    hm1 = null;
+		    
+            filter = new OAFilter() {
+                @Override
+                public boolean isUsed(Object obj) {
+                    return hm2.contains(obj);
+                }
+            };
+		    return filter;
+		}
+
+		
 
 		final char c1 = text.charAt(0);
 		final char c2 = text.length() == 1 ? 0 : text.charAt(1);
