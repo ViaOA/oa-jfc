@@ -199,10 +199,12 @@ public class OAConsole extends OATable implements FocusListener, MouseListener {
 			String prop = property;
 			Hub h = hubListen;
 
+			/* 20231112 removed 
 			if (hubListen.getMasterHub() != null) {
 				h = hubListen.getMasterHub();
 				prop = HubDetailDelegate.getPropertyFromMasterToDetail(hubListen) + "." + property;
 			}
+			*/
 			if (prop.indexOf('.') > 0) {
 				hubFromMerger = new Hub();
 				int dcnt = OAString.dcount(prop, '.');
