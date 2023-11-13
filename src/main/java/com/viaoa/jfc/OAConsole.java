@@ -59,8 +59,8 @@ public class OAConsole extends OATable implements FocusListener, MouseListener {
 	private String listenProperty;
 	private final WeakHashMap<OAObject, Hub<Console>> hmConsole = new WeakHashMap<OAObject, Hub<Console>>();
 	private int columns;
-	private HubListener hubListener;
-	private Hub hubFromMerger;
+	private HubListener hubListener, hubListener2;
+	private Hub hubForMerger;
 	private int maxRows = 500;
 
 	public OAConsole(Hub hub, String property, int columns) {
@@ -97,12 +97,20 @@ public class OAConsole extends OATable implements FocusListener, MouseListener {
 	}
 
 	public void close() {
-		if (hubListener != null && hubListen != null) {
-			hubListen.removeHubListener(hubListener);
-		}
+	    if (hubListener != null) {
+	        if (hubForMerger != null) hubForMerger.removeHubListener(hubListener);
+	        else if (hubListen != null) hubListen.removeHubListener(hubListener);
+	    }
+	    
 		if (hmConsole != null) {
 			hmConsole.clear();
 		}
+		
+		if (hubListen != null && hubListener2 != null) {
+		    hubListen.removeHubListener(hubListener2);
+		}
+		
+		hubListener = hubListener2 = null;
 	}
 
 	@Override
@@ -138,9 +146,10 @@ public class OAConsole extends OATable implements FocusListener, MouseListener {
 					return;
 				}
 
-				if (getHub() == null) {
-					return;
-				}
+                if (getHub() == null) {
+                    return;
+                }
+				
 				Object obj = e.getObject();
 				if (obj == null) {
 					return;
@@ -151,6 +160,10 @@ public class OAConsole extends OATable implements FocusListener, MouseListener {
 				}
 				OAObject oaObj = (OAObject) obj;
 
+                if (hubForMerger == null) {
+                    if (e.getObject() != hubListen.getAO()) return;
+                }
+				
 				OAConsole.this.afterPropertyChange(oaObj, (String) e.getNewValue());
 			}
 
@@ -164,11 +177,12 @@ public class OAConsole extends OATable implements FocusListener, MouseListener {
 					return;
 				}
 				OAObject oaObj = (OAObject) obj;
+				
 				hmConsole.remove(oaObj);
 			}
 		};
 
-		HubListener hubListener2 = new HubListenerAdapter() {
+		hubListener2 = new HubListenerAdapter() {
 			@Override
 			public void afterChangeActiveObject(HubEvent e) {
 				Object obj = e.getObject();
@@ -185,45 +199,34 @@ public class OAConsole extends OATable implements FocusListener, MouseListener {
 				hmConsole.clear();
 			}
 		};
-		hubListen.addHubListener(hubListener2);
-
-		// initialize
-		OAObject oaObj = (OAObject) hubListen.getAO();
-		if (oaObj != null) {
-			makeActive(oaObj);
-			afterPropertyChange(oaObj, null);
-		}
 
 		listenProperty = property;
 		if (property != null) {
 			String prop = property;
 			Hub h = hubListen;
 
-			/* 20231112 removed 
-			if (hubListen.getMasterHub() != null) {
-				h = hubListen.getMasterHub();
-				prop = HubDetailDelegate.getPropertyFromMasterToDetail(hubListen) + "." + property;
-			}
-			*/
 			if (prop.indexOf('.') > 0) {
-				hubFromMerger = new Hub();
+				hubForMerger = new Hub();
 				int dcnt = OAString.dcount(prop, '.');
 				String s = OAString.field(prop, ".", 1, dcnt - 1);
-				new HubMerger(h, hubFromMerger, s, true);
+				HubMerger hm = new HubMerger(h, hubForMerger, s, true);
+				
 				listenProperty = OAString.field(prop, ".", dcnt);
-				hubFromMerger.addHubListener(hubListener, listenProperty, true);
+				hubForMerger.addHubListener(hubListener, listenProperty, true);
 			} else {
 				hubListen.addHubListener(hubListener, property, true);
 			}
+            hubListen.addHubListener(hubListener2);
+            OAObject oaObj = (OAObject) hubListen.getAO();
+            if (oaObj != null) {
+                makeActive(oaObj);
+            }
 		}
 
 		addFocusListener(this);
-
 		addMouseListener(this);
 	}
 
-	
-//qqqqqqqqqqqqqqqqq	
 	protected void setupMenu() {
         final JPopupMenu pmenu = new JPopupMenu();
         JMenuItem mi;
@@ -319,14 +322,24 @@ public class OAConsole extends OATable implements FocusListener, MouseListener {
 	}
 
 	protected void _afterPropertyChange(OAObject oaObj, String val) {
-		Hub<Console> hubx = hmConsole.get(oaObj);
-		if (hubx == null) {
-			hubx = new Hub<Console>(Console.class);
-			hmConsole.put(oaObj, hubx);
-		}
+	    Hub<Console> hubx;
+	    if (hubForMerger != null) { 
+	        OAObject objx = (OAObject) hubListen.getAO();
+    		hubx = hmConsole.get(objx);
+    		if (hubx == null) {
+    			hubx = new Hub<Console>(Console.class);
+    			hmConsole.put(objx, hubx);
+    		}
+	    }
+	    else {
+            hubx = hmConsole.get(oaObj);
+            if (hubx == null) {
+                hubx = new Hub<Console>(Console.class);
+                hmConsole.put(oaObj, hubx);
+            }
+	    }
 
 		if (val == null) {
-			// val = oaObj.getPropertyAsString(listenProperty);
 			hubx.clear();
 			return;
 		}
@@ -338,14 +351,10 @@ public class OAConsole extends OATable implements FocusListener, MouseListener {
 		}
 		hubx.add(console);
 
-		if (oaObj != hubListen.getAO()) {
-			return;
-		}
-
 		if (!OAConsole.this.bHasFocus && !OAConsole.this.bHasMouse) {
 			boolean b;
-			if (hubFromMerger != null) {
-				b = hubFromMerger.contains(oaObj);
+			if (hubForMerger != null) {
+				b = hubForMerger.contains(oaObj);
 			} else {
 				b = (OAConsole.this.hubListen.getAO() == oaObj);
 			}

@@ -983,7 +983,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 
 		s = getConsoleProperty();
 		OAConsole con = null;
-		if (!OAString.isEmpty(s) && dlgWait.getConsole() == null) {
+		if (!OAString.isEmpty(s)) {
 			con = new OAConsole(getHub(), s, 45);
 			con.setPreferredSize(14, 1, true);
 			dlgWait.setConsole(con);
