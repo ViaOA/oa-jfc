@@ -27,25 +27,43 @@ import java.util.*;
 import com.viaoa.hub.Hub;
 import com.viaoa.jfc.*;
 import com.viaoa.jfc.console.Console;
+import com.viaoa.object.OAThreadLocalDelegate;
+import com.viaoa.process.OAProcess;
 import com.viaoa.util.OAString;
 
 
 public class OAWaitDialog extends JDialog implements ActionListener {
 
 	private JLabel lblStatus;
+    private JLabel lblProcess;
     private JButton cmdCancel;
+    private JButton cmdBackground;
     private JProgressBar progressBar;
-    private boolean bAllowCancel;
+    private boolean bUsesProcess;
+    private boolean bAllowRunInBackground;
     private Window parent;
     private OAConsole console;
 
+    private boolean bRunningInBackground;
+    private boolean bCancelled;
+    
+    private boolean bDone;
+    
+    private volatile OAProcess process;
+    
+    
+    
     public OAWaitDialog(Window parent) {
         this(parent, true);
     }    
-    public OAWaitDialog(Window parent, boolean bAllowCancel) {
+    public OAWaitDialog(Window parent, boolean bAllowBackground) {
+        this(parent, bAllowBackground, false);
+    }
+    public OAWaitDialog(Window parent, boolean bAllowBackground, boolean bUsesProcess) {
     	super(parent, "", ModalityType.APPLICATION_MODAL);
     	this.parent = parent;
-    	this.bAllowCancel = bAllowCancel;
+    	this.bAllowRunInBackground = bAllowBackground;
+        this.bUsesProcess = bUsesProcess;
         this.setResizable(false);
         
         // create window without decoration
@@ -55,17 +73,59 @@ public class OAWaitDialog extends JDialog implements ActionListener {
         
         this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         
-        if (bAllowCancel) {
+        if (bAllowBackground) {
             this.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
-                    getCancelButton().doClick();
+                    getRunInBackgroundButton().doClick();
                 }
             });
         }
         getContentPane().setLayout(new BorderLayout(2,2));
         getContentPane().add(getPanel(), BorderLayout.NORTH);
     }    
+    
+    
+    public void setProcess(OAProcess process) {
+        this.process = process;
+        refreshProcess();
+    }
+    public OAProcess getProcess() {
+        if (process != null) return process;
+        process = new OAProcess() {
+            @Override
+            public void run() {
+            }  
+            @Override
+            public void setSteps(String... steps) {
+                super.setSteps(steps);
+                refreshProcess();
+            }
+            @Override
+            public void setCurrentStep(int x) {
+                super.setCurrentStep(x);
+                refreshProcess();
+            }
+            @Override
+            public void setName(String s) {
+                super.setName(s);
+                refreshProcess();
+            }
+            @Override
+            public void setDescription(String s) {
+                super.setDescription(s);
+                refreshProcess();
+            }
+            @Override
+            public void cancel(String reason) {
+                super.cancel(reason);
+                refreshProcess();
+            }
+        };
+        refreshProcess();
+        return process;
+    }
+    
     
     public void setStatus(String msg) {
         getStatusLabel().setText(msg);
@@ -79,6 +139,14 @@ public class OAWaitDialog extends JDialog implements ActionListener {
 		return lblStatus;
 	}
 
+    public JLabel getProcessLabel() {
+        if (lblProcess == null) {
+            lblProcess = new JLabel("");
+            lblProcess.setHorizontalAlignment(JLabel.CENTER);
+        }
+        return lblProcess;
+    }
+	
     public JProgressBar getProgressBar() {
         if (progressBar == null) {
             progressBar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 20);
@@ -86,35 +154,68 @@ public class OAWaitDialog extends JDialog implements ActionListener {
         return progressBar;
     }
 	
-    public JButton getCancelButton() {
-    	if (cmdCancel == null) {
-    	    cmdCancel = new JButton("Cancel");
-    	    cmdCancel.registerKeyboardAction(this, "cancel", KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), JComponent.WHEN_IN_FOCUSED_WINDOW);
-    	    cmdCancel.setActionCommand("cancel");
-    	    cmdCancel.addActionListener(this);
+    public JButton getRunInBackgroundButton() {
+    	if (cmdBackground == null) {
+    	    cmdBackground = new JButton("Background");
+            cmdBackground.setActionCommand("background");
+    	    cmdBackground.addActionListener(this);
     	}
-    	return cmdCancel;
+    	return cmdBackground;
     }
-	
+
+    public JButton getCancelButton() {
+        if (cmdCancel == null) {
+            cmdCancel = new JButton("Cancel");
+            cmdCancel.registerKeyboardAction(this, "cancel", KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), JComponent.WHEN_IN_FOCUSED_WINDOW);
+            cmdCancel.setActionCommand("cancel");
+            cmdCancel.addActionListener(this);
+        }
+        return cmdCancel;
+    }
+    
     protected JPanel getPanel() {
     	JPanel panel = new JPanel(new BorderLayout(2,2));
 
-        Border border;
-        border = new EmptyBorder(5,5,5,5);
+        Border border = new EmptyBorder(5,5,5,5);
         panel.setBorder(border);
 
+        JPanel panel2 = new JPanel(new BorderLayout(2,2));
+        
         JPanel pan2 = new JPanel(new BorderLayout(2,2));
-        border = new EmptyBorder(25,5,25,5);
+        border = new EmptyBorder(25,5,5,5);
         pan2.setBorder(border);
         pan2.add(getStatusLabel(), BorderLayout.CENTER);
-        panel.add(pan2, BorderLayout.NORTH);
+        panel2.add(pan2, BorderLayout.NORTH);
         
-        if (bAllowCancel) {
-            pan2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        
+        pan2 = new JPanel(new BorderLayout(2,2));
+        border = new EmptyBorder(5,5,25,5);
+        pan2.setBorder(border);
+        pan2.add(getProcessLabel(), BorderLayout.CENTER);
+        panel2.add(pan2, BorderLayout.SOUTH);
+
+        panel.add(panel2, BorderLayout.NORTH);
+        
+        if (bAllowRunInBackground || bUsesProcess) {
+            if (bAllowRunInBackground && bUsesProcess) {
+                pan2 = new JPanel(new GridLayout(1, 2, 14, 1));
+            }
+            else {
+                pan2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            }
             border = new EmptyBorder(1,1,15,1);
             pan2.setBorder(border);
-            pan2.add(getCancelButton());
-            panel.add(pan2, BorderLayout.CENTER);
+            if (bAllowRunInBackground) {
+                pan2.add(getRunInBackgroundButton());
+            }
+            if (bUsesProcess) {
+                pan2.add(getCancelButton());
+            }
+            
+            JPanel pan3 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            pan3.add(pan2);
+            
+            panel.add(pan3, BorderLayout.CENTER);
         }
         
         JPanel pan = new JPanel(new GridBagLayout());
@@ -139,11 +240,29 @@ public class OAWaitDialog extends JDialog implements ActionListener {
         return panel;
     }
     
-    private boolean bCancelled;
+    public boolean getAllowRunInBackground() {
+        return bAllowRunInBackground;
+    }
+    public boolean getUsesProcess() {
+        return bUsesProcess;
+    }
+    
     public boolean wasCancelled() {
         return bCancelled;
     }
+    public boolean getCancelled() {
+        return bCancelled;
+    }
+    
+    public boolean getRunningInBackground() {
+        return bRunningInBackground;
+    }
+    public boolean isRunningInBackground() {
+        return bRunningInBackground;
+    }
 
+    
+    
     @Override
     public void setVisible(boolean b) {
         setVisible(b, b);
@@ -157,7 +276,12 @@ public class OAWaitDialog extends JDialog implements ActionListener {
                 pack();
                 this.setLocationRelativeTo(parent);
             }
+            bRunningInBackground = false;
             bCancelled = false;
+
+            if (getAllowRunInBackground() && cmdCancel != null) {
+                cmdCancel.setEnabled(true);
+            }
         }
         setCursor(Cursor.getPredefinedCursor(bShowProcessing?Cursor.WAIT_CURSOR:Cursor.DEFAULT_CURSOR));
         getProgressBar().setIndeterminate(bShowProcessing);
@@ -173,20 +297,23 @@ public class OAWaitDialog extends JDialog implements ActionListener {
     	if (e == null) return;
         String cmd = e.getActionCommand();
     	if (cmd == null) return;
+        if (cmd.equalsIgnoreCase("background")) {
+            bRunningInBackground = true;
+            setVisible(false);
+            onRunInBackground();
+        }
         if (cmd.equalsIgnoreCase("cancel")) {
             bCancelled = true;
-            setVisible(false);
-            /*
-            int x = JOptionPane.showConfirmDialog(this, "Ok to cancel", "", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (x == JOptionPane.YES_OPTION) {
-                bCancelled = true;
-                setVisible(false);
+            
+            if (process != null) {
+                process.cancel("Process cancelled by user");
             }
-            */
             onCancel();
         }
     }
     
+    protected void onRunInBackground() {
+    }
     protected void onCancel() {
     }
     
@@ -197,16 +324,19 @@ public class OAWaitDialog extends JDialog implements ActionListener {
     public void setConsole(OAConsole con) {
         if (console == con) return;
 
-        this.console = con;
-        
-        if (splitPane != null) {
-            getContentPane().remove(splitPane);
-            splitPane = null;
+        if (scrollPane != null) {
+            scrollPane.remove(console);
+            if (splitPane == null) getContentPane().remove(scrollPane);
         }
-        else if (scrollPane != null) {
-            getContentPane().remove(scrollPane);
+        if (splitPane != null) {
+            if (console != null) splitPane.remove(scrollPane);
+            if (compDisplay != null) splitPane.remove(compDisplay);
+            getContentPane().remove(splitPane);
         }
         scrollPane = null;
+        splitPane = null;
+        
+        this.console = con;
         
         if (console != null) {
             this.scrollPane = new JScrollPane(con);
@@ -227,14 +357,34 @@ public class OAWaitDialog extends JDialog implements ActionListener {
     }
 
     private JComponent compDisplay;
+    
     public void setDisplayComponent(JComponent pan) {
+        if (this.compDisplay == pan) return;
+        
+        if (scrollPane != null) {
+            scrollPane.remove(console);
+            if (splitPane == null) getContentPane().remove(scrollPane);
+        }
+        if (splitPane != null) {
+            if (console != null) splitPane.remove(scrollPane);
+            if (compDisplay != null) splitPane.remove(compDisplay);
+            getContentPane().remove(splitPane);
+        }
+        scrollPane = null;
+        splitPane = null;
+       
+        
+        
         this.compDisplay = pan;
         if (pan != null) {
             if (console != null) {
-                JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, compDisplay, new JScrollPane(console));
-                getContentPane().add(sp, BorderLayout.CENTER);
+                this.scrollPane = new JScrollPane(console);
+                this.splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, compDisplay, this.scrollPane);
+                getContentPane().add(splitPane, BorderLayout.CENTER);
             }
-            else getContentPane().add(compDisplay, BorderLayout.CENTER);
+            else {
+                getContentPane().add(compDisplay, BorderLayout.CENTER);
+            }
             setResizable(true);
         }
     }
@@ -243,9 +393,15 @@ public class OAWaitDialog extends JDialog implements ActionListener {
     }
     
     
-    private boolean bDone;
     public void done() {
         bDone = true;
+        if (getAllowRunInBackground() && cmdCancel != null) {
+            cmdCancel.setEnabled(false);
+        }
+        if (this.process != null) {
+            this.process.setDone();
+            refreshProcess();
+        }
     }
     
     @Override
@@ -254,9 +410,31 @@ public class OAWaitDialog extends JDialog implements ActionListener {
         super.setCursor(cursor);
     }
     
+    public void refreshProcess() {
+        String msg;
+        OAProcess p = this.process;
+        if (p != null) {
+            if (p.wasCancelled()) {
+                msg = "Process requested to be cancelled";
+            }
+            else if (p.isDone()) {
+                msg = "Process completed";
+            }
+            else {
+                msg = "Process is running";
+            }
+            int x = p.getCurrentStep();
+            String[] ss = p.getSteps();
+            if (ss != null && ss.length > 0 && x < ss.length) {
+                msg += String.format(" - step %d of %d - %s",  x+1, ss.length, ss[x]);
+            }
+        }
+        else msg = "";
+        getProcessLabel().setText(msg);
+    }
     
     public static void main(String[] args) {
-        final OAWaitDialog dlg = new OAWaitDialog(null);
+        final OAWaitDialog dlg = new OAWaitDialog(null, true, true);
         dlg.setTitle("Wait for me");
         dlg.getStatusLabel().setText("this is a wait dialog");
 
@@ -269,16 +447,28 @@ public class OAWaitDialog extends JDialog implements ActionListener {
         
         OAConsole oac = new OAConsole(h, "text", 45);
         dlg.setConsole(oac);
-
+        
         Thread t = new Thread() {
             @Override
             public void run() {
+                OAThreadLocalDelegate.setProcess(dlg.getProcess());
+                dlg.refreshProcess();
+                dlg.getProcess().setSteps("step 1", "step 2", "step 3");
+                int currentStep = 0;
                 try {
                     for (int i=0; i<180;i++) {
+                        if (dlg.process.wasCancelled()) {
+                            updateObject.setText("Cancelled!");
+                            break;
+                        }
+                        if (i % 20 == 0 && currentStep < dlg.getProcess().getTotalSteps()) {
+                            dlg.getProcess().setCurrentStep(currentStep++); 
+                        }
                         updateObject.setText(i+" "+OAString.getRandomString(5, 75, true, true, true));
                         Thread.sleep(350);
                     }
-dlg.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    updateObject.setText("done");
+                    dlg.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                }
                 catch (Exception e) {
                     // TODO: handle exception
@@ -286,10 +476,10 @@ dlg.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         };
         t.start();
+        
         dlg.setVisible(true);
         System.exit(0);
     }
-    
 }
 
 

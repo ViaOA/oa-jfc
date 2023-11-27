@@ -1076,13 +1076,14 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 		control.setUseSwingWorker(b);
 	}
 
-	public boolean getUseSwingWorker() {
-		if (control == null) {
-			return false;
-		}
-		return control.getUseSwingWorker();
-	}
-
+    public boolean getUseSwingWorker() {
+        if (control == null) {
+            return false;
+        }
+        return control.getUseSwingWorker();
+    }
+	
+	
 	public void setProcessingText(String title, String msg) {
 		if (control == null) {
 			return;

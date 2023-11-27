@@ -74,6 +74,7 @@ import com.viaoa.object.OAObjectInfo;
 import com.viaoa.object.OAObjectInfoDelegate;
 import com.viaoa.object.OAObjectReflectDelegate;
 import com.viaoa.object.OAThreadLocalDelegate;
+import com.viaoa.process.OAProcess;
 import com.viaoa.template.OATemplate;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
@@ -315,7 +316,6 @@ public class ButtonController extends OAJfcController implements ActionListener 
 	public void setUseSwingWorker(boolean b) {
 		this.bUseSwingWorker = b;
 	}
-
 	public boolean getUseSwingWorker() {
 		return this.bUseSwingWorker;
 	}
@@ -738,7 +738,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 	}
 
 	public void reportActionCompleted(boolean b, Exception ex) {
-		if (ex != null) {
+	    if (ex != null) {
 			LOG.log(Level.WARNING, "error while performing command action", ex);
 			for (int i = 0; i < 10; i++) {
 				Throwable t = ex.getCause();
@@ -752,7 +752,13 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			if (b) {
 				afterActionPerformed();
 			} else {
-				afterActionPerformedFailure("Action was not completed", null);
+                String msg;
+			    OAProcess oap = dlgWait.getProcess();
+                if (oap != null && oap.getCancelled()) {
+                    msg = "Cancelled - "+ OAString.notNull(oap.getReturnMessage());
+                }			    
+                else msg = "Not completed";
+                afterActionPerformedFailure(msg, null);
 			}
 		}
 	}
@@ -957,12 +963,13 @@ public class ButtonController extends OAJfcController implements ActionListener 
 
 		final Window window = OAJfcUtil.getWindow(button);
 		if (dlgWait == null) {
-			dlgWait = new OAWaitDialog(window, true); // allowCancel, was false
+			dlgWait = new OAWaitDialog(window, true, true); 
 		}
-
-		dlgWait.getCancelButton().setText("Run in background");
-		dlgWait.getCancelButton().setToolTipText("use this to close the dialog, and allow the the process to run in the background");
-
+		dlgWait.getRunInBackgroundButton().setText("Run in background");
+		dlgWait.getRunInBackgroundButton().setToolTipText("use this to close the dialog, and allow the the process to run in the background");
+        dlgWait.getCancelButton().setToolTipText("use this to request the process to be cancelled");
+        dlgWait.setProcess(null); // so it will be re-created
+		
 		String s = processingTitle;
 		if (s == null) {
 			s = "Processing";
@@ -1003,6 +1010,9 @@ public class ButtonController extends OAJfcController implements ActionListener 
 
 			@Override
 			protected Boolean doInBackground() throws Exception {
+			    OAProcess oap = dlgWait.getProcess(); // creates new process
+                OAThreadLocalDelegate.setProcess(oap);
+			    
 				publish("");
 				boolean b;
 				if (console != null && getClearConsole()) {
@@ -1027,7 +1037,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			protected void done() {
 
 				synchronized (Lock) {
-					if (!dlgWait.wasCancelled() && console == null && compDisplay == null) {
+					if (!dlgWait.getRunningInBackground() && console == null && compDisplay == null) {
 						if (dlgWait.isVisible()) {
 							dlgWait.setVisible(false);
 						}
@@ -1037,7 +1047,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						if (console != null) {
 							console.close();
 						}
-						JButton cmd = dlgWait.getCancelButton();
+						JButton cmd = dlgWait.getRunInBackgroundButton();
 						cmd.setText("Close");
 						cmd.setToolTipText("the command has completed, click to close window.");
 
@@ -1077,11 +1087,15 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					msg = OAString.trunc(msg, 300);
 					dlgWait.setStatus(msg);
 					dlgWait.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-					if (dlgWait.wasCancelled()) {
+					if (dlgWait.getRunningInBackground()) {
 						dlgWait.setVisible(true, false);
 					}
 
-					reportActionCompleted(true, exception);
+					OAProcess oap = dlgWait.getProcess();
+					if (oap != null && oap.getCancelled()) {
+	                    reportActionCompleted(false, exception);
+					}
+					else reportActionCompleted(true, exception);
 				}
 			}
 		};
