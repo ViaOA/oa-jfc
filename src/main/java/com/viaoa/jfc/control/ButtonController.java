@@ -753,7 +753,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				afterActionPerformed();
 			} else {
                 String msg;
-			    OAProcess oap = dlgWait.getProcess();
+			    OAProcess oap = dlgWait == null ? null : dlgWait.getProcess();
                 if (oap != null && oap.getCancelled()) {
                     msg = "Cancelled - "+ OAString.notNull(oap.getReturnMessage());
                 }			    
