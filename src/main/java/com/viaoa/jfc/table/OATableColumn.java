@@ -484,12 +484,15 @@ public class OATableColumn {
 			table.getHub().addHubListener(hubListener);
 		}
 
-		// 20180626 see if methodName"AsString" exists
+		
+        // see if methodName"Display" exists
 		methodsAsString = null;
 		if (methods != null && methods.length > 0) {
 			Method m = methods[methods.length - 1];
 
-			Method mx = OAReflect.getMethod(m.getDeclaringClass(), m.getName() + "AsString", 0, null);
+			// 20240118 enum prop uses propName+"Display"
+            Method mx = OAReflect.getMethod(m.getDeclaringClass(), m.getName() + "Display", 0, null);
+			//was: Method mx = OAReflect.getMethod(m.getDeclaringClass(), m.getName() + "AsString", 0, null);
 			if (mx != null) {
 				methodsAsString = new Method[methods.length];
 				System.arraycopy(methods, 0, methodsAsString, 0, methods.length - 1);
@@ -499,5 +502,4 @@ public class OATableColumn {
 
 		return methods;
 	}
-
 }
