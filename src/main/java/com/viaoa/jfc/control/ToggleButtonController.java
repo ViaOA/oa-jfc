@@ -364,7 +364,10 @@ public class ToggleButtonController extends OAJfcController implements ItemListe
 						}
 
 						if (OACompare.compare(prev, value) == 0) {
-							return true;
+						    // 20240123 added next line for null
+						    if (prev == value || (prev != null && value != null)) {
+						        return true;
+						    }
 						}
 
 						boolean bValid = true;

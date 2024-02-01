@@ -78,9 +78,7 @@ import com.viaoa.process.OAProcess;
 import com.viaoa.template.OATemplate;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
-import com.viaoa.util.OACompare;
-import com.viaoa.util.OAReflect;
-import com.viaoa.util.OAString;
+import com.viaoa.util.*;
 
 /**
  * Functionality for binding JButton to OA. Note: order of tasks for actionPerformed event: actionPerformed, [password dialog]
@@ -113,6 +111,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 	private Object updateValue;
 
 	private boolean bUseSwingWorker;
+	private boolean bAllowCancel;
 	public String processingTitle, processingMessage;
 
 	public ButtonController(Hub hub, AbstractButton button, OAButton.ButtonEnabledMode enabledMode, OAButton.ButtonCommand command,
@@ -320,6 +319,13 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		return this.bUseSwingWorker;
 	}
 
+    public void setAllowCancel(boolean b) {
+        this.bAllowCancel = b;
+    }
+    public boolean getAllowCancel() {
+        return this.bAllowCancel;
+    }
+	
 	public void setProcessingText(String title, String msg) {
 		processingTitle = title;
 		processingMessage = msg;
@@ -737,7 +743,18 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		}
 	}
 
-	public void reportActionCompleted(boolean b, Exception ex) {
+	public void reportActionCompleted(boolean bDone, Exception ex) {
+        final OAProcess oap = dlgWait == null ? null : dlgWait.getProcess();
+        
+        if (oap != null) {
+            if (ex == null) {
+                ex = oap.getException();
+            }
+            if (!bDone && oap.getDone()) {
+                bDone = true;
+            }
+        }
+        
 	    if (ex != null) {
 			LOG.log(Level.WARNING, "error while performing command action", ex);
 			for (int i = 0; i < 10; i++) {
@@ -749,13 +766,20 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			}
 			afterActionPerformedFailure("Command error: " + OAString.fmt(ex.getMessage(), "200L.").trim(), ex);
 		} else {
-			if (b) {
+			if (bDone) {
 				afterActionPerformed();
 			} else {
                 String msg;
-			    OAProcess oap = dlgWait == null ? null : dlgWait.getProcess();
-                if (oap != null && oap.getCancelled()) {
-                    msg = "Cancelled - "+ OAString.notNull(oap.getReturnMessage());
+                if (oap != null && oap.getWasCancelled()) {
+                    String s = oap.getCancelledReason();
+                    if (OAStr.isEmpty(s)) {
+                        s = oap.getRequestCancelReason();
+                        if (OAStr.isEmpty(s)) {
+                            if (oap.getRequestedToCancel()) s = "by user request";
+                            else s = "by process";
+                        }
+                    }
+                    msg = "Cancelled - "+ OAString.notNull(s);
                 }			    
                 else msg = "Not completed";
                 afterActionPerformedFailure(msg, null);
@@ -768,11 +792,13 @@ public class ButtonController extends OAJfcController implements ActionListener 
 	}
 
 	public void default_afterActionPerformed() {
+        final OAProcess oap = dlgWait == null ? null : dlgWait.getProcess();
+	    
 		String completedMessage = getCompletedMessage();
-		String returnMessage = getReturnMessage();
-		String displayMessage = "";
+        if (oap != null && OAStr.isEmpty(completedMessage)) {
+            completedMessage = oap.getDoneMessage();
+        }
 
-		boolean bUsedCompletedMsg = false;
 		if (completedMessage != null) {
 			Hub h = getHub();
 			if (h != null && h.isOAObject()) {
@@ -781,25 +807,24 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					OATemplate temp = new OATemplate(completedMessage);
 					temp.setProperty("returnMessage", returnMessage); // used by <%=$returnMessage%>
 					completedMessage = temp.process((OAObject) obj);
-					bUsedCompletedMsg = true;
 					if (completedMessage != null && completedMessage.indexOf('<') >= 0
 							&& completedMessage.toLowerCase().indexOf("<html>") < 0) {
 						completedMessage = "<html>" + completedMessage;
 					}
 				}
 			}
-			displayMessage = completedMessage;
 		}
 
-		if (!bUsedCompletedMsg && returnMessage != null) {
-			if (displayMessage.length() > 0) {
-				displayMessage += " ";
-			}
-			displayMessage += returnMessage;
+        /*
+        String returnMessage = getReturnMessage();
+		if (OAStr.isNotEmpty(returnMessage)) {
+			completedMessage = OAStr.append(completedMessage, returnMessage, "\n");
 		}
+		*/
 
-		if (!OAString.isEmpty(displayMessage) && OAString.isEmpty(getConsoleProperty()) && compDisplay == null) {
-			String s = OAString.lineBreak(displayMessage, 85, "\n", 20);
+        if (OAString.isNotEmpty(completedMessage)) {
+		//was: if (OAString.isNotEmpty(displayMessage) && OAString.isEmpty(getConsoleProperty()) && compDisplay == null) {
+			String s = OAString.lineBreak(completedMessage, 85, "\n", 20);
 			JOptionPane.showMessageDialog(
 											OAJfcUtil.getWindow(button),
 											s, "Command completed",
@@ -967,8 +992,9 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		}
 		dlgWait.getRunInBackgroundButton().setText("Run in background");
 		dlgWait.getRunInBackgroundButton().setToolTipText("use this to close the dialog, and allow the the process to run in the background");
-        dlgWait.getCancelButton().setToolTipText("use this to request the process to be cancelled");
-        dlgWait.setProcess(null); // so it will be re-created
+        dlgWait.getCancelButton().setToolTipText("Use this to request the process to be cancelled");
+        dlgWait.clearProcess(); // so it will be re-created
+        dlgWait.getProcess().setAllowCancel(getAllowCancel());
 		
 		String s = processingTitle;
 		if (s == null) {
@@ -1035,7 +1061,11 @@ public class ButtonController extends OAJfcController implements ActionListener 
 
 			@Override
 			protected void done() {
-
+                final OAProcess oap = dlgWait.getProcess(); // creates new process
+                if (!oap.getDone() && !oap.getWasCancelled()) {
+                    oap.setDone();
+                }
+			    
 				synchronized (Lock) {
 					if (!dlgWait.getRunningInBackground() && console == null && compDisplay == null) {
 						if (dlgWait.isVisible()) {
@@ -1043,7 +1073,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						}
 					} else {
 						dlgWait.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-						dlgWait.done();//hack
+						dlgWait.doneRunning();
 						if (console != null) {
 							console.close();
 						}
@@ -1063,10 +1093,6 @@ public class ButtonController extends OAJfcController implements ActionListener 
 								dlgWait.setVisible(false);
 							}
 						}, "zz", KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), JComponent.WHEN_IN_FOCUSED_WINDOW);
-
-						dlgWait.getProgressBar().setIndeterminate(false);
-						dlgWait.getProgressBar().setMaximum(100);
-						dlgWait.getProgressBar().setValue(100);
 					}
 
 					try {
@@ -1091,8 +1117,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						dlgWait.setVisible(true, false);
 					}
 
-					OAProcess oap = dlgWait.getProcess();
-					if (oap != null && oap.getCancelled()) {
+					if (oap != null && !oap.getDone()) {
 	                    reportActionCompleted(false, exception);
 					}
 					else reportActionCompleted(true, exception);
@@ -1107,6 +1132,8 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			}
 		}
 
+		OAThreadLocalDelegate.setProcess(null);
+		
 		if (aiCompleted.get() == 0) {
 			// run in background
 			// sw.cancel(true);  //qqqq need to test to see how it affects the thread.isInterrupted flag
@@ -1114,6 +1141,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			sw.get(); // even though dlg.setVisible is modal, we need to check for an exception, if it was not cancelled
 		}
 		bResult = true;//aiCompleted.get() > 0;
+		
 		return bResult;
 	}
 

@@ -950,6 +950,13 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 		getController().setColumns(x);
 	}
 
+	public void setAllowCancel(boolean b) {
+	    getController().setAllowCancel(b);
+	}
+    public boolean getAllowCancel() {
+        return getController().getAllowCancel();
+    }
+	
 	@Override
 	public int getColumns() {
 		return getController().getColumns();

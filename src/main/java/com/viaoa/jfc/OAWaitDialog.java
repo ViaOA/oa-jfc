@@ -14,18 +14,11 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
-import java.net.URL;
-import java.util.*;
-
 import com.viaoa.hub.Hub;
-import com.viaoa.jfc.*;
 import com.viaoa.jfc.console.Console;
 import com.viaoa.object.OAThreadLocalDelegate;
 import com.viaoa.process.OAProcess;
@@ -46,12 +39,8 @@ public class OAWaitDialog extends JDialog implements ActionListener {
 
     private boolean bRunningInBackground;
     private boolean bCancelled;
-    
     private boolean bDone;
-    
     private volatile OAProcess process;
-    
-    
     
     public OAWaitDialog(Window parent) {
         this(parent, true);
@@ -86,8 +75,8 @@ public class OAWaitDialog extends JDialog implements ActionListener {
     }    
     
     
-    public void setProcess(OAProcess process) {
-        this.process = process;
+    public void clearProcess() {
+        this.process = null;
         refreshProcess();
     }
     public OAProcess getProcess() {
@@ -116,9 +105,29 @@ public class OAWaitDialog extends JDialog implements ActionListener {
                 super.setDescription(s);
                 refreshProcess();
             }
+
             @Override
-            public void cancel(String reason) {
-                super.cancel(reason);
+            public void setAllowCancel(boolean b) {
+                super.setAllowCancel(b);
+                refreshProcess();
+            }
+            
+            @Override
+            public void requestCancel(String reason) {
+                super.requestCancel(reason);
+                refreshProcess();
+            }
+            
+            @Override
+            public void setWasCancelled(boolean b) {
+                super.setWasCancelled(b);
+                OAWaitDialog.this.bCancelled = b;
+                refreshProcess();
+            }
+            
+            @Override
+            public void setDone() {
+                super.setDone();
                 refreshProcess();
             }
         };
@@ -165,7 +174,12 @@ public class OAWaitDialog extends JDialog implements ActionListener {
 
     public JButton getCancelButton() {
         if (cmdCancel == null) {
-            cmdCancel = new JButton("Cancel");
+            cmdCancel = new JButton("Cancel") {
+                @Override
+                public void setEnabled(boolean b) {
+                    super.setEnabled(b);
+                }  
+            };
             cmdCancel.registerKeyboardAction(this, "cancel", KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), JComponent.WHEN_IN_FOCUSED_WINDOW);
             cmdCancel.setActionCommand("cancel");
             cmdCancel.addActionListener(this);
@@ -285,6 +299,7 @@ public class OAWaitDialog extends JDialog implements ActionListener {
         }
         setCursor(Cursor.getPredefinedCursor(bShowProcessing?Cursor.WAIT_CURSOR:Cursor.DEFAULT_CURSOR));
         getProgressBar().setIndeterminate(bShowProcessing);
+        refreshProcess();
         try {
             super.setVisible(b);  // this will put it in blocking mode
         }
@@ -303,11 +318,10 @@ public class OAWaitDialog extends JDialog implements ActionListener {
             onRunInBackground();
         }
         if (cmd.equalsIgnoreCase("cancel")) {
-            bCancelled = true;
-            
             if (process != null) {
-                process.cancel("Process cancelled by user");
+                process.requestCancel("Cancelled by user");
             }
+            else bCancelled = true;
             onCancel();
         }
     }
@@ -393,14 +407,10 @@ public class OAWaitDialog extends JDialog implements ActionListener {
     }
     
     
-    public void done() {
+    public void doneRunning() {
         bDone = true;
-        if (getAllowRunInBackground() && cmdCancel != null) {
+        if (cmdCancel != null) {
             cmdCancel.setEnabled(false);
-        }
-        if (this.process != null) {
-            this.process.setDone();
-            refreshProcess();
         }
     }
     
@@ -414,11 +424,27 @@ public class OAWaitDialog extends JDialog implements ActionListener {
         String msg;
         OAProcess p = this.process;
         if (p != null) {
-            if (p.wasCancelled()) {
-                msg = "Process requested to be cancelled";
+            boolean b = p.getAllowCancel();
+            b = b && !p.getDone() && !p.getWasCancelled() && !p.getRequestedToCancel();
+            getCancelButton().setEnabled(b);
+            
+            if (p.getDone() || p.getWasCancelled()) {
+                getProgressBar().setIndeterminate(false);
+                getProgressBar().setMaximum(100);
+                getProgressBar().setValue(100);
             }
-            else if (p.isDone()) {
+            
+            if (p.getWasCancelled()) {
+                msg = "Process was cancelled";
+            }
+            else if (p.getDone()) {
                 msg = "Process completed";
+                if (p.getRequestedToCancel()) {
+                    msg += " (request to cancel was ignored)";
+                }
+            }
+            else if (p.getRequestedToCancel()) {
+                msg = "Process requested to be cancelled";
             }
             else {
                 msg = "Process is running";
@@ -453,23 +479,37 @@ public class OAWaitDialog extends JDialog implements ActionListener {
             public void run() {
                 OAThreadLocalDelegate.setProcess(dlg.getProcess());
                 dlg.refreshProcess();
+                dlg.getProcess().setAllowCancel(true);
                 dlg.getProcess().setSteps("step 1", "step 2", "step 3");
                 int currentStep = 0;
                 try {
-                    for (int i=0; i<180;i++) {
-                        if (dlg.process.wasCancelled()) {
-                            updateObject.setText("Cancelled!");
+                    int iRequestToCancel = -1;
+                    for (int i=0; i<80;i++) {
+                        if (iRequestToCancel < 0 && dlg.process.getRequestedToCancel()) {
+                            if (iRequestToCancel < 0) iRequestToCancel = i;
+                            updateObject.setText("Command was requested to cancel by user");
+                        }
+                        if (iRequestToCancel > 0 && i == iRequestToCancel + 10) {
+                            dlg.process.setWasCancelled(true);
+                        }
+                        if (dlg.process.getWasCancelled()) {
+                            updateObject.setText("Command was cancelled by process");
                             break;
                         }
-                        if (i % 20 == 0 && currentStep < dlg.getProcess().getTotalSteps()) {
+
+                        if (i % 10 == 0 && currentStep < dlg.getProcess().getTotalSteps()) {
                             dlg.getProcess().setCurrentStep(currentStep++); 
                         }
                         updateObject.setText(i+" "+OAString.getRandomString(5, 75, true, true, true));
                         Thread.sleep(350);
                     }
-                    updateObject.setText("done");
+                    dlg.getProcess().setDone();
+                    if (!dlg.getProcess().getWasCancelled()) {
+                        dlg.getProcess().setDoneMessage("All done");
+                        updateObject.setText("done");
+                    }
                     dlg.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-               }
+                }
                 catch (Exception e) {
                     // TODO: handle exception
                 }
