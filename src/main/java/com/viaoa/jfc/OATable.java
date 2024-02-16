@@ -125,12 +125,7 @@ import com.viaoa.object.OAThreadLocalDelegate;
 import com.viaoa.template.OATemplate;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
-import com.viaoa.util.OACompare;
-import com.viaoa.util.OAConv;
-import com.viaoa.util.OANullObject;
-import com.viaoa.util.OAProperties;
-import com.viaoa.util.OAReflect;
-import com.viaoa.util.OAString;
+import com.viaoa.util.*;
 
 /**
  * Used for building a Table of columns/rows listing Objects. All columns are created by adding an OATableComponent as a column to the
@@ -2112,7 +2107,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 	}
 
 	/**
-	 * qqqqqqqqqq static int averageCharWidth = 0; static int averageCharHeight = 0; static int lastFontSize = 0; / ** Used to determine the
+	 * q static int averageCharWidth = 0; static int averageCharHeight = 0; static int lastFontSize = 0; / ** Used to determine the
 	 * pixel width based on the average width of a character 'X'. / public static int getCharWidth(Component comp, int columns) { if (comp
 	 * == null) return 0; return getCharWidth(comp, comp.getFont(), columns); } public static int getCharWidth(int columns) { if
 	 * (averageCharWidth != 0) { return averageCharWidth * columns; } JTextField txt = new JTextField(); Font font = txt.getFont(); return
@@ -4189,132 +4184,119 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 
 	private static Icon iconFake;
 
-	protected Component _getRenderer(Component comp, JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column,
-			boolean wasChanged, boolean wasMouseOver) {
-		JLabel lbl = null;
-		// 1of3: set default settings
-		if (!(comp instanceof JLabel)) {
-			if (lblDummy == null) {
-				lblDummy = new JLabel();
-			}
-			lbl = lblDummy;
-			/*
-			lbl.setBackground(Color.cyan);
-			lbl.setForeground(Color.cyan);
-			if (borderDummy == null) borderDummy = new LineBorder(Color.red);
-			lbl.setBorder(borderDummy);
-			*/
-			if (iconFake == null) {
-				iconFake = new OAColorIcon(Color.white, 0, 0);
-			}
-			lbl.setIcon(iconFake);
-			lbl.setText("xqz");
-			lbl.setBackground(comp.getBackground());
-		} else {
-			lbl = (JLabel) comp;
-		}
+	// 20240205	
+	protected Component _getRenderer(final Component comp, final JTable table, final Object value, 
+	    boolean isSelected, boolean hasFocus, 
+	    int row, int column,
+        boolean wasChanged, boolean wasMouseOver) {
 
-		if (hub.getAt(row) != null) {
-			if (!isSelected && !hasFocus) {
-				lbl.setForeground(Color.BLACK);
-				if (row % 2 == 0) {
-					lbl.setBackground(COLOR_Even);
-				} else {
-					lbl.setBackground(COLOR_Odd);
-				}
-			}
-		}
+       if (!(comp instanceof JComponent)) {
+           return comp;
+       }
+       JComponent jcomp = (JComponent) comp;
+       
+       final boolean bIsLabel = (comp instanceof JLabel);
 
-		if (wasChanged) {
-			lbl.setForeground(COLOR_Change_Foreground);
-			lbl.setBackground(COLOR_Change_Background);
-			lbl.setBorder(BORDER_Change);
-			if (isSelected) {
-				// lbl.setBorder(??); // use selected background color
-			}
-		} else {
-			if (hasFocus && row >= 0 && hub.getPos() == row) {
-				lbl.setForeground(Color.white);
-				lbl.setBackground(COLOR_Focus);
-			}
+       if (hub.getAt(row) != null) {
+           if (!isSelected && !hasFocus) {
+               jcomp.setForeground(Color.BLACK);
+               if (row % 2 == 0) {
+                   jcomp.setBackground(COLOR_Even);
+               } else {
+                   jcomp.setBackground(COLOR_Odd);
+               }
+           }
+       }
 
-			if (wasMouseOver) {
-				lbl.setForeground(Color.white);
-				lbl.setBackground(COLOR_MouseOver);
-				lbl.setBorder(BORDER_Focus);
-			} else {
-				lbl.setBorder(null);
-			}
-		}
+       // values to keep after customizations are called
+       Color bg = null;
+       Color fg = null;
+       Border border = null;
+       if (wasChanged) {
+           fg = COLOR_Change_Foreground;
+           bg = COLOR_Change_Background;
+           border = BORDER_Change;
+           if (isSelected) {
+               // jcomp.setBorder(??); // use selected background color
+           }
+       }
+       else if (hasFocus) {
+           fg = Color.white;
+           bg = COLOR_MouseOver;
+           border = BORDER_Focus;
+       } 
+       else {
+           if (hasFocus && row >= 0 && hub.getPos() == row) {
+               fg = Color.white;
+               bg = COLOR_Focus;
+           }
 
-		// have the component customize
-		OATableComponent oacomp = null;
-		int x = (tableLeft == null) ? 0 : tableLeft.columns.size();
+           if (wasMouseOver) {
+               fg = Color.white;
+               bg = COLOR_MouseOver;
+               border = BORDER_Focus;
+           }
+           else if (isSelected || hasFocus) {
+               fg = UIManager.getColor("Table.selectionForeground");
+               bg = UIManager.getColor("Table.selectionBackground");
+           } else {
+               border = null;
+           }
+       }
 
-		final OATableColumn tc;
-		if (tableLeft != null && column < tableLeft.columns.size()) {
-			tc = (OATableColumn) tableLeft.columns.elementAt(column);
-			oacomp = tc.getOATableComponent();
-		} else if (column >= 0 && (column - x) < columns.size()) {
-			tc = (OATableColumn) columns.elementAt(column - x);
-			oacomp = tc.getOATableComponent();
-		} else {
-			tc = null;
-		}
+       // have the component customize
+       OATableComponent oacomp = null;
+       int x = (tableLeft == null) ? 0 : tableLeft.columns.size();
 
-		// 1of4: have component update itself
-		// 20181004
-		final Object objx = getObjectAt(row, column);
-		if (oacomp instanceof OAJfcComponent) {
-			if (oacomp instanceof JLabel) {
-				// 20220429
-				((OAJfcComponent) oacomp).getController().update((JComponent) oacomp, objx, false); // was: lbl
-				//was:
-				// ((OAJfcComponent) oacomp).getController().update(lbl, objx, false); // was: lbl
-			} else {
-				((OAJfcComponent) oacomp).getController().update((JComponent) oacomp, objx, false); // was: lbl
-			}
-		}
+       final OATableColumn tc;
+       if (tableLeft != null && column < tableLeft.columns.size()) {
+           tc = (OATableColumn) tableLeft.columns.elementAt(column);
+           oacomp = tc.getOATableComponent();
+       } else if (column >= 0 && (column - x) < columns.size()) {
+           tc = (OATableColumn) columns.elementAt(column - x);
+           oacomp = tc.getOATableComponent();
+       } else {
+           tc = null;
+       }
 
-		// 2of4: allow component to customize
-		if (oacomp != null) {
-			oacomp.customizeTableRenderer(lbl, table, value, isSelected, hasFocus, row, column, wasChanged, wasMouseOver);
-		}
+       // 1of4: have component update itself
+       final Object objx = getObjectAt(row, column);
+       if (oacomp instanceof OAJfcComponent) {
+           ((OAJfcComponent) oacomp).getController().update((JComponent) oacomp, objx, false); 
+           if (jcomp != oacomp) {
+               ((OAJfcComponent) oacomp).getController().update(jcomp, objx, false); 
+           }
+       }
 
-		// 3of4 allow tc to customize
-		if (tc != null) {
-			OATableColumnCustomizer tcc = tc.getCustomizer();
-			if (tcc != null) {
-				// Object obj = getObjectAt(row, column);
-				tcc.customizeRenderer(lbl, value, isSelected, hasFocus, row, column, wasChanged, wasMouseOver);
-			}
-		}
+       if (bIsLabel) {
+           // 2of4: allow component to customize
+           oacomp.customizeTableRenderer((JLabel) jcomp, table, value, isSelected, hasFocus, row, column, wasChanged, wasMouseOver);
 
-		// 4of4: allow App to customize
-		customizeRenderer(lbl, value, isSelected, hasFocus, row, column, wasChanged, wasMouseOver);
+           // 3of4 allow tc to customize
+           if (tc != null) {
+               OATableColumnCustomizer tcc = tc.getCustomizer();
+               if (tcc != null) {
+                   tcc.customizeRenderer((JLabel) jcomp, value, isSelected, hasFocus, row, column, wasChanged, wasMouseOver);
+               }
+           }
 
-		if (lbl == lblDummy && comp != null) {
-			/*
-			Color c = lblDummy.getBackground();
-			if (!Color.cyan.equals(c)) comp.setBackground(c);
-			c = lblDummy.getForeground();
-			if (!Color.cyan.equals(c)) comp.setForeground(c);
-			if (lbl.getBorder() != borderDummy) {
-			    if (comp instanceof JComponent) {
-			        ((JComponent) comp).setBorder(lbl.getBorder());
-			    }
-			}
-			*/
-			// custom code wants to change the rendering comp
-			if (!"xqz".equals(lblDummy.getText()) || lbl.getIcon() != iconFake) {
-				if ("xqz".equals(lblDummy.getText())) {
-					lbl.setText("");
-				}
-				comp = lbl;
-			}
-		}
-		return comp;
-	}
+           // 4of4: allow App to customize
+           customizeRenderer((JLabel) jcomp, value, isSelected, hasFocus, row, column, wasChanged, wasMouseOver);
+       }
+
+       if (fg != null || bg != null || border != null) {
+           if (fg != null || bg != null) {
+               if (fg == null) fg = OAColor.getForeground(bg);
+               if (bg == null) bg = OAColor.getForeground(fg);
+               jcomp.setForeground(fg);
+               jcomp.setBackground(bg);
+           }
+           jcomp.setBorder(border);
+       }
+       
+       
+       return comp;
+   }
 
 	/**
 	 * This is called by getRenderer(..) after the default settings have been set.
