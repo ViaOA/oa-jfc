@@ -1759,7 +1759,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		}
 		String s = "" + getHub().getSize();
 		int x = Math.max(s.length(), 2);
-		tcCount.getTableColumn().setPreferredWidth(OAJfcUtil.getCharWidth(x) + 11);
+		tcCount.getTableColumn().setPreferredWidth(OAJfcUtil.getCharWidth(x) + 12);
 	}
 
 	// 20150423
