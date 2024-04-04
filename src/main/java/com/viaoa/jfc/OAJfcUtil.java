@@ -479,9 +479,9 @@ public class OAJfcUtil {
 			// averageCharWidth = fm.charWidth('m');  // =11, same code used by JTextField.getColumnWidth
 
 			// 2018116
-			String s = "AaBbCcDdEeFfGgMmOoWwYyZz012345";
+			String s = "AaBbCcDdEeFfGgMmOoWwYyZz012345 ";
 			dAverageCharWidth = fm.stringWidth(s);
-			dAverageCharWidth = ((double) dAverageCharWidth) / s.length();
+			dAverageCharWidth = ((double) dAverageCharWidth) / (s.length()-1);
 			averageCharWidth = (int) Math.ceil(dAverageCharWidth); // =7or8
 			//was: averageCharWidth = (int) (fm.stringWidth("9m0M123456") / 10);  // =7or8
 
