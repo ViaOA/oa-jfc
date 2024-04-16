@@ -803,7 +803,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			Hub h = getHub();
 			if (h != null && h.isOAObject()) {
 				Object obj = h.getAO();
-				if (completedMessage != null && completedMessage.indexOf("<%=") >= 0 && obj instanceof OAObject) {
+				if (completedMessage.indexOf("<%=") >= 0 && obj instanceof OAObject) {
 					OATemplate temp = new OATemplate(completedMessage);
 					temp.setProperty("returnMessage", returnMessage); // used by <%=$returnMessage%>
 					completedMessage = temp.process((OAObject) obj);
@@ -1104,7 +1104,26 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					}
 
 					String msg = "";
-					msg = OAString.append(msg, getCompletedMessage(), ", ");
+					
+
+					String completedMessage = getCompletedMessage();
+			        if (completedMessage != null) {
+			            Hub h = getHub();
+			            if (h != null && h.isOAObject()) {
+			                Object obj = h.getAO();
+			                if (completedMessage.indexOf("<%=") >= 0 && obj instanceof OAObject) {
+			                    OATemplate temp = new OATemplate(completedMessage);
+			                    temp.setProperty("returnMessage", returnMessage); // used by <%=$returnMessage%>
+			                    completedMessage = temp.process((OAObject) obj);
+			                    if (completedMessage != null && completedMessage.indexOf('<') >= 0
+			                            && completedMessage.toLowerCase().indexOf("<html>") < 0) {
+			                        completedMessage = "<html>" + completedMessage;
+			                    }
+			                }
+			            }
+			        }
+					msg = OAString.append(msg, completedMessage, ", ");
+					
 					if (exception != null) {
 						OAString.append(msg, "Command had an exception, " + exception.getMessage());
 					}
