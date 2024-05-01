@@ -756,7 +756,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
         }
         
 	    if (ex != null) {
-			LOG.log(Level.WARNING, "error while performing command action", ex);
+			LOG.log(Level.WARNING, "error while performing command", ex);
 			for (int i = 0; i < 10; i++) {
 				Throwable t = ex.getCause();
 				if (t == null || t == ex || !(t instanceof Exception)) {
@@ -764,7 +764,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				}
 				ex = (Exception) t;
 			}
-			afterActionPerformedFailure("Command error: " + OAString.fmt(ex.getMessage(), "200L.").trim(), ex);
+			afterActionPerformedFailure("Command error: " + OAString.fmt(ex.toString(), "200L.").trim(), ex);
 		} else {
 			if (bDone) {
 				afterActionPerformed();
