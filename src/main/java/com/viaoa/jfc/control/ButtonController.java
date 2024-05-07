@@ -1386,6 +1386,8 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				break;
 			case WizardNew:
 				createNew(false, false);
+                ho = hub.getActiveObject();
+                ((OAObject) ho).setObjectDefaults();  // 20240507
 				break;
 			case New:
 			case Add:
