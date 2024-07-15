@@ -17,6 +17,7 @@ import com.viaoa.annotation.*;
 public class CalcPropertyDef extends OAObject {
     private static final long serialVersionUID = 1L;
     public static final String P_Name = "Name";
+    public static final String P_LowerName = "LowerName";
     public static final String P_DisplayName = "DisplayName";
     public static final String P_IsForHub = "IsForHub";
      
@@ -24,6 +25,7 @@ public class CalcPropertyDef extends OAObject {
     public static final String P_ObjectDef = "ObjectDef";
      
     protected String name;
+    protected String lowerName;
     protected String displayName;
     /** 20131027
      *  true if this calcProp is for the whole Hub, and the method has a static method with a Hub param
@@ -49,6 +51,17 @@ public class CalcPropertyDef extends OAObject {
         firePropertyChange(P_Name, old, this.name);
     }
     
+    @OAProperty(displayLength = 18)
+    @OAColumn()
+    public String getLowerName() {
+        return lowerName;
+    }
+
+    public void setLowerName(String newValue) {
+        String old = lowerName;
+        this.lowerName = newValue;
+        firePropertyChange(P_LowerName, old, this.lowerName);
+    }
      
     @OAProperty(displayName = "Display Name", maxLength = 11, displayLength = 11)
     @OAColumn(maxLength = 11)

@@ -53,12 +53,14 @@ public class ObjectDefDelegate {
         for (OAPropertyInfo pi : oi.getPropertyInfos()) {
             PropertyDef pd = new PropertyDef();
             pd.setName(pi.getName());
+            pd.setLowerName(pi.getLowerName());
             pd.setDisplayName(pi.getName());
             od.getPropertyDefs().add(pd);
         }
         for (OACalcInfo ci : oi.getCalcInfos()) {
             CalcPropertyDef cd = new CalcPropertyDef();
             cd.setName(ci.getName());
+            cd.setLowerName(ci.getLowerName());
             cd.setDisplayName(ci.getName());
             cd.setIsForHub(ci.getIsForHub());
             od.getCalcPropertyDefs().add(cd);
@@ -68,6 +70,7 @@ public class ObjectDefDelegate {
             if (!li.getUsed()) continue;
             LinkPropertyDef lp = new LinkPropertyDef();
             lp.setName(li.getName());
+            lp.setLowerName(li.getLowerName());
             lp.setDisplayName(li.getName());
             lp.setType(li.getType()==OALinkInfo.ONE ? LinkPropertyDef.TYPE_One : LinkPropertyDef.TYPE_Many);
             od.getLinkPropertyDefs().add(lp);

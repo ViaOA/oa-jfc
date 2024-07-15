@@ -60,7 +60,7 @@ public class TextFieldController extends OAJfcController implements FocusListene
 	private Object activeObject;
 	private Object focusActiveObject;
 	private OAPlainDocument document;
-	private boolean bConsumeEsc;
+	private boolean bEscapeKey;
 
 	/**
 	 * 'U'ppercase, 'L'owercase, 'T'itle, 'J'ava identifier 'E'ncrpted password/encrypt 'S'HA password
@@ -531,39 +531,69 @@ public class TextFieldController extends OAJfcController implements FocusListene
 		}
 	}
 
+	// 20240715
+	private boolean bIgnoreKeys;
+	public void setIgnoreKeyEvents(boolean b) {
+	    bIgnoreKeys = b;
+	    bEscapeKey = false;
+	}
+	
+	
 	// Key Events
 	@Override
 	public void keyPressed(KeyEvent e) {
+	    bEscapeKey = false;
+	    if (e.isConsumed()) return;
+	    
+	    if (bIgnoreKeys) {
+	        e.consume();
+	        return;
+	    }
+	    
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			bConsumeEsc = false;
 			if (!textField.getText().equals(prevText)) {
-				bConsumeEsc = true;
+			    bEscapeKey = true;
 				e.consume();
-				textField.setText(prevText);
 			}
-			textField.selectAll();
 		} else if (e.getKeyCode() == KeyEvent.VK_SPACE && ((e.getModifiers() & Event.CTRL_MASK) > 0)) {
 			// could be invoking insert-field (see InsertFieldTextController)
-			//..qqqqqqqqqqqqqqqq
 			bMousePressed = true;
 		}
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE && bConsumeEsc) {
-			e.consume();
-		}
-	}
-
-	@Override
 	public void keyTyped(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE && bConsumeEsc) {
-			e.consume();
-			return;
+        if (e.isConsumed()) return;
+        
+        if (bIgnoreKeys) {
+            e.consume();
+            return;
+        }
+        
+		if (bEscapeKey) { // note: e.keycode = 0 (not 27) at this point
+            if (!textField.getText().equals(prevText)) {
+                textField.setText(prevText);
+                textField.selectAll();
+                e.consume();
+            }
+            else bEscapeKey = false;
 		}
 	}
 
+    @Override
+    public void keyReleased(KeyEvent e) {
+        if (bIgnoreKeys) {
+            e.consume();
+            return;
+        }
+        
+        if (bEscapeKey) {
+            bEscapeKey = false;
+            e.consume();
+        }
+    }
+	
+	
 	private boolean bMousePressed;
 
 	@Override

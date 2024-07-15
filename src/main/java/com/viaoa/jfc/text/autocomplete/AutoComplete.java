@@ -32,8 +32,7 @@ import javax.swing.event.CaretListener;
 import javax.swing.plaf.TextUI;
 import javax.swing.text.*;
 
-import com.viaoa.jfc.OAJfcUtil;
-import com.viaoa.jfc.OATable;
+import com.viaoa.jfc.*;
 
 
 /**
@@ -67,74 +66,89 @@ public abstract class AutoComplete {
         
         
         txt.addKeyListener(new KeyAdapter() {
-            boolean bIgnore = false;
+            boolean bIgnore;
+
             @Override
             public void keyPressed(KeyEvent e) {
+                if (!popup.isVisible()) return;
+
                 bIgnore = false;
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_DOWN:
-                        if (popup.isVisible()) {
-                            int si = list.getSelectedIndex(); 
-                            if (si < list.getModel().getSize() - 1) { 
-                                list.setSelectedIndex(si + 1); 
-                                list.ensureIndexIsVisible(si + 1); 
-                            } 
-                            bIgnore = true;
-                        }
+                        int si = list.getSelectedIndex(); 
+                        if (si < list.getModel().getSize() - 1) { 
+                            list.setSelectedIndex(si + 1); 
+                            list.ensureIndexIsVisible(si + 1); 
+                        } 
+                        bIgnore = true;
                         break;
                     case KeyEvent.VK_UP:
-                        if (popup.isVisible()) {
-                            int si = list.getSelectedIndex(); 
-                            if (si > 0) { 
-                                list.setSelectedIndex(--si); 
-                                list.ensureIndexIsVisible(si); 
-                            } 
-                            bIgnore = true;
-                        }
+                        si = list.getSelectedIndex(); 
+                        if (si > 0) { 
+                            list.setSelectedIndex(--si); 
+                            list.ensureIndexIsVisible(si); 
+                        } 
+                        bIgnore = true;
                         break;
                     case KeyEvent.VK_PAGE_DOWN:
-                        if (popup.isVisible()) {
-                            int si = list.getSelectedIndex();
-                            int rc = list.getVisibleRowCount();
-                            si += rc;
-                            int max = list.getModel().getSize();
-                            if (si >= max) si = max-1;
-                            if (si < 0) si = 0;
-                            list.setSelectedIndex(si); 
-                            list.ensureIndexIsVisible(si); 
-                            bIgnore = true;
-                        }
+                        si = list.getSelectedIndex();
+                        int rc = list.getVisibleRowCount();
+                        si += rc;
+                        int max = list.getModel().getSize();
+                        if (si >= max) si = max-1;
+                        if (si < 0) si = 0;
+                        list.setSelectedIndex(si); 
+                        list.ensureIndexIsVisible(si); 
+                        bIgnore = true;
                         break;
                     case KeyEvent.VK_PAGE_UP:
-                        if (popup.isVisible()) {
-                            int si = list.getSelectedIndex();
-                            int rc = list.getVisibleRowCount();
-                            si -= rc;
-                            if (si < 0) si = 0;
-                            list.setSelectedIndex(si); 
-                            list.ensureIndexIsVisible(si); 
-                            bIgnore = true;
-                        }
+                        si = list.getSelectedIndex();
+                        rc = list.getVisibleRowCount();
+                        si -= rc;
+                        if (si < 0) si = 0;
+                        list.setSelectedIndex(si); 
+                        list.ensureIndexIsVisible(si); 
+                        bIgnore = true;
                         break;
                     case KeyEvent.VK_ESCAPE:
-                        if (popup.isVisible()) {
-                            popup.setVisible(false);
-                            bIgnore = true;
-                        }
+                        bIgnore = true;
                         break;
                     case KeyEvent.VK_ENTER:
-                        if (popup.isVisible()) {
-                            setTextWithSelectionFromList();
-                            popup.setVisible(false); 
-                            bIgnore = true;
-                        }
+                        setTextWithSelectionFromList();
+                        bIgnore = true;
                         break;
                 }
-                if (!bIgnore) {
-                    super.keyPressed(e);
+                if (bIgnore) {
+                    e.consume();
+                    
+                    if (txt instanceof OATextField) {
+                        ((OATextField) txt).getController().setIgnoreKeyEvents(true);
+                    }
                 }
-                else e.consume(); 
             }  
+            
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (bIgnore) {
+                    e.consume(); 
+                }
+            }
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (!bIgnore) return;
+                bIgnore = false;
+                e.consume(); 
+
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_ESCAPE:
+                    case KeyEvent.VK_ENTER:
+                        popup.setVisible(false); 
+                }
+                
+                if (txt instanceof OATextField) {
+                    ((OATextField) txt).getController().setIgnoreKeyEvents(false);
+                }
+            }
         });
 
         txt.addCaretListener(new CaretListener() {
@@ -222,7 +236,6 @@ public abstract class AutoComplete {
         
         popup.setBorder(border); 
         popup.add(scroll);
-        
     }
 
     protected void setTextWithSelectionFromList() {
@@ -251,6 +264,15 @@ public abstract class AutoComplete {
     }
     
     
+    protected int getBeginPosition(int posCaret) throws Exception {
+        int begin = Utilities.getWordStart(txt, posCaret);
+        if (begin == posCaret && posCaret > 0) {
+            begin = Utilities.getWordStart(txt, posCaret-1);
+        }
+        return begin;
+    }
+    
+    
     public void showAutoComplete() {
         if (!txt.isEditable()) return;
         //if (popup.isVisible()) popup.setVisible(false); 
@@ -262,10 +284,7 @@ public abstract class AutoComplete {
         
         try {
             // find begin of word
-            begin = Utilities.getWordStart(txt, end);
-            if (begin == end && end > 0) {
-                begin = Utilities.getWordStart(txt, end-1);
-            }
+            begin = getBeginPosition(begin);
             /* was:
             for ( ;begin >= 0; begin--) {
                 String s = doc.getText(begin, 1);

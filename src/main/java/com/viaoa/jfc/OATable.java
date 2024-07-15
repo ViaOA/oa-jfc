@@ -1141,6 +1141,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		this.hubSelect = hub;
 		int x = (hub == null) ? ListSelectionModel.SINGLE_SELECTION : ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
 		getSelectionModel().setSelectionMode(x);
+		if (hub != null && this.hub != null && hub.getSize() == 0 && this.hub.getAO() != null) hub.add(this.hub.getAO());
 		control.setSelectHub(hubSelect, bAllowRemovingFromSelectHub);
 		// 20190117 this should be turned on by calliing setMultiSelectControlKey(true)
 		//bMultiSelectControlKey = (hub != null);
@@ -4536,7 +4537,7 @@ class TableController extends OAJfcController implements ListSelectionListener {
 				qq++;
 			} finally {
 				if (hubSelect != null && hubSelect.size() == 0) {
-					hub.setPos(-1); //20180605
+					hub.setPos(-1);
 				}
 				aiIgnoreValueChanged.decrementAndGet();
 			}

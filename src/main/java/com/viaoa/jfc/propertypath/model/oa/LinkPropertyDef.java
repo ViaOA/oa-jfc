@@ -17,6 +17,7 @@ import com.viaoa.annotation.*;
 public class LinkPropertyDef extends OAObject {
     private static final long serialVersionUID = 1L;
     public static final String P_Name = "Name";
+    public static final String P_LowerName = "LowerName";
     public static final String P_DisplayName = "DisplayName";
     public static final String P_Type = "Type";
      
@@ -25,6 +26,7 @@ public class LinkPropertyDef extends OAObject {
     public static final String P_ToObjectDef = "ToObjectDef";
      
     protected String name;
+    protected String lowerName;
     protected String displayName;
     protected int type;
     public static final int TYPE_One = 0;
@@ -44,8 +46,7 @@ public class LinkPropertyDef extends OAObject {
     public LinkPropertyDef() {
     }
      
-    @OAProperty(maxLength = 4, displayLength = 4)
-    @OAColumn(maxLength = 4)
+    @OAProperty(displayLength = 18)
     public String getName() {
         return name;
     }
@@ -54,6 +55,18 @@ public class LinkPropertyDef extends OAObject {
         String old = name;
         this.name = newValue;
         firePropertyChange(P_Name, old, this.name);
+    }
+    
+    @OAProperty(displayLength = 18)
+    @OAColumn()
+    public String getLowerName() {
+        return lowerName;
+    }
+
+    public void setLowerName(String newValue) {
+        String old = lowerName;
+        this.lowerName = newValue;
+        firePropertyChange(P_LowerName, old, this.lowerName);
     }
     
      

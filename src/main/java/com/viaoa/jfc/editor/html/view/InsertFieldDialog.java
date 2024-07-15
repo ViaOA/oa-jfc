@@ -197,13 +197,14 @@ public class InsertFieldDialog extends JDialog {
     public OAComboBox getCustomFieldsComboBox() {
         if (cboCustomFields != null) return cboCustomFields;
         cboCustomFields = new OAComboBox(hubCustomFields, "", 20);
-        //cboCustomFields.setPopupColumns(24);
+        cboCustomFields.setPopupColumns(24);
         return cboCustomFields;
     }
 
     public OAComboBox getCustomCommandsComboBox() {
         if (cboCustomCommands != null) return cboCustomCommands;
-        cboCustomCommands = new OAComboBox(hubCustomCommands, "", 20);
+        cboCustomCommands = new OAComboBox(hubCustomCommands, "", 32);
+        cboCustomCommands.setPopupColumns(46);
         return cboCustomCommands;
     }
 
