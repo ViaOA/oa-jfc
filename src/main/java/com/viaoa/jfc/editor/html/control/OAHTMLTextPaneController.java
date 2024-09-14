@@ -131,8 +131,10 @@ import com.viaoa.util.OAConv;
 import com.viaoa.util.OAString;
 
 /**
- * Expands on OATextController to create an HTML word processor. NOTE: this is now used internally by OAHTMLTextPane, and does not need to
- * be create separately.
+ * Expands on OATextController to create an HTML word processor. 
+ * 
+ * NOTE: used internally by OAHTMLTextPane
+ * 
  * <ul>
  * <li>menuItems and buttons
  * <li>dialogs for colors, editing source, search/replace, spell check, etc.
@@ -1030,6 +1032,8 @@ public class OAHTMLTextPaneController extends OATextController {
 		}
 		return miSelectParagraph;
 	}
+	
+	
 
 	public JMenuItem getPopupSelectParagraphMenuItem() {
 		if (pmiSelectParagraph == null) {
@@ -1825,7 +1829,7 @@ public class OAHTMLTextPaneController extends OATextController {
 	private JMenuItem pmiInsertTableRow;
 
 	protected JMenuItem createInsertTableRowMenuItem() {
-		JMenuItem mi = new JMenuItem("Table Row...");
+		JMenuItem mi = new JMenuItem("Table Row ...");
 		mi.setMnemonic(KeyEvent.VK_R);
 		mi.setToolTipText("Insert Table Row");
 		mi.setIcon(new ImageIcon(getImageURL("table.gif")));
@@ -1869,7 +1873,7 @@ public class OAHTMLTextPaneController extends OATextController {
 	private JMenuItem pmiInsertTableColumn;
 
 	protected JMenuItem createInsertTableColumnMenuItem() {
-		JMenuItem mi = new JMenuItem("Table Column...");
+		JMenuItem mi = new JMenuItem("Table Column ...");
 		mi.setMnemonic(KeyEvent.VK_C);
 		mi.setToolTipText("Insert Table Column");
 		mi.setIcon(new ImageIcon(getImageURL("table.gif")));
@@ -2479,7 +2483,7 @@ public class OAHTMLTextPaneController extends OATextController {
 
 	protected JMenuItem createEditBlockMenuItem() {
 		JMenuItem miEditBlock = new JMenuItem("Paragraph properties ...");
-		miEditBlock.setToolTipText("Edit HTML source code");
+		miEditBlock.setToolTipText("Edit Properties for selected paragraph");
 		miEditBlock.setMnemonic(KeyEvent.VK_P);
 
 		miEditBlock.setIcon(new ImageIcon(getImageURL("paragraph.gif")));
@@ -2509,7 +2513,7 @@ public class OAHTMLTextPaneController extends OATextController {
 	public JButton getEditBlockButton() {
 		if (cmdEditBlock == null) {
 			cmdEditBlock = new JButton();
-			cmdEditBlock.setToolTipText("Edit paragraph properties");
+			cmdEditBlock.setToolTipText("Edit properties for selected Paragraph");
 			cmdEditBlock.setRequestFocusEnabled(false);
 			cmdEditBlock.setFocusPainted(false);
 			OAButton.setupButton(cmdEditBlock);
@@ -2919,13 +2923,19 @@ public class OAHTMLTextPaneController extends OATextController {
 		toolBar.add(getSplitHyperLinkButton());
 
 		toolBar.addSeparator();
+		
+//qqqqqqqqqqqqqqqqqqq		
+		toolBar.add(getEditBlockButton());		
+		
 		toolBar.add(getEditSourceButton());
 
 		updateEnabled();
 
 		return toolBar;
 	}
-
+    
+    
+	
 	public void onFontChange() {
 		if (dlgFont == null) {
 			dlgFont = new FontDialog(getWindow(), getFontNames(), fontSizes);

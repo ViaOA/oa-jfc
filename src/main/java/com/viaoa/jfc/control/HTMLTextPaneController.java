@@ -260,7 +260,9 @@ public abstract class HTMLTextPaneController extends OAJfcController implements 
 			if (newText == null) {
 				newText = "";
 			}
-			newText = OAHTMLParser.removeBody(newText); // store inner (clean) html only
+			// 20240807 removed this so that 'head' data is not lost
+			// qqqqqq might want to make this an option in OAHTMLTextPane
+			// newText = OAHTMLParser.removeBody(newText); // store inner (clean) html only
 
 			boolean bChange = OAString.compare(newText, prevText) != 0 || (imageChangeCount != editor.getImageChangeCount());
 

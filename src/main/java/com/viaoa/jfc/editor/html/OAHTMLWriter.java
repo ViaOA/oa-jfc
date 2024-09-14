@@ -10,17 +10,13 @@
 */
 package com.viaoa.jfc.editor.html;
 
+import java.io.*;
+import java.util.*;
+
 import javax.swing.text.*;
 import javax.swing.text.html.*;
 
-import java.io.Writer;
-import java.util.Stack;
-import java.util.Enumeration;
-import java.util.Vector;
-import java.io.IOException;
-import java.util.StringTokenizer;
-import java.util.NoSuchElementException;
-import java.net.URL;
+import com.viaoa.util.OAStr;
 
 /**
  * This is a writer for HTMLDocuments.
@@ -100,6 +96,7 @@ public class OAHTMLWriter extends AbstractWriter {
      */
     public OAHTMLWriter(Writer w, HTMLDocument doc) {
         this(w, doc, 0, doc.getLength());
+        completeDoc = true;
     }
 
     /**
@@ -116,10 +113,23 @@ public class OAHTMLWriter extends AbstractWriter {
      */
     public OAHTMLWriter(Writer w, HTMLDocument doc, int pos, int len) {
         super(w, doc, pos, len);
-        completeDoc = (pos == 0 && len == doc.getLength());
+        completeDoc = (pos == 0 && len >= doc.getLength());
         setLineLength(80);
     }
 
+    private Element elementToWrite;
+    public OAHTMLWriter(Writer w, HTMLDocument doc, Element element) {
+        this(w, doc, element.getStartOffset(), element.getEndOffset() -  element.getStartOffset());
+        elementToWrite = element;
+        completeDoc = false;
+    }
+
+    private boolean bInnerOnly;
+    public void writeInner() throws IOException, BadLocationException {
+        bInnerOnly = true;
+        write();
+    }
+    
     /**
      * Iterates over the Element tree and controls the writing out of all the
      * tags and its attributes.
@@ -132,8 +142,8 @@ public class OAHTMLWriter extends AbstractWriter {
      */
     public void write() throws IOException, BadLocationException {
         ElementIterator it = getElementIterator();
-        Element current = null;
-        Element next = null;
+        Element currentElement = null;
+        Element nextElement = null;
 
         wroteHead = false;
         setCurrentLineLength(0);
@@ -144,32 +154,44 @@ public class OAHTMLWriter extends AbstractWriter {
         }
         inPre = false;
         boolean forcedBody = false;
-        while ((next = it.next()) != null) {
-            if (!inRange(next)) {
-                if (completeDoc && next.getAttributes().getAttribute(StyleConstants.NameAttribute) == HTML.Tag.BODY) {
+        boolean bFoundElementToWrite = (elementToWrite == null);
+        while ((nextElement = it.next()) != null) {
+            
+            if (elementToWrite != null) {
+                if (nextElement == elementToWrite) {
+                    bFoundElementToWrite = true;
+                    if (bInnerOnly) continue; // start at the next one
+                }
+                if (!bFoundElementToWrite) {
+                    continue;
+                }
+            }
+            
+            if (!inRange(nextElement)) {
+                if (completeDoc && nextElement.getAttributes().getAttribute(StyleConstants.NameAttribute) == HTML.Tag.BODY) {
                     forcedBody = true;
                 }
                 else {
                     continue;
                 }
             }
-            if (current != null) {
+            if (currentElement != null) {
 
                 /*
                  * if next is child of current increment indent
                  */
 
-                if (indentNeedsIncrementing(current, next)) {
+                if (indentNeedsIncrementing(currentElement, nextElement)) {
                     incrIndent();
                 }
-                else if (current.getParentElement() != next.getParentElement()) {
+                else if (currentElement.getParentElement() != nextElement.getParentElement() && !blockElementStack.isEmpty()) {
                     /*
                      * next and current are not siblings so emit end tags for
                      * items on the stack until the item on top of the stack, is
                      * the parent of the next.
                      */
                     Element top = (Element) blockElementStack.peek();
-                    while (top != next.getParentElement()) {
+                    while (top != nextElement.getParentElement()) {
                         /*
                          * pop() will return top.
                          */
@@ -181,30 +203,31 @@ public class OAHTMLWriter extends AbstractWriter {
                             }
                             endTag(top);
                         }
+                        if (blockElementStack.isEmpty()) break;                        
                         top = (Element) blockElementStack.peek();
                     }
                 }
-                else if (current.getParentElement() == next.getParentElement()) {
+                else if (currentElement.getParentElement() == nextElement.getParentElement() && !blockElementStack.isEmpty()) {
                     /*
                      * if next and current are siblings the indent level is
                      * correct. But, we need to make sure that if current is on
                      * the stack, we pop it off, and put out its end tag.
                      */
                     Element top = (Element) blockElementStack.peek();
-                    if (top == current) {
+                    if (top == currentElement) {
                         blockElementStack.pop();
                         endTag(top);
                     }
                 }
             }
-            if (!next.isLeaf() || isFormElementWithContent(next.getAttributes())) {
-                blockElementStack.push(next);
-                startTag(next);
+            if (!nextElement.isLeaf() || isFormElementWithContent(nextElement.getAttributes())) {
+                blockElementStack.push(nextElement);
+                startTag(nextElement);
             }
             else {
-                emptyTag(next);
+                emptyTag(nextElement);
             }
-            current = next;
+            currentElement = nextElement;
         }
         /* Emit all remaining end tags */
 
@@ -216,16 +239,16 @@ public class OAHTMLWriter extends AbstractWriter {
 
         if (forcedBody) {
             blockElementStack.pop();
-            endTag(current);
+            endTag(currentElement);
         }
         while (!blockElementStack.empty()) {
-            current = (Element) blockElementStack.pop();
-            if (!synthesizedElement(current)) {
-                AttributeSet attrs = current.getAttributes();
+            currentElement = (Element) blockElementStack.pop();
+            if (!synthesizedElement(currentElement)) {
+                AttributeSet attrs = currentElement.getAttributes();
                 if (!matchNameAttribute(attrs, HTML.Tag.PRE) && !isFormElementWithContent(attrs)) {
                     decrIndent();
                 }
-                endTag(current);
+                endTag(currentElement);
             }
         }
 
@@ -443,10 +466,8 @@ public class OAHTMLWriter extends AbstractWriter {
             indentSmart();
             write("<base href=\"" + document.getBase() + "\">");
             writeLineSeparator();
-            // vv }
             decrIndent();
         }
-
     }
 
     /**
@@ -1176,11 +1197,57 @@ public class OAHTMLWriter extends AbstractWriter {
      * found to arguments of an HTML style attribute.
      */
     private static void convertToHTML40(AttributeSet from, MutableAttributeSet to) {
+        final String match = "top:bottom:right:left:";
         Enumeration keys = from.getAttributeNames();
+        Map<String, Integer> hm = new HashMap();
+        Map<String, String> hm2 = new HashMap();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            if (!(key instanceof CSS.Attribute)) continue;
+            String s = key.toString();
+            int dcnt = OAStr.dcount(s, '-');
+            if (dcnt == 2 || dcnt == 3) {
+                String s2 = OAStr.field(s, '-', 2).toLowerCase();
+                if (match.indexOf(s2+":") >= 0) {
+                    if (dcnt == 3) s = OAStr.field(s, '-', 1) + "-" + OAStr.field(s, '-', 3);
+                    else s = OAStr.field(s, '-', 1);
+
+                    Integer ix = hm.get(s);
+                    s2 = ""+from.getAttribute(key);
+                    if (ix == null) {
+                        hm.put(s, 1);
+                        hm2.put(s, s2);
+                    }
+                    else {
+                        if (s2.equals(hm2.get(s))) {
+                            hm.put(s,  ix + 1);
+                        }
+                    }
+                }
+            }
+        }
+        
+        keys = from.getAttributeNames();
         String value = "";
         while (keys.hasMoreElements()) {
             Object key = keys.nextElement();
             if (key instanceof CSS.Attribute) {
+                String s = key.toString();
+                int dcnt = OAStr.dcount(s, '-');
+                if (dcnt == 2 || dcnt == 3) {
+                    if (dcnt == 3) s = OAStr.field(s, '-', 1) + "-" + OAStr.field(s, '-', 3);
+                    else s = OAStr.field(s, '-', 1);
+                    Integer ix = hm.get(s);
+                    if (ix != null && ix == 4) {
+                        String s2 = hm2.remove(s);
+                        if (s2 != null) {
+                            if (value.length() > 0) value += "; ";
+                            value += s + ":" + s2;
+                        }
+                        continue;
+                    }
+                }
+                
                 if (value.length() > 0) value += "; ";
                 value += key + ":" + from.getAttribute(key);
             }

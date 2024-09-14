@@ -15,7 +15,7 @@ import java.awt.Color;
 import com.viaoa.annotation.OAClass;
 import com.viaoa.hub.Hub;
 import com.viaoa.object.OAObject;
-import com.viaoa.util.OAString;
+import com.viaoa.util.*;
 
 /**
  * OAObject used for BlockDialog.
@@ -61,8 +61,8 @@ public class Block extends OAObject {
     public static final String P_BorderBottomStyle = "BorderBottomStyle";
     public static final String P_BorderLeftStyle = "BorderLeftStyle";
     
-    protected int width;
-    protected int height;
+    protected String width;
+    protected String height;
     protected int margin;
     protected int marginTop;
     protected int marginBottom;
@@ -241,6 +241,11 @@ public class Block extends OAObject {
             setBorderLeftColor(newValue);
             setBorderBottomColor(newValue);
             setBorderRightColor(newValue);
+            
+            if (newValue != null) {
+                if (getBorderWidth() == 0) setBorderWidth(1); 
+                if (getBorderStyle() == null) setBorderStyle("solid"); 
+            }
         }
     }
     
@@ -357,19 +362,19 @@ public class Block extends OAObject {
     
     
     
-    public int getHeight() {
+    public String getHeight() {
         return height;
     }
-    public void setHeight(int newValue) {
-        int old = this.height;
+    public void setHeight(String newValue) {
+        String old = this.height;
         this.height = newValue;
         firePropertyChange(P_Height, old, this.height);
     }
-    public int getWidth() {
+    public String getWidth() {
         return width;
     }
-    public void setWidth(int newValue) {
-        int old = this.width;
+    public void setWidth(String newValue) {
+        String old = this.width;
         this.width = newValue;
         firePropertyChange(P_Width, old, this.width);
     }
@@ -387,8 +392,8 @@ public class Block extends OAObject {
         // "border-style:solid; border-top-width:2;border-color:green;width:120px;");
         
         String style = "";
-        if (width > 0) style += "width:"+width+";";
-        if (height > 0) style += "height:"+height+";";
+        if (OAStr.isNotEmpty(width)) style += "width:"+width+";";
+        if (OAStr.isNotEmpty(height)) style += "height:"+height+";";
 
         if (marginTop > 0) style += "margin-top:"+marginTop+";";
         if (marginRight > 0) style += "margin-right:"+marginRight+";";

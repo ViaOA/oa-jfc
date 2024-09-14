@@ -20,12 +20,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import com.viaoa.hub.Hub;
-import com.viaoa.jfc.OAColorComboBox;
-import com.viaoa.jfc.OAComboBox;
-import com.viaoa.jfc.OATextField;
-import com.viaoa.jfc.OATree;
-import com.viaoa.jfc.OATreeComboBox;
-import com.viaoa.jfc.OATreeNode;
+import com.viaoa.jfc.*;
 import com.viaoa.jfc.editor.html.oa.Block;
 import com.viaoa.jfc.editor.html.oa.DocElement;
 
@@ -43,7 +38,7 @@ public class BlockDialog extends JDialog {
     private Hub<DocElement> hubRootDocElement;
 
     public BlockDialog(Window parent, Hub<Block> hubBlock, Hub<DocElement> hubRootDocElement, Hub<DocElement> hubDocElement) {
-        super(parent, "Paragraph settings", ModalityType.APPLICATION_MODAL);
+        super(parent, "Paragraph properties", ModalityType.APPLICATION_MODAL);
         this.hubBlock = hubBlock;
         this.hubRootDocElement = hubRootDocElement;
         this.hubDocElement = hubDocElement;
@@ -51,7 +46,7 @@ public class BlockDialog extends JDialog {
         setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
         
         setLayout(new BorderLayout());
-        add(getPanel(), BorderLayout.CENTER);
+        add(new JScrollPane(getPanel()), BorderLayout.CENTER);
         
         this.pack();
         this.setLocationRelativeTo(parent);
@@ -80,14 +75,13 @@ public class BlockDialog extends JDialog {
     private OATreeComboBox treeComboBox;
     public OATreeComboBox getTreeComboBox() {
         if (treeComboBox == null) {
-            OATree tree = new OATree(24, 64);
+            OATree tree = new OATree(24, 58);
             OATreeNode node = new OATreeNode("Name", hubRootDocElement, hubDocElement);
             tree.add(node);
-
-            node.add(node, "name");
-            
+            node.add(node, "name"); // recursive
             treeComboBox = new OATreeComboBox(tree, hubDocElement, "name");
             treeComboBox.setColumns(24);
+            treeComboBox.setMaxColumns(52);
         }
         return treeComboBox;
     }
@@ -103,26 +97,43 @@ public class BlockDialog extends JDialog {
         gc.anchor = gc.NORTHWEST;
         JLabel lbl;
         OATextField txt;
+        JComponent comp;
 
-                
         pan.add(new JLabel("HTML Element:"), gc);
         gc.gridwidth = gc.REMAINDER;
-        pan.add(getTreeComboBox(), gc);
+        gc.weightx = 1d;
+        gc.fill = gc.HORIZONTAL;
+        comp = new OAResizePanel(getTreeComboBox(), 50);
+        pan.add(comp, gc);
         gc.gridwidth = 1;
-        
+        gc.weightx = 0d;
+        gc.fill = gc.NONE;        
                 
         pan.add(new JLabel("Width:"), gc);
-        txt = new OATextField(hubBlock, Block.P_Width, 3);
+        txt = new OATextField(hubBlock, Block.P_Width, 4);
+        txt.setMaxCols(10);
         gc.gridwidth = gc.REMAINDER;
-        pan.add(txt, gc);
+        gc.weightx = 1d;
+        gc.fill = gc.HORIZONTAL;
+        comp = new OAResizePanel(txt, 50);
+        pan.add(comp, gc);
         gc.gridwidth = 1;
+        gc.weightx = 0d;
+        gc.fill = gc.NONE;        
 
         pan.add(new JLabel("Height:"), gc);
-        txt = new OATextField(hubBlock, Block.P_Height, 3);
+        txt = new OATextField(hubBlock, Block.P_Height, 4);
+        txt.setMaxCols(10);
         gc.gridwidth = gc.REMAINDER;
-        pan.add(txt, gc);
+        gc.weightx = 1d;
+        gc.fill = gc.HORIZONTAL;
+        comp = new OAResizePanel(txt, 50);
+        pan.add(comp, gc);
         gc.gridwidth = 1;
+        gc.weightx = 0d;
+        gc.fill = gc.NONE;        
 
+        
         pan.add(new JLabel("Background Color"), gc);
         OAColorComboBox ccbo = new OAColorComboBox(hubBlock, Block.P_BackgroundColor, 4);
         gc.gridwidth = gc.REMAINDER;
@@ -131,22 +142,27 @@ public class BlockDialog extends JDialog {
         
         pan.add(new JLabel("Margin:"), gc);
         txt = new OATextField(hubBlock, Block.P_Margin, 3);
+        txt.setMaxCols(10);
         pan.add(txt, gc);
 
         pan.add(new JLabel("Top"), gc);
         txt = new OATextField(hubBlock, Block.P_MarginTop, 3);
+        txt.setMaxCols(10);
         pan.add(txt, gc);
 
         pan.add(new JLabel("Right"), gc);
         txt = new OATextField(hubBlock, Block.P_MarginRight, 3);
+        txt.setMaxCols(10);
         pan.add(txt, gc);
         
         pan.add(new JLabel("Bottom"), gc);
         txt = new OATextField(hubBlock, Block.P_MarginBottom, 3);
+        txt.setMaxCols(10);
         pan.add(txt, gc);
         
         pan.add(new JLabel("Left"), gc);
         txt = new OATextField(hubBlock, Block.P_MarginLeft, 3);
+        txt.setMaxCols(10);
         gc.gridwidth = gc.REMAINDER;
         pan.add(txt, gc);
         gc.gridwidth = 1;
@@ -154,22 +170,27 @@ public class BlockDialog extends JDialog {
         
         pan.add(new JLabel("Padding:"), gc);
         txt = new OATextField(hubBlock, Block.P_Padding, 3);
+        txt.setMaxCols(10);
         pan.add(txt, gc);
 
         pan.add(new JLabel("Top"), gc);
         txt = new OATextField(hubBlock, Block.P_PaddingTop, 3);
+        txt.setMaxCols(10);
         pan.add(txt, gc);
 
         pan.add(new JLabel("Right"), gc);
         txt = new OATextField(hubBlock, Block.P_PaddingRight, 3);
+        txt.setMaxCols(10);
         pan.add(txt, gc);
         
         pan.add(new JLabel("Bottom"), gc);
         txt = new OATextField(hubBlock, Block.P_PaddingBottom, 3);
+        txt.setMaxCols(10);
         pan.add(txt, gc);
 
         pan.add(new JLabel("Left"), gc);
         txt = new OATextField(hubBlock, Block.P_PaddingLeft, 3);
+        txt.setMaxCols(10);
         gc.gridwidth = gc.REMAINDER;
         pan.add(txt, gc);
         gc.gridwidth = 1;
@@ -177,22 +198,27 @@ public class BlockDialog extends JDialog {
         
         pan.add(new JLabel("Border Width:"), gc);
         txt = new OATextField(hubBlock, Block.P_BorderWidth, 3);
+        txt.setMaxCols(10);
         pan.add(txt, gc);
 
         pan.add(new JLabel("Top"), gc);
         txt = new OATextField(hubBlock, Block.P_BorderTopWidth, 3);
+        txt.setMaxCols(10);
         pan.add(txt, gc);
 
         pan.add(new JLabel("Right"), gc);
         txt = new OATextField(hubBlock, Block.P_BorderRightWidth, 3);
+        txt.setMaxCols(10);
         pan.add(txt, gc);
         
         pan.add(new JLabel("Bottom"), gc);
         txt = new OATextField(hubBlock, Block.P_BorderBottomWidth, 3);
+        txt.setMaxCols(10);
         pan.add(txt, gc);
         
         pan.add(new JLabel("Left"), gc);
         txt = new OATextField(hubBlock, Block.P_BorderLeftWidth, 3);
+        txt.setMaxCols(10);
         gc.gridwidth = gc.REMAINDER;
         pan.add(txt, gc);
         gc.gridwidth = 1;
@@ -224,31 +250,31 @@ public class BlockDialog extends JDialog {
         pan.add(new JLabel("Border Style"), gc);
         Hub<String> h = Block.getBorderStyles();
         h.setLinkHub(hubBlock, Block.P_BorderStyle);
-        OAComboBox cbo = new OAComboBox(h, "", 6);
+        OAComboBox cbo = new OAComboBox(h, "", 7);
         pan.add(cbo, gc);
         
         pan.add(new JLabel("Top"), gc);
         h = Block.getBorderStyles();
         h.setLinkHub(hubBlock, Block.P_BorderTopStyle);
-        cbo = new OAComboBox(h, "", 6);
+        cbo = new OAComboBox(h, "", 7);
         pan.add(cbo, gc);
 
         pan.add(new JLabel("Right"), gc);
         h = Block.getBorderStyles();
         h.setLinkHub(hubBlock, Block.P_BorderRightStyle);
-        cbo = new OAComboBox(h, "", 6);
+        cbo = new OAComboBox(h, "", 7);
         pan.add(cbo, gc);
         
         pan.add(new JLabel("Bottom"), gc);
         h = Block.getBorderStyles();
         h.setLinkHub(hubBlock, Block.P_BorderBottomStyle);
-        cbo = new OAComboBox(h, "", 6);
+        cbo = new OAComboBox(h, "", 7);
         pan.add(cbo, gc);
         
         pan.add(new JLabel("Left"), gc);
         h = Block.getBorderStyles();
         h.setLinkHub(hubBlock, Block.P_BorderLeftStyle);
-        cbo = new OAComboBox(h, "", 6);
+        cbo = new OAComboBox(h, "", 7);
         gc.gridwidth = gc.REMAINDER;
         pan.add(cbo, gc);
         gc.gridwidth = 1;
@@ -344,7 +370,53 @@ public class BlockDialog extends JDialog {
     
 
     public static void main(String[] args) {
-        InsertHyperlinkDialog dlg = new InsertHyperlinkDialog(null);
+        Hub hub = new Hub<Block>(Block.class);
+        hub.add(new Block());
+        hub.setPos(0);
+        BlockDialog dlg = new BlockDialog(null, hub, new Hub<DocElement>(DocElement.class), new Hub<DocElement>(DocElement.class));
+        dlg.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+        dlg.addWindowListener(new WindowListener() {
+            
+            @Override
+            public void windowOpened(WindowEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void windowIconified(WindowEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+                System.exit(0);
+            }
+            
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+            
+            @Override
+            public void windowClosed(WindowEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void windowActivated(WindowEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+        });
         dlg.setVisible(true);
         
     }

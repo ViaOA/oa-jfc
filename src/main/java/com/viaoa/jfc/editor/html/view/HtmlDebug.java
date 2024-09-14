@@ -154,13 +154,47 @@ public class HtmlDebug {
     }
     
 /*
+    HtmlDebug hd = new HtmlDebug(txtHtml);
     JSplitPane sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     sp.setDividerSize(10);
     sp.setOneTouchExpandable(true);
     
-    sp.setLeftComponent(getOutlinePanel());
+    sp.setLeftComponent(hd);
     sp.setRightComponent(new JScrollPane(editor));
     //sp.setDividerLocation(sp.getMinimumDividerLocation());
 */
+
+/*
+
+    public OAPanel createTemplateHTMLTextPanel() {
+        OAHTMLTextPane txthtml = createTemplateHTMLTextPane();
+
+        OAPanel pan = new OAPanel(txthtml);
+        pan.setLayout(new BorderLayout());
+        pan.add(new OAScroller(txthtml.getToolBar()), BorderLayout.NORTH);
+        pan.add(new JScrollPane(txthtml), BorderLayout.CENTER);
+     
+        HtmlDebug hd = new HtmlDebug(txthtml);
+        JSplitPane sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        sp.setDividerSize(10);
+        sp.setOneTouchExpandable(true);
+        
+        sp.setLeftComponent(hd.getPanel());
+        sp.setRightComponent(pan);
+        //sp.setDividerLocation(sp.getMinimumDividerLocation());
+        
+        return pan;
+    }
+
+    public OAHTMLTextPane createTemplateHTMLTextPane() {
+        OAHTMLTextPane html = new OAHTMLTextPane(getHub(), ReportDef.P_Template);
+        html.setSpellChecker(Resource.getSpellChecker());
+        html.setPreferredSize(10,  30);
+        // need to create a place to have the images stored
+        html.createImageHandler(ImageStore.class, ImageStore.P_Bytes, ImageStore.P_OrigFileName, ImageStore.P_Id);
+        return html;
+    }
+*/
+
 }
 

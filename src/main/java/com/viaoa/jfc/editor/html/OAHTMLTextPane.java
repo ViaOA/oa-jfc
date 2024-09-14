@@ -64,7 +64,7 @@ import com.viaoa.jfc.print.OAPrintUtil;
 import com.viaoa.jfc.print.OAPrintable;
 import com.viaoa.jfc.text.spellcheck.SpellChecker;
 import com.viaoa.object.OAObject;
-import com.viaoa.util.OAString;
+import com.viaoa.util.*;
 
 /*
     see changes for converting/reading HTML
@@ -72,10 +72,43 @@ import com.viaoa.util.OAString;
 
 */
 
-/*
- * Text pane used for html styled editor.
- *
- * Subclasses JTextPane and adds support for pasting and printing:
+/* CSS Notes
+
+border-width: 1;
+    border-top-width: 1;
+    border-right-width: 1;
+    border-left-width: 1;
+    border-bottom-width: 1;
+
+see: main.css in OATemplate 
+see: html.css in oajfc
+
+does not support text-overflow
+  use format instead: school.name, '25L.'
+  does not support max-width and min-width CSS properties.
+only supports CSS1, features like max-width, min-width, max-height, and min-height were introduced in CSS2
+
+
+border-spacing: 0; // cell spacing inside tables
+
+html tags dont appear to support multiple classes
+   need to create a single one that combines.
+
+Child selectors ">" are not supported
+
+does not support multiple classes per tag:
+To ensure consistent styling, it's better to assign only one class per element and, if needed, combine the styles into a single class in your CSS.
+
+CSS Units: Relative units like em, rem, and % are not supported. 
+     Swing mostly supports absolute units like px for font sizes.
+
+Notes:  
+?? for oatemplate values (ex: format), use single quotes instead of double, which can get converted to &quot;
+
+
+*/
+
+ /*
  * <ul>
  * <li>setBase can be used to set base location to a jar file url.
  * <li>Pasting will clean up html to make it compatible.
@@ -108,6 +141,9 @@ import com.viaoa.util.OAString;
  *
  * !!! Important !!!! this is from javax.swing.text.html.CSS.java
  * http://docs.oracle.com/javase/6/docs/api/javax/swing/text/html/CSS.html
+ *
+ * see main.css for the default used by oa-jfc
+ *
  *
  * Defines a set of CSS attributes as a typesafe enumeration. The HTML View
  * implementations use CSS attributes to determine how they will render. This
@@ -163,9 +199,9 @@ import com.viaoa.util.OAString;
  *
  *
  * ** NOTE **
- *  for Table, if the Border attr is used, then it's value will be used for all TD border-width,
+ *  for Table, if the html "border" attr is used (ex: "border=2", then it's value will be used for all TD border-width,
  *      for any TD inside of it (even inner tables)
- *  set Table attribute "BORDER=0" to remove lines
+ *  set Table attribute "BORDER=0" to remove lines, which will use the default main.css values.
  *
  * <li>list-style-type
  * <li>list-style-position
@@ -216,7 +252,7 @@ Example:
  * <li>list-style
  * </ul>
  * <p>
- * <b>Note: for the time being we do not fully support relative units, unless
+ * <b>Note: does not fully support relative units, unless
  * noted, so that p { margin-top: 10% } will be treated as if no margin-top was
  * specified.
  *
@@ -261,10 +297,10 @@ Example:
               Concrete Designs Inc.<br>
               650 N. Broad St.<br>
               Tucson, AZ 45213<br>
-              Phone: (521) 625-6853<br>
-              Fax: (521) 625-3220<br>
+              Phone: (541) 895-6053<br>
+              Fax: (521) 825-3220<br>
               <nobr>
-                <u>www.concrete-designs-inc.com</u>
+                <u>www.concrete-designs.com</u>
               </nobr>
             </td>
 
@@ -280,12 +316,12 @@ Example:
         </table>
       </body>
     </html>
+*/
 
-
-
-
-
+/**
+ * Text pane used for html styled editor.
  *
+ * 
  * @see OAHTMLTextPaneController for binding, added features, usage and sample
  * @see OAHTMLDocument
  * @author vvia
@@ -350,9 +386,12 @@ public class OAHTMLTextPane extends JTextPane implements OAPrintable {
 	 * @param jarURI ex: jar:file:dispatcherlg.jar!/com/oldcastle/dispatcher
 	 */
 	public void setBase(String binDir, String jarURI) throws Exception {
-		File file = new File(com.viaoa.util.OAString.convertFileName(binDir));
+	    File file;
+	    if (OAStr.isEmpty(binDir)) file = null;
+	    else file = new File(com.viaoa.util.OAString.convertFileName(binDir));
+	    
 		URL url;
-		if (file.exists()) {
+		if (file != null && file.exists()) {
 			url = file.toURI().toURL();
 		} else {
 			url = new URL(jarURI);
@@ -406,6 +445,9 @@ public class OAHTMLTextPane extends JTextPane implements OAPrintable {
 				_setText2(text);
 				break;
 			} catch (Exception e) {
+			    // e.printStackTrace();
+			    int xx = 4;
+			    xx++;//qqqqqqqqqqqqq
 				// concurrency error, will retry up to 5 times
 			}
 		}
@@ -1236,6 +1278,7 @@ public class OAHTMLTextPane extends JTextPane implements OAPrintable {
 	 * doc.setParagraphAttributes(pos, 0, sas, true);
 	 *
 	 * Dictionary cache = (Dictionary) getDocument().getProperty(OAHTMLDocument.IMAGE_CACHE_PROPERTY); if (cache != null) { cache.put(srcName, img); } } */
+	
 	/**
 	 * This can be overwritten to intercept any images that are updated, so that it can be stored in a central location.
 	 *

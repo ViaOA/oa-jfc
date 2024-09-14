@@ -5,16 +5,19 @@
 
 /*
  * @(#)default.css	1.54 05/11/17
+ 
+ NOTE: modified for oa-jfc
+ 
  */
 
-body  {font-size: 14pt;
-       font-family: Serif;
+body  {font-size: 11pt; /* was 14 */
+       font-family: Dialog; /* was Serif */
        font-weight: normal;
        margin-left: 0;
        margin-right: 0;
        color: black}
 
-p   {margin-top: 0; /*vv was: 15 */
+p   {margin-top: 0; /* was: 15 */
 	} 
 
 h1  {font-size: x-large;
@@ -46,6 +49,11 @@ h6 {font-size: xx-small;
     font-weight: bold;
     margin-top: 10;
     margin-bottom: 10}
+
+div.background {
+	background-color: white;
+}
+
 
 li p {margin-top: 0;
     margin-bottom: 0}
@@ -192,38 +200,42 @@ var {font-weight: bold;
      font-style: italic}
 
 table {
-	border-color: Gray;
-	border-style: outset
-    /* border-style: none */
+	border-color: silver;  /* gray */
+	border-style: none;
+    /* 
+       border-style: none, solid, outset, inset ... 
+    */
+    border-spacing: 0;
+    border-width: 1; /* to set for for grid borders: only set td, th */
 }
 
 tr {
-	text-align: left
-}
-
-td {
-	border-color: Gray;
-
-    border-style: inset;
-
-    /* border-style: none */
-
-    padding-left: 3;
-	padding-right: 3;
-	padding-top: 3;
-	padding-bottom: 3
+	text-align: left;
+	border-style: none;
 }
 
 th {
-	text-align: center;
+    text-align: left;
 	font-weight: bold;
-	border-color: Gray;
-	border-style: inset;
+	border-width: 1px;
+	border-color: silver;
+	border-style: solid;
 	padding-left: 3;
 	padding-right: 3;
-	padding-top: 3;
-	padding-bottom: 3
+	padding-top: 1;
+	padding-bottom: 1;
 }
+
+td {
+    border-width: 1px;
+	border-color: silver; 
+    border-style: solid;
+    padding-left: 3;
+	padding-right: 3;
+	padding-top: 1;
+	padding-bottom: 1;
+}
+
 
 address {
 	color: blue;

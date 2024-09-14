@@ -58,12 +58,15 @@ public abstract class OAHTMLEditorKit extends HTMLEditorKit {
         // copy Styles from EditorKit to Document
         StyleSheet current = getStyleSheet();
         StyleSheet ss = new StyleSheet();
+
         ss.addStyleSheet(current);
         // in css: ss.addRule("p {margin-top: 0}");
         // in css: ss.addRule("body { font-family: Arial; font-size: 12pt; }"); // sans-serif
         
         // add a CSS rule to force body tags to use the default label font
         // instead of the value in javax.swing.text.html.default.csss
+        
+/* 20240908 removed.  now using values in html.css under element body         
         Font font = UIManager.getFont("Label.font");
         String fontFamilyName = "Arial";
         if (font == null) {
@@ -73,7 +76,12 @@ public abstract class OAHTMLEditorKit extends HTMLEditorKit {
         else fontFamilyName = font.getFamily();
         
         String defaultFont = "body { font-family: " + fontFamilyName + "; " +"font-size: 12pt; }";
+*/        
+      
+        // 20240909 same as html.css
+        String defaultFont = "body { font-family: Dialog; font-size: 11pt; }";
         ss.addRule(defaultFont);
+        
         return ss;
     }
     
@@ -81,6 +89,14 @@ public abstract class OAHTMLEditorKit extends HTMLEditorKit {
     public void write(Writer out, Document doc, int pos, int len) throws IOException, BadLocationException {
         OAHTMLWriter w = new OAHTMLWriter(out, (HTMLDocument) doc, pos, len);
         w.write();    
+    }
+    public void write(Writer out, Document doc, Element ele) throws IOException, BadLocationException {
+        OAHTMLWriter w = new OAHTMLWriter(out, (HTMLDocument) doc, ele);
+        w.write();    
+    }
+    public void writeInner(Writer out, Document doc, Element ele) throws IOException, BadLocationException {
+        OAHTMLWriter w = new OAHTMLWriter(out, (HTMLDocument) doc, ele);
+        w.writeInner();    
     }
     
     /**

@@ -309,7 +309,7 @@ public class OAHTMLDocument extends HTMLDocument {
                 if (key == HTML.Attribute.VALIGN) {
                     // hack: HTML.Attribute.VALIGN is needed, since
                     // text.html.TabelView does not use use css.vertical-align,
-                    // see javax.swing.text.html.CSS.java for list of support
+                    // see javax.swing.text.html.CSS.java for list of supported
                     // tags
                     continue;
                 }
@@ -367,22 +367,24 @@ public class OAHTMLDocument extends HTMLDocument {
     public void setAttributes(Element e, AttributeSet attributeSet) {
         try {
             writeLock();
-            int offset = e.getStartOffset();
-            int length = Math.max(0, e.getEndOffset() - offset);
+            final int offset = e.getStartOffset();
+            final int length = Math.max(0, e.getEndOffset() - offset);
 
-            DefaultDocumentEvent changes = new DefaultDocumentEvent(offset, length, DocumentEvent.EventType.CHANGE);
+            
+            
+            DefaultDocumentEvent changeEvent = new DefaultDocumentEvent(offset, length, DocumentEvent.EventType.CHANGE);
             AttributeSet asCopy = attributeSet.copyAttributes();
 
-            changes.addEdit(new AttributeUndoableEdit(e, asCopy, true));
+            changeEvent.addEdit(new AttributeUndoableEdit(e, asCopy, true));
 
             MutableAttributeSet attr = (MutableAttributeSet) e.getAttributes();
 
             attr.removeAttributes(attr);
             attr.addAttributes(attributeSet);
 
-            changes.end();
-            fireChangedUpdate(changes);
-            fireUndoableEditUpdate(new UndoableEditEvent(this, changes));
+            changeEvent.end();
+            fireChangedUpdate(changeEvent);
+            fireUndoableEditUpdate(new UndoableEditEvent(this, changeEvent));
         }
         finally {
             writeUnlock();
@@ -427,10 +429,7 @@ public class OAHTMLDocument extends HTMLDocument {
         bGetLengthHack = false;
     }
     
-    
-    
     // ========== TEST
-
     public static void main(String[] args) throws Exception {
         URL key = new URL("file://c:/temp/testPicture.jpg");
 

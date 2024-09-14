@@ -11,27 +11,18 @@
 package com.viaoa.jfc.editor.html.control;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Rectangle;
+import java.io.StringWriter;
 import java.util.*;
 
 import javax.swing.SwingUtilities;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.Element;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.html.CSS;
-import javax.swing.text.html.HTML;
-import javax.swing.text.html.CSS.Attribute;
+import javax.swing.text.*;
+import javax.swing.text.html.*;
 
 import com.viaoa.hub.*;
-import com.viaoa.util.*;
-import com.viaoa.jfc.editor.html.OAHTMLDocument;
-import com.viaoa.jfc.editor.html.OAHTMLEditorKit;
-import com.viaoa.jfc.editor.html.OAHTMLTextPane;
-import com.viaoa.jfc.editor.html.oa.Block;
-import com.viaoa.jfc.editor.html.oa.DocElement;
+import com.viaoa.jfc.editor.html.*;
+import com.viaoa.jfc.editor.html.oa.*;
 import com.viaoa.jfc.editor.html.view.BlockDialog;
+import com.viaoa.util.*;
 
 /**
  * Controller for BlockDialog, used to edit a paragraph (block) attributes.
@@ -106,7 +97,7 @@ public class BlockController {
 
                 @Override
                 public void setVisible(boolean b) {
-                    if (b) initSelectedElement();
+                    if (b) initSelectedElement(null);
                     super.setVisible(b);
                 }
             };
@@ -115,18 +106,19 @@ public class BlockController {
     }
 
     
-    protected void initSelectedElement() {
+    protected void initSelectedElement(final Element eleSelected) {
         getRootDocElements().clear();
         hmDocElement.clear();
         hmElement.clear();
 
         OAHTMLDocument doc = (OAHTMLDocument) textPane.getDocument();
+        
         loadElements(doc.getRootElements()[0], getRootDocElements());
 
         hubRootDocElement.setPos(0);
         
         int position = textPane.getCaretPosition();
-        element = doc.getParagraphElement(position);
+        element = eleSelected != null ? eleSelected : doc.getParagraphElement(position);
         attributeSet = element.getAttributes();
         
         DocElement de = hmDocElement.get(element);
@@ -142,8 +134,6 @@ public class BlockController {
         DocElement[] des = new DocElement[al.size()];
         al.toArray(des);
         getBlockDialog().getTreeComboBox().getTree().setSelectedNode(des);
-        
-        
     }
     
 
@@ -172,7 +162,7 @@ public class BlockController {
                     if (i+1 == x) name += "\"";
                 }
                 catch (Exception ex) {
-                    System.out.println("Error: "+ex);
+                    System.out.println("BlockController Error: "+ex);
                 }
             }
             else {
@@ -185,6 +175,7 @@ public class BlockController {
     
     private void updateBlock() {
         Block block = getBlock();
+        String s;
 
         OAHTMLDocument doc = (OAHTMLDocument) textPane.getDocument();
         OAHTMLEditorKit kit = (OAHTMLEditorKit) textPane.getEditorKit();
@@ -203,11 +194,14 @@ public class BlockController {
 
         Object obj;
         obj = sas.getAttribute(CSS.Attribute.WIDTH);
-        block.setWidth(obj == null ? 0 : OAConv.toInt(obj.toString()));
+        block.setWidth(obj == null ? null : obj.toString());
 
         obj = sas.getAttribute(CSS.Attribute.HEIGHT);
-        block.setHeight(obj == null ? 0 : OAConv.toInt(obj.toString()));
+        block.setHeight(obj == null ? null : obj.toString());
 
+        obj = sas.getAttribute(CSS.Attribute.BACKGROUND_COLOR);
+        block.setBackgroundColor(obj == null ? null : (Color) OAConv.convert(Color.class, obj.toString()));
+        
         block.setMargin(0);
         obj = sas.getAttribute(CSS.Attribute.MARGIN_TOP);
         block.setMarginTop(obj == null ? 0 : OAConv.toInt(obj.toString()));
@@ -221,6 +215,12 @@ public class BlockController {
         obj = sas.getAttribute(CSS.Attribute.MARGIN_LEFT);
         block.setMarginLeft(obj == null ? 0 : OAConv.toInt(obj.toString()));
 
+        int x = block.getMarginTop();
+        if (x > 0 && block.getMarginBottom() == x && block.getMarginLeft() == x && block.getMarginRight() == x) {
+            block.setMargin(x);
+        }
+        
+        
         block.setPadding(0);
         obj = sas.getAttribute(CSS.Attribute.PADDING_TOP);
         block.setPaddingTop(obj == null ? 0 : OAConv.toInt(obj.toString()));
@@ -234,6 +234,11 @@ public class BlockController {
         obj = sas.getAttribute(CSS.Attribute.PADDING_LEFT);
         block.setPaddingLeft(obj == null ? 0 : OAConv.toInt(obj.toString()));
 
+        x = block.getPaddingTop();
+        if (x > 0 && block.getPaddingBottom() == x && block.getPaddingLeft() == x && block.getPaddingRight() == x) {
+            block.setPadding(x);
+        }
+        
         block.setBorderWidth(0);
         obj = sas.getAttribute(CSS.Attribute.BORDER_TOP_WIDTH);
         block.setBorderTopWidth(obj == null ? 0 : OAConv.toInt(obj.toString()));
@@ -247,10 +252,16 @@ public class BlockController {
         obj = sas.getAttribute(CSS.Attribute.BORDER_LEFT_WIDTH);
         block.setBorderLeftWidth(obj == null ? 0 : OAConv.toInt(obj.toString()));
 
+        x = block.getBorderTopWidth();
+        if (x > 0 && block.getBorderBottomWidth() == x && block.getBorderLeftWidth() == x && block.getBorderRightWidth() == x) {
+            block.setBorderWidth(x);
+        }
+        
+        
+        
         obj = sas.getAttribute(CSS.Attribute.BORDER_COLOR);
         block.setBorderColor(null);
-
-/*qqqqqqqqqq 20140131 add this back in ... only available in Java 1.7, no 1.6        
+        
         obj = sas.getAttribute(CSS.Attribute.BORDER_TOP_COLOR);
         block.setBorderTopColor(obj == null ? null : (Color) OAConv.convert(Color.class, obj.toString()));
         
@@ -262,12 +273,17 @@ public class BlockController {
 
         obj = sas.getAttribute(CSS.Attribute.BORDER_LEFT_COLOR);
         block.setBorderLeftColor(obj == null ? null : (Color) OAConv.convert(Color.class, obj.toString()));
-*/        
+        
+        Color col = block.getBorderTopColor();
+        if (col != null && block.getBorderBottomColor().equals(col) && block.getBorderLeftColor().equals(col) && block.getBorderRightColor().equals(col)) {
+            block.setBorderColor(col);
+        }
 
+        
+        
         obj = sas.getAttribute(CSS.Attribute.BORDER_STYLE);
         block.setBorderStyle(null);
-
-/*qqqqqqqqqq 20140131 add this back in ... only available in Java 1.7, no 1.6        
+        
         obj = sas.getAttribute(CSS.Attribute.BORDER_TOP_STYLE);
         block.setBorderTopStyle(obj == null ? null : obj.toString());
         
@@ -279,70 +295,82 @@ public class BlockController {
         
         obj = sas.getAttribute(CSS.Attribute.BORDER_LEFT_STYLE);
         block.setBorderLeftStyle(obj == null ? null : obj.toString());
-*/
         
+        s = block.getBorderTopStyle();
+        if (OAStr.isNotEmpty(s) && s.equals(block.getBorderBottomStyle()) && s.equals(block.getBorderLeftStyle()) && s.equals(block.getBorderRightStyle())) {
+            block.setBorderStyle(s);
+        }
         
-        obj = sas.getAttribute(CSS.Attribute.BACKGROUND_COLOR);
-        block.setBackgroundColor(obj == null ? null : (Color) OAConv.convert(Color.class, obj.toString()));
     }
 
     public void apply() {
-        Block block = getBlock();
+        try {
+            _apply();
+        }
+        catch (Exception ex) {
+            System.out.println("BlockController Error: "+ex);
+            // throw new RuntimeException(ex);
+        }
+    }
+
+    protected void _apply() throws Exception {
+        final Block block = getBlock();
 
         OAHTMLDocument doc = (OAHTMLDocument) textPane.getDocument();
         OAHTMLEditorKit kit = (OAHTMLEditorKit) textPane.getEditorKit();
 
-        /*
-        int pos = textPane.getCaretPosition();
-        element = doc.getParagraphElement(pos);
-        attributeSet = element.getAttributes();
-        */
-        
         SimpleAttributeSet sas = new SimpleAttributeSet(attributeSet);
 
         if (attributeSet.getAttribute(StyleConstants.NameAttribute) == HTML.Tag.IMPLIED) {
             sas.removeAttribute(StyleConstants.NameAttribute);
             sas.addAttribute(StyleConstants.NameAttribute, HTML.Tag.P);
         }
-        
-        
+
         sas.removeAttribute(CSS.Attribute.WIDTH);
         sas.removeAttribute(CSS.Attribute.HEIGHT);
+        sas.removeAttribute(CSS.Attribute.BACKGROUND_COLOR);
 
+        sas.removeAttribute(CSS.Attribute.MARGIN);
         sas.removeAttribute(CSS.Attribute.MARGIN_TOP);
         sas.removeAttribute(CSS.Attribute.MARGIN_RIGHT);
         sas.removeAttribute(CSS.Attribute.MARGIN_BOTTOM);
         sas.removeAttribute(CSS.Attribute.MARGIN_LEFT);
 
+        sas.removeAttribute(CSS.Attribute.PADDING);
         sas.removeAttribute(CSS.Attribute.PADDING_TOP);
         sas.removeAttribute(CSS.Attribute.PADDING_RIGHT);
         sas.removeAttribute(CSS.Attribute.PADDING_BOTTOM);
         sas.removeAttribute(CSS.Attribute.PADDING_LEFT);
 
+        sas.removeAttribute(CSS.Attribute.BORDER_WIDTH);
         sas.removeAttribute(CSS.Attribute.BORDER_TOP_WIDTH);
         sas.removeAttribute(CSS.Attribute.BORDER_RIGHT_WIDTH);
         sas.removeAttribute(CSS.Attribute.BORDER_BOTTOM_WIDTH);
         sas.removeAttribute(CSS.Attribute.BORDER_LEFT_WIDTH);
 
-/*qqqqqqqqqq 20140131 add this back in ... only available in Java 1.7, no 1.6        
+        sas.removeAttribute(CSS.Attribute.BORDER_COLOR);
         sas.removeAttribute(CSS.Attribute.BORDER_TOP_COLOR);
         sas.removeAttribute(CSS.Attribute.BORDER_RIGHT_COLOR);
         sas.removeAttribute(CSS.Attribute.BORDER_BOTTOM_COLOR);
         sas.removeAttribute(CSS.Attribute.BORDER_LEFT_COLOR);
-*/        
-        sas.removeAttribute(CSS.Attribute.BORDER_STYLE);
 
-        sas.removeAttribute(CSS.Attribute.BACKGROUND_COLOR);
+        sas.removeAttribute(CSS.Attribute.BORDER_STYLE);
+        sas.removeAttribute(CSS.Attribute.BORDER_TOP_STYLE);
+        sas.removeAttribute(CSS.Attribute.BORDER_RIGHT_STYLE);
+        sas.removeAttribute(CSS.Attribute.BORDER_BOTTOM_STYLE);
+        sas.removeAttribute(CSS.Attribute.BORDER_LEFT_STYLE);
 
         String style = block.getStyle();
 
         Object obj = sas.getAttribute(CSS.Attribute.BACKGROUND_IMAGE);
         if (obj != null) {
             sas.removeAttribute(CSS.Attribute.BACKGROUND_IMAGE);
-            int w = block.getWidth();
-            int h = block.getHeight();
+            String s  = block.getWidth();
+            int w = OAStr.isInteger(s) ? OAConv.toInt(s) : 0;
+            s  = block.getHeight();
+            int h = OAStr.isInteger(s) ? OAConv.toInt(s) : 0;
 
-            String s = obj.toString();
+            s = obj.toString();
             int pos = s.indexOf('&');
             if (pos < 0)  pos = s.indexOf(')');
             if (pos > 0) s = s.substring(0, pos);
@@ -360,22 +388,51 @@ public class BlockController {
         sas.addAttributes(asx);
         
         ((OAHTMLDocument) textPane.getDocument()).setAttributes(element, sas);
+
+        // hack: changing attributes on a TABLE does not auto display (painter is not updated)
+        //   this will "force" it to be recreated.
         
+        AttributeSet attrs = element.getAttributes();
+        Object elementName = attrs.getAttribute(AbstractDocument.ElementNameAttribute);
+        Object o = (elementName != null) ? null : attrs.getAttribute(StyleConstants.NameAttribute);
+        if (!(o instanceof HTML.Tag)) return;
         
-        /*was
-        if (attributeSet.getAttribute(StyleConstants.NameAttribute) == HTML.Tag.DIV) {
-            ((OAHTMLDocument) textPane.getDocument()).setAttributes(element, sas);
-        }
-        else {
-            if (attributeSet.getAttribute(StyleConstants.NameAttribute) == HTML.Tag.IMPLIED) {
-                sas.removeAttribute(StyleConstants.NameAttribute);
-                sas.addAttribute(StyleConstants.NameAttribute, HTML.Tag.P);
+        HTML.Tag kind = (HTML.Tag) o;
+        if (kind != HTML.Tag.TABLE) return;
+
+        int startOffset = element.getStartOffset();
+        int endOffset = element.getEndOffset();
+
+        // find parent that only has one child
+        Element eleParent = element.getParentElement();
+        if (eleParent == null) return;
+        
+        StringWriter writer = new StringWriter();
+        kit.writeInner(writer, doc, eleParent);
+        String htmlInner = writer.toString();
+        doc.setInnerHTML(eleParent, htmlInner);
+
+        // update tree and activeObject
+        Element ele = doc.getParagraphElement(startOffset);
+        Element eleFound = ele;
+        for ( ;ele != null && ele.getParentElement() != null; ele = ele.getParentElement()) {
+            if (ele.getStartOffset() != startOffset) {
+                break;
             }
-            ((OAHTMLDocument) textPane.getDocument()).setParagraphAttributes(position, 1, sas, true);
+            if (ele.getEndOffset() != endOffset) {
+                continue;
+            }
+            attrs = ele.getAttributes();
+            o = attrs.getAttribute(StyleConstants.NameAttribute);
+            if (o instanceof HTML.Tag) {
+                kind = (HTML.Tag) o;
+                if (kind == HTML.Tag.TABLE) {
+                    eleFound = ele;
+                }
+            }
         }
-        */
+        initSelectedElement(eleFound);
     }
-
-    
-
 }
+
+
