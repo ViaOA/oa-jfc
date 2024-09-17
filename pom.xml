@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.viaoa</groupId>
     <artifactId>oa-jfc</artifactId>
-    <version>3.7.9</version>
+    <version>3.7.10</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -53,7 +53,7 @@
         <dependency>
             <groupId>com.viaoa</groupId>
             <artifactId>oa-core</artifactId>
-            <version>3.7.9</version>
+            <version>3.7.10</version>
         </dependency>
 
         <dependency>
@@ -154,7 +154,7 @@
                     <keystore>${keystore.path}</keystore>
                     <alias>${keystore.alias}</alias>
                     <storepass>${keystore.store.password}</storepass>
-<!--                     
+<!-- qqqqqqqqq update the same as oa-core qqqqqqqqqqqqqqqq  copy the same to oa-web qqqqqqqq                    
                     <tsa>http://sha256timestamp.ws.symantec.com/sha256/timestamp</tsa>
  -->                    
                 </configuration>
