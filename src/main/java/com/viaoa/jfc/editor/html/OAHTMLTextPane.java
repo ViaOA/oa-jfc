@@ -74,6 +74,10 @@ import com.viaoa.util.*;
 
 /* CSS Notes
 
+setting a class on an html element will also set it for children
+ex:  table class="form" will set it on all child tables.  Use style instead.
+
+
 border-width: 1;
     border-top-width: 1;
     border-right-width: 1;
@@ -82,6 +86,10 @@ border-width: 1;
 
 see: main.css in OATemplate 
 see: html.css in oajfc
+
+html.css
+   html tables only styles TD with borders.  Table and TR are set to border-width: 0
+
 
 does not support text-overflow
   use format instead: school.name, '25L.'
