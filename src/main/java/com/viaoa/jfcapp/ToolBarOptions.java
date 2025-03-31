@@ -19,7 +19,10 @@ public class ToolBarOptions {
     public boolean bIcon;
     public boolean bLabel;
     public boolean bGoto;
-    public boolean bCommands;
+    
+    // first,prev,next,last | up,down | save,new,insert,add,wizard | remove,delete
+    public boolean bCommands;   
+    
     public boolean bSearch;
     public boolean bFind;
     public boolean bCustom;
@@ -35,8 +38,13 @@ public class ToolBarOptions {
     
     
     // bGoBack bIcon bLabel bGoto bCommands bSearch bFind bCustom bHubCalc bReport bTable bHubSearch bDownload
-    public ToolBarOptions(boolean bGoBack, boolean bIcon, boolean bLabel, boolean bGoto, boolean bCommands, boolean bSearch,
-            boolean bFind, boolean bCustom, boolean bHubCalc, boolean bReport, boolean bTable, boolean bHubSearch, boolean bDownload) {
+    public ToolBarOptions(
+        boolean bGoBack, boolean bIcon, boolean bLabel, 
+        boolean bGoto, boolean bCommands, boolean bSearch,
+        boolean bFind, boolean bCustom, boolean bHubCalc, 
+        boolean bReport, boolean bTable, boolean bHubSearch, 
+        boolean bDownload)
+    {
         this.bGoBack = bGoBack;
         this.bIcon = bIcon;
         this.bLabel = bLabel;
