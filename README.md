@@ -8,18 +8,18 @@ Includes:
 * Styled editor
 * Report writer with pdf save-as option
 * Custom renders and editors
-* recusive support for tree data
+* recursive support for tree data
 * advanced table functionality - split tables, tree tables, filtering, lazy loading, etc.
 * expanded layouts
 * Templates for mouse over, report generation, and custom rendering
 
-Full software systems can be visually designed and then automatically generated using the OA library, OABuilder visual modeling tool, along with the OA.G2 code generation
+Full software systems can be visually designed and then automatically generated using the OA library, OABuilder visual modeling tool, along with the OACodeGen UI code generation
 
-Visit [www.viaoa.com](www.viaoa.com) for more information.
+Visit [www.viaoa.com](https://www.viaoa.com) for more information.
 
 Visit [OA-Jfc Javadoc](http://viaoa.github.io/oa-jfc/docs/index.html)
 
 Current release on Maven Central: 
     Group Id: com.viaoa
     Artifact Id: oa-jfc
-    Version: 3.7.1
+
