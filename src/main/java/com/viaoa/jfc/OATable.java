@@ -4739,7 +4739,25 @@ class TableController extends OAJfcController implements ListSelectionListener {
 
 	private boolean bHasHadMaster; // 20171217
 
+	
 	public @Override void onNewList(HubEvent e) {
+		if (SwingUtilities.isEventDispatchThread()) {
+			_onNewList(e);
+		} else {
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					@Override
+					public void run() {
+						_onNewList(e);
+					}
+				});
+			}
+			catch (Exception ex) {
+			}
+		}
+	}
+	
+	protected void _onNewList(HubEvent e) {
 		// super.onNewList(e);
 		if (!bHasHadMaster) {
 			if (table.hub.getMasterHub() != null) {
