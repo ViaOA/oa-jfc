@@ -543,7 +543,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 			String s = "";
 			if (getHub() != null) {
 				s = getHub().getObjectClass().getSimpleName();
-				s = com.viaoa.util.OAString.convertHungarian(s);
+				s = com.viaoa.util.OAString.convertToHungarian(s);
 			}
 
 			if (cmd == ButtonCommand.ObjectMethod || cmd == ButtonCommand.HubMethod) {

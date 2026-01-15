@@ -446,7 +446,7 @@ public class TextFieldController extends OAJfcController implements FocusListene
 					text = OAString.toTitleCase(text);
 				}
 			} else if (conversion == 'J' || conversion == 'j') {
-				text = OAString.makeJavaIndentifier(text);
+				text = OAString.makeJavaIdentifier(text);
 			} else if (conversion == 'S' || conversion == 's') {
 				text = OAString.getSHAHash(text);
 			} else if (conversion == 'P' || conversion == 'p') {

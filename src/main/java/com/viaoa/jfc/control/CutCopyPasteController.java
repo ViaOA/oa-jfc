@@ -302,7 +302,7 @@ public class CutCopyPasteController {
         Hub h = null;
         if (omiCut != null) h = omiCut.getHub();
         if (h == null) h = hubManual;
-        if (h != null) s = "Cut " + OAString.convertHungarian(OAString.getClassName(h.getObjectClass()));
+        if (h != null) s = "Cut " + OAString.convertToHungarian(OAString.getClassName(h.getObjectClass()));
         getCutMenuItem().setText(s);
     
         s = "Copy";
