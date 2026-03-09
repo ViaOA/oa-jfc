@@ -1829,7 +1829,7 @@ public class OAJfcController extends HubListenerAdapter {
 				return propertyInfoMaxColumns;
 			}
 
-			OAObjectInfo oi = OAObjectInfoDelegate.getOAObjectInfo(h.getObjectClass());
+			OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(h.getObjectClass());
 			OAPropertyInfo pi = oi.getPropertyInfo(endPropertyName);
 
 			propertyInfoMaxColumns = (pi == null) ? -1 : pi.getMaxLength();

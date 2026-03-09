@@ -1992,14 +1992,14 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 					if (tndUse.node.def.updateHub != hubNode && tndUse.node.def.updateHub.getSharedHub() != hubNode) {
 						if (hubNode.getSharedHub() != tndUse.node.def.updateHub) {
 							// 20140421,20170823 dont change if hub is from a type=ONE.  OAObject.setAO will handle it.
-							OALinkInfo li = HubDetailDelegate.getLinkInfoFromDetailToMaster(tndUse.node.def.updateHub);
+							OALinkInfo li = HubDetailDelegate.callDetailGetLinkInfoFromDetailToMaster(tndUse.node.def.updateHub);
 							OALinkInfo liRev;
 							boolean b = true;
 
 							if (li != null) {
 								liRev = OAObjectInfoDelegate.getReverseLinkInfo(li);
 							} else {
-								liRev = HubDetailDelegate.getLinkInfoFromMasterHubToDetail(tndUse.node.def.updateHub);
+								liRev = HubDetailDelegate.callHubDetailGetLinkInfoFromMasterHubToDetail(tndUse.node.def.updateHub);
 							}
 							if (liRev != null && liRev.getType() == li.ONE) {
 								b = false;
@@ -2105,7 +2105,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 			}
 			hsHub.add(hx);
 
-			OALinkInfo li = HubDetailDelegate.getLinkInfoFromDetailToMaster(hx);
+			OALinkInfo li = HubDetailDelegate.callDetailGetLinkInfoFromDetailToMaster(hx);
 
 			OALinkInfo liRev;
 			boolean b = true;
@@ -2113,7 +2113,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 			if (li != null) {
 				liRev = OAObjectInfoDelegate.getReverseLinkInfo(li);
 			} else {
-				liRev = HubDetailDelegate.getLinkInfoFromMasterHubToDetail(hx);
+				liRev = HubDetailDelegate.callHubDetailGetLinkInfoFromMasterHubToDetail(hx);
 			}
 			if (liRev != null && liRev.getType() == li.ONE) {
 				b = false;
@@ -2141,14 +2141,14 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 						hsHub.add(hx);
 
 						// 20140421,20170823 dont change if hub is from a type=ONE.  OAObject.setAO will handle it.
-						OALinkInfo li = HubDetailDelegate.getLinkInfoFromDetailToMaster(hx);
+						OALinkInfo li = HubDetailDelegate.callDetailGetLinkInfoFromDetailToMaster(hx);
 						OALinkInfo liRev;
 						boolean b = true;
 
 						if (li != null) {
 							liRev = OAObjectInfoDelegate.getReverseLinkInfo(li);
 						} else {
-							liRev = HubDetailDelegate.getLinkInfoFromMasterHubToDetail(hx);
+							liRev = HubDetailDelegate.callHubDetailGetLinkInfoFromMasterHubToDetail(hx);
 						}
 						if (liRev != null && liRev.getType() == li.ONE) {
 							b = false;
@@ -2189,7 +2189,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 				hsHub.add(h);
 
 				// 20111008 dont set to null if it is a Hub used by a LinkOne detail
-				OALinkInfo li = HubDetailDelegate.getLinkInfoFromDetailToMaster(h);
+				OALinkInfo li = HubDetailDelegate.callDetailGetLinkInfoFromDetailToMaster(h);
 				if (li != null) {
 					li = OAObjectInfoDelegate.getReverseLinkInfo(li);
 				}

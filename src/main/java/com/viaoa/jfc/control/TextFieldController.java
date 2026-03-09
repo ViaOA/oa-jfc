@@ -211,7 +211,7 @@ public class TextFieldController extends OAJfcController implements FocusListene
 		if (OAReflect.isNumber(endPropertyClass)) {
 			final boolean bFloat = !OAReflect.isInteger(endPropertyClass);
 
-			OAObjectInfo oi = OAObjectInfoDelegate.getOAObjectInfo(getHub().getObjectClass());
+			OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(getHub().getObjectClass());
 			OAPropertyInfo pi = oi.getPropertyInfo(endPropertyName);
 
 			final boolean isCurrency = pi != null && pi.isCurrency();

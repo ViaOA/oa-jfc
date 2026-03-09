@@ -306,7 +306,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			return s;
 		}
 		if (hub != null) {
-			OAObjectInfo oi = OAObjectInfoDelegate.getObjectInfo(hub.getObjectClass());
+			OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(hub.getObjectClass());
 			s = command.name() + " " + oi.getDisplayName();
 		}
 		return s;
@@ -457,7 +457,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				} else {
 					hubx = hub.getMasterHub();
 					if (hubx != null) {
-						propx = HubDetailDelegate.getPropertyFromMasterToDetail(hub);
+						propx = HubDetailDelegate.callHubDetailGetPropertyFromMasterToDetail(hub);
 					}
 				}
 				if (hubx == null || propx == null) {
@@ -631,7 +631,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			} else {
 				hubx = hub.getMasterHub();
 				if (hubx != null) {
-					propx = HubDetailDelegate.getPropertyFromMasterToDetail(hub);
+					propx = HubDetailDelegate.callHubDetailGetPropertyFromMasterToDetail(hub);
 				}
 			}
 			if (hubx == null || propx == null) {
@@ -1531,7 +1531,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				} else {
 					hubx = hub.getMasterHub();
 					if (hubx != null) {
-						propx = HubDetailDelegate.getPropertyFromMasterToDetail(hub);
+						propx = HubDetailDelegate.callHubDetailGetPropertyFromMasterToDetail(hub);
 					}
 				}
 				if (hubx == null || propx == null) {
@@ -1965,7 +1965,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						objx = hub.getMasterObject();
 						if (objx instanceof OAObject) {
 							if (((OAObject) objx).isNew()) {
-								OALinkInfo li = HubDetailDelegate.getLinkInfoFromMasterHubToDetail(hub);
+								OALinkInfo li = HubDetailDelegate.callHubDetailGetLinkInfoFromMasterHubToDetail(hub);
 								if (li != null && li.getOwner()) {
 									flag = false;
 								}

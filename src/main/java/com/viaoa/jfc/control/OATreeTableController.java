@@ -207,7 +207,7 @@ public class OATreeTableController extends OATree implements OATableComponent {
     
     protected void refreshHub() {
         if (bIgnoreFlag) return;
-        if (OAThreadLocalDelegate.isLoading()) {
+        if (OAThreadLocalDelegate.callThreadLocalIsLoading()) {
             if (hubTable.size() > 0) return;
         }
         

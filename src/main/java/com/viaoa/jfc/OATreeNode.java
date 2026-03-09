@@ -1017,7 +1017,7 @@ public class OATreeNode implements Cloneable {
 		// 20110802 recursive nodes
 		if (methodsToHub == null && bRecursive) {
 			Class clazz = object.getClass();
-			OAObjectInfo oi = OAObjectInfoDelegate.getOAObjectInfo(clazz);
+			OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(clazz);
 			OALinkInfo li = oi.getRecursiveLinkInfo(OALinkInfo.MANY);
 
 			// find method
@@ -1051,7 +1051,7 @@ public class OATreeNode implements Cloneable {
 
 		// 20110802 recursive nodes
 		if (methodsToHub == null && bRecursive) {
-			OAObjectInfo oi = OAObjectInfoDelegate.getOAObjectInfo(clazz);
+			OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(clazz);
 			OALinkInfo li = oi.getRecursiveLinkInfo(OALinkInfo.MANY);
 
 			// find method

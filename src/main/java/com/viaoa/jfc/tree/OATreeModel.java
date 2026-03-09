@@ -143,7 +143,7 @@ public class OATreeModel implements TreeModel {
                     }
                 }
             };
-            if (OAThreadLocalDelegate.isLoading()) {
+            if (OAThreadLocalDelegate.callThreadLocalIsLoading()) {
                  SwingUtilities.invokeLater(r);
             }
             else {

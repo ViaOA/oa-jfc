@@ -138,7 +138,7 @@ public class OAMenuItem extends JMenuItem implements OAJfcComponent {
 					} else {
 						hubx = hub.getMasterHub();
 						if (hubx != null) {
-							prop = HubDetailDelegate.getPropertyFromMasterToDetail(hub);
+							prop = HubDetailDelegate.callHubDetailGetPropertyFromMasterToDetail(hub);
 						}
 					}
 					if (hubx == null || prop == null) {

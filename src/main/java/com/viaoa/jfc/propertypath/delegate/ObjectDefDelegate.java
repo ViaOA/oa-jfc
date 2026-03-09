@@ -41,7 +41,7 @@ public class ObjectDefDelegate {
             return od;
         }
         
-        OAObjectInfo oi = OAObjectInfoDelegate.getOAObjectInfo(rootClass);
+        OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(rootClass);
         od = new ObjectDef();
         od.setObjectClass(rootClass);
         String s = rootClass.getName();
