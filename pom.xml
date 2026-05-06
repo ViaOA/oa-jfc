@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.viaoa</groupId>
   <artifactId>oa-jfc</artifactId>
-  <version>3.7.12</version>
+  <version>3.7.13</version>
   <packaging>jar</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
@@ -54,7 +54,7 @@
     <dependency>
       <groupId>com.viaoa</groupId>
       <artifactId>oa-core</artifactId>
-      <version>3.7.12</version>
+      <version>3.7.13</version>
     </dependency>
 
     <dependency>
@@ -143,6 +143,7 @@
         </configuration>
       </plugin>
 
+<!-- qqqqqqqqqqqqqq
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jarsigner-plugin</artifactId>
@@ -161,7 +162,7 @@
           <storepass>${keystore.store.password}</storepass>
         </configuration>
       </plugin>
-
+qqqqqqqqqqqqqqq -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -207,6 +208,7 @@
 
 
       <!-- mavencentral deploy see oa-core pom.xml -->
+<!-- qqqqqqqqqqqqqqqqqqq      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
@@ -221,8 +223,10 @@
           </execution>
         </executions>
       </plugin>
+qqqqqqqqqqqqqqqqqqq -->
 
       <!-- deploy on maven central, run mvn clean deploy -->
+<!-- qqqqqqqqqqqqqqqqqqq      
       <plugin>
         <groupId>org.sonatype.central</groupId>
         <artifactId>central-publishing-maven-plugin</artifactId>
@@ -233,6 +237,7 @@
           <autoPublish>true</autoPublish>
         </configuration>
       </plugin>
+qqqqqqqqqqqqqqqqqqq -->
 
     </plugins>
   </build>
