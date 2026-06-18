@@ -25,6 +25,7 @@ import com.viaoa.hub.*;
 import com.viaoa.jfc.dnd.*;
 import com.viaoa.jfc.control.*;
 import com.viaoa.jfc.table.*;
+import com.viaoa.object.OAObject;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
 
@@ -630,16 +631,16 @@ public class OAList extends JList implements OATableComponent, DragGestureListen
             Hub newHub = getDropHub();
             if (newHub == null) return;
             
-            // 20190215
-            if (!HubAddRemoveDelegate.isAllowAddRemove(newHub)) return;
+            if (!control.getGraph().hubsInternal().callHubAddRemoveIsAllowAddRemove(newHub)) return;
+            //was: if (!HubAddRemoveDelegate.isAllowAddRemove(newHub)) return;
             if (!newHub.isValid()) return;
             
             Object toObject = newHub.elementAt(row);
 
             if ( newHub.getObjectClass().isAssignableFrom(dragObject.getClass()) ) {
                 if (dragObject != toObject) {
-                    
-                	int pos = HubDataDelegate.getPos(newHub, dragObject, false, false);
+                	int pos = control.getGraph().hubsInternal().callHubDataGetPos(newHub, dragObject, false, false);
+                	//was: int pos = HubDataDelegate.getPos(newHub, dragObject, false, false);
                     if (pos >= 0) {
                         // move
                         if (!newHub.isSorted()) {
@@ -652,12 +653,12 @@ public class OAList extends JList implements OATableComponent, DragGestureListen
                     }
                     else {
                         if (newHub.isSorted()) {
-                            newHub.add(dragObject);
+                            newHub.add((OAObject) dragObject);
                             // 20091214
                             OAUndoManager.add(OAUndoableEdit.createUndoableAdd(null, newHub, dragObject));
                         }
                         else {
-                            newHub.insert(dragObject, row);
+                            newHub.insert((OAObject) dragObject, row);
                             // 20091214
                             OAUndoManager.add(OAUndoableEdit.createUndoableInsert(null, newHub, dragObject, row));
                         }

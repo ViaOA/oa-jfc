@@ -27,12 +27,15 @@ import javax.swing.border.EmptyBorder;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
 
+import com.viaoa.converter.OAConv;
+import com.viaoa.datetime.OADate;
+import com.viaoa.datetime.OADateTime;
+
 //import com.sun.java.swing.plaf.motif.MotifComboBoxUI;
 //import com.sun.java.swing.plaf.windows.WindowsComboBoxUI;
 
 import com.viaoa.hub.*;
 import com.viaoa.object.OAObject;
-import com.viaoa.util.*;
 
 /**
     ComboBox that has a calendar component display for the dropdown component.
@@ -464,7 +467,7 @@ class DatePopup implements ComboPopup, MouseMotionListener, MouseListener, KeyLi
     	    	else obj = comboBox.getSelectedItem();
                 if (obj instanceof OADateTime) {
                     OADateTime dt = (OADateTime) obj;
-                    calendar.set(dt.getYear(),dt.getMonth(),dt.getDay());
+                    calendar.set(dt.getYear(),dt.getMonthValue(),dt.getDayOfMonth());
                     updatePopup();
                 }
             }
@@ -477,7 +480,7 @@ class DatePopup implements ComboPopup, MouseMotionListener, MouseListener, KeyLi
         cmdToday.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 OADate t = new OADate();
-                calendar.set(t.getYear(),t.getMonth(),t.getDay());
+                calendar.set(t.getYear(),t.getMonthValue(),t.getDayOfMonth());
                 comboBox.setSelectedItem(new OADate(calendar));
                 updatePopup();
             }
@@ -561,7 +564,7 @@ class DatePopup implements ComboPopup, MouseMotionListener, MouseListener, KeyLi
 	    boolean b = false;
 	    if (obj instanceof OADateTime) {
 	        currentDate = (OADateTime) obj;
-	        b = (currentDate.getYear() != calendar.get(calendar.YEAR) || currentDate.getMonth() != calendar.get(calendar.MONTH));
+	        b = (currentDate.getYear() != calendar.get(calendar.YEAR) || currentDate.getMonthValue() != (calendar.get(calendar.MONTH) + 1));
 	    }
 
 	    if (b) {

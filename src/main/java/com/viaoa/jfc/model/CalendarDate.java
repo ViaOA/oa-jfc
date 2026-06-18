@@ -12,7 +12,7 @@ package com.viaoa.jfc.model;
 
 import com.viaoa.object.*;
 import com.viaoa.annotation.OAClass;
-import com.viaoa.util.*;
+import com.viaoa.datetime.*;
 
 @OAClass(localOnly=true, addToCache=false, initialize=false)
 public class CalendarDate extends OAObject {

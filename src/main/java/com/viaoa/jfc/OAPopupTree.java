@@ -17,7 +17,6 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
 import com.viaoa.hub.*;
-import com.viaoa.util.*;
 import com.viaoa.jfc.control.*;
 import com.viaoa.jfc.table.*;
 import com.viaoa.jfc.tree.OATreeNodeData;

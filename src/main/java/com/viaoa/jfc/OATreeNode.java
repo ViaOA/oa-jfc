@@ -39,14 +39,14 @@ import javax.swing.JTree;
 import javax.swing.JViewport;
 import javax.swing.UIManager;
 
+import com.viaoa.converter.OAConv;
+import com.viaoa.converter.OAConverter;
+import com.viaoa.graph.api.internal.OAGraphInternal;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubAODelegate;
 import com.viaoa.hub.HubEvent;
-import com.viaoa.hub.HubEventDelegate;
-import com.viaoa.hub.HubFilter;
 import com.viaoa.hub.HubListener;
 import com.viaoa.hub.HubListenerAdapter;
-import com.viaoa.hub.HubShareDelegate;
+import com.viaoa.hub.filter.HubFilter;
 import com.viaoa.image.ColoredLineUnderIcon;
 import com.viaoa.image.MultiIcon;
 import com.viaoa.image.OAImageUtil;
@@ -56,14 +56,12 @@ import com.viaoa.jfc.tree.OATreeCellEditor;
 import com.viaoa.jfc.tree.OATreeListener;
 import com.viaoa.jfc.tree.OATreeModel;
 import com.viaoa.jfc.tree.OATreeNodeData;
-import com.viaoa.object.OALinkInfo;
+import com.viaoa.lang.OAString;
+import com.viaoa.metadata.OALinkInfo;
+import com.viaoa.metadata.OAObjectInfo;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectInfo;
-import com.viaoa.object.OAObjectInfoDelegate;
-import com.viaoa.util.OAConv;
-import com.viaoa.util.OAConverter;
-import com.viaoa.util.OAReflect;
-import com.viaoa.util.OAString;
+import com.viaoa.reflect.OAReflect;
+import com.viaoa.runtime.OARuntime;
 
 /**
  * TreeNode for OATree. Node in tree, with leading hub or a property path to data from parent node. A node can be added to itself, to make
@@ -347,7 +345,7 @@ public class OATreeNode implements Cloneable {
 			if (this.def.hubSelected.contains(tnd.object)) {
 				this.def.hubSelected.remove(tnd.object);
 			} else {
-				this.def.hubSelected.add(tnd.object);
+				this.def.hubSelected.add((OAObject) tnd.object);
 			}
 		}
 		def.tree.repaint();
@@ -364,7 +362,7 @@ public class OATreeNode implements Cloneable {
 			if (child.node.def.hubSelected != null) {
 				if (bChecked) {
 					if (!child.node.def.hubSelected.contains(child.object)) {
-						child.node.def.hubSelected.add(child.object);
+						child.node.def.hubSelected.add((OAObject) child.object);
 					}
 				} else if (child.node.def.hubSelected.contains(child.object)) {
 					child.node.def.hubSelected.remove(child.object);
@@ -560,6 +558,13 @@ public class OATreeNode implements Cloneable {
 		}
 	}
 
+	public OAGraphInternal getGraph(Hub hub) {
+		return (OAGraphInternal) OARuntime.graph(hub);
+	}
+	public OAGraphInternal getGraph(OAObject obj) {
+		return (OAGraphInternal) OARuntime.graph(obj);
+	}
+	
 	/**
 	 * if there is an updateHub, then the sharedHub that it is using needs to have its activeObject in sync with the updateHub. Hub2TreeNode
 	 * will then listen for changes and update the tree.
@@ -584,8 +589,9 @@ public class OATreeNode implements Cloneable {
 				if (def.tree.bIsSelectingNode) {
 					return;
 				}
-
-				if (hub != null && !HubShareDelegate.isUsingSameSharedHub(def.updateHub, hub)) {
+				
+				if (hub != null && !getGraph(hub).hubsInternal().callHubShareIsUsingSameSharedHub(def.updateHub, hub)) {
+				//was: if (hub != null && !HubShareDelegate.isUsingSameSharedHub(def.updateHub, hub)) {
 					return;
 				}
 
@@ -595,13 +601,15 @@ public class OATreeNode implements Cloneable {
 					h = OATreeNode.this.hub;
 				} else {
 					// this will "hit" the same hub that the OATreeNodeData is listening to - since it is listening to the "real" Hub.
-					h = HubShareDelegate.getMainSharedHub(def.updateHub);
+					h = getGraph(def.updateHub).hubsInternal().callHubShareGetMainSharedHub(def.updateHub);
+					//was: h = HubShareDelegate.getMainSharedHub(def.updateHub);
 				}
 				if (obj != h.getAO()) {
 					// 2l0190311 dont set AO, send hub event instead
 					try {
 						bSkip = true;
-						HubEventDelegate.fireAfterChangeActiveObjectEvent(h, obj, h.getPos(obj), false);
+						getGraph(h).hubsInternal().fireAfterChangeActiveObjectEvent(h, (OAObject) obj, h.getPos(obj), false);
+						//was: HubEventDelegate.fireAfterChangeActiveObjectEvent(h, obj, h.getPos(obj), false);
 					} finally {
 						bSkip = false;
 					}
@@ -633,7 +641,8 @@ public class OATreeNode implements Cloneable {
 
 				// 20110106
 				boolean bHoldWasOnAnotherHub = bWasOnAnotherHub;
-				if (hub != null && !HubShareDelegate.isUsingSameSharedHub(def.updateHub, hub)) {
+				if (hub != null && !getGraph(def.updateHub).hubsInternal().callHubShareIsUsingSameSharedHub(def.updateHub, hub)) {				
+				//was: if (hub != null && !HubShareDelegate.isUsingSameSharedHub(def.updateHub, hub)) {
 					bWasOnAnotherHub = true;
 					return;
 				} else {
@@ -642,7 +651,8 @@ public class OATreeNode implements Cloneable {
 					}
 				}
 
-				if (hub != null && HubShareDelegate.isUsingSameSharedAO(def.updateHub, hub)) {
+				if (hub != null && getGraph(def.updateHub).hubsInternal().callHubShareIsUsingSameSharedAO(def.updateHub, hub)) {
+				//was: if (hub != null && HubShareDelegate.isUsingSameSharedAO(def.updateHub, hub)) {
 					if (!bHoldWasOnAnotherHub) {
 						return;
 					}
@@ -655,17 +665,20 @@ public class OATreeNode implements Cloneable {
 					h = OATreeNode.this.hub;
 				} else {
 					// this next statement will "hit" the same hub that the OATreeNodeData is listening to - since it is listening to the "real" Hub.
-					h = HubShareDelegate.getMainSharedHub(def.updateHub);
+					h = getGraph(def.updateHub).hubsInternal().callHubShareGetMainSharedHub(def.updateHub);
+					//was: h = HubShareDelegate.getMainSharedHub(def.updateHub);
 				}
 				if (obj != h.getAO()) {
-					HubAODelegate.setActiveObject(h, obj);
+					h.setActiveObject(obj);
+					//was: HubAODelegate.setActiveObject(h, obj);
 				} else {
 					if (bHoldWasOnAnotherHub) {
 						// 20110106 need to notify Hub2TreeNode to reset selected treeNode 
 						//    since this is a recursive node that is selected again, and
 						//      the AO has not been changed since it is the node that was last selected.
 						//  otherwise, the node will not be selected - since Hub2TreeNode needs to get a changeAO event
-						HubAODelegate.setActiveObject(h, obj, false, false, true);
+						getGraph(h).services().hubs().ao().setActiveObject(h, (OAObject) obj, false, false, true);
+						//was: HubAODelegate.setActiveObject(h, obj, false, false, true);
 						bHoldWasOnAnotherHub = false;
 					}
 				}
@@ -1394,7 +1407,7 @@ public class OATreeNode implements Cloneable {
 					def.methodsToFont = OAReflect.getMethods(obj.getClass(), def.fontProperty);
 				}
 				if (def.methodsToFont != null) {
-					font = (Font) com.viaoa.util.OAConv.convert(Font.class, OAReflect.getPropertyValue(obj, def.methodsToFont));
+					font = (Font) OAConv.convert(Font.class, OAReflect.getPropertyValue(obj, def.methodsToFont));
 				}
 			}
 		}
@@ -1414,8 +1427,7 @@ public class OATreeNode implements Cloneable {
 					def.methodsToBackgroundColor = OAReflect.getMethods(obj.getClass(), def.backgroundColorProperty);
 				}
 				if (def.methodsToBackgroundColor != null) {
-					color = (Color) com.viaoa.util.OAConv.convert(	Color.class,
-																	OAReflect.getPropertyValue(obj, def.methodsToBackgroundColor));
+					color = (Color) OAConv.convert(Color.class, OAReflect.getPropertyValue(obj, def.methodsToBackgroundColor));
 				}
 			}
 		}
@@ -1432,7 +1444,7 @@ public class OATreeNode implements Cloneable {
 					def.methodsToIconColor = OAReflect.getMethods(obj.getClass(), def.iconColorProperty);
 				}
 				if (def.methodsToIconColor != null) {
-					color = (Color) com.viaoa.util.OAConv.convert(Color.class, OAReflect.getPropertyValue(obj, def.methodsToIconColor));
+					color = (Color) OAConv.convert(Color.class, OAReflect.getPropertyValue(obj, def.methodsToIconColor));
 				}
 			}
 			if (color == null) {
@@ -1472,7 +1484,7 @@ public class OATreeNode implements Cloneable {
 					def.methodsToForegroundColor = OAReflect.getMethods(obj.getClass(), def.foregroundColorProperty);
 				}
 				if (def.methodsToForegroundColor != null) {
-					color = (Color) com.viaoa.util.OAConv.convert(	Color.class,
+					color = (Color) OAConv.convert(	Color.class,
 																	OAReflect.getPropertyValue(obj, def.methodsToForegroundColor));
 				}
 			}

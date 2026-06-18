@@ -32,7 +32,7 @@ import javax.swing.plaf.metal.MetalComboBoxButton;
 import javax.swing.table.TableCellEditor;
 
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener.Type;
+import com.viaoa.hub.listener.HubChangeListener.Type;
 import com.viaoa.jfc.control.CustomComboBoxController;
 import com.viaoa.jfc.table.OAComboBoxTableCellEditor;
 import com.viaoa.jfc.table.OATableComponent;

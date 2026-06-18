@@ -25,12 +25,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.TableCellEditor;
 
+import com.viaoa.filter.OAFilter;
 import com.viaoa.hub.Hub;
 import com.viaoa.jfc.control.ToggleButtonController;
 import com.viaoa.jfc.table.OACheckBoxTableCellEditor;
 import com.viaoa.jfc.table.OATableComponent;
 import com.viaoa.object.OAObject;
-import com.viaoa.util.OAFilter;
 
 public class OACheckBox extends JCheckBox implements OATableComponent, OAJfcComponent {
 	OACheckBoxController control;

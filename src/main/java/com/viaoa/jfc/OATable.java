@@ -97,21 +97,23 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import com.viaoa.compare.OACompare;
+import com.viaoa.compare.match.OAMatchNull;
+import com.viaoa.config.OAProperties;
+import com.viaoa.converter.OAConv;
+import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.service.hub.HubStatusService;
+import com.viaoa.graph.sibling.OASiblingHelper;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubAODelegate;
-import com.viaoa.hub.HubChangeListener;
-import com.viaoa.hub.HubDataDelegate;
-import com.viaoa.hub.HubDelegate;
-import com.viaoa.hub.HubDetailDelegate;
 import com.viaoa.hub.HubEvent;
-import com.viaoa.hub.HubEventDelegate;
-import com.viaoa.hub.HubFilter;
-import com.viaoa.hub.HubLinkDelegate;
 import com.viaoa.hub.HubListenerAdapter;
+import com.viaoa.hub.filter.HubFilter;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.border.CustomLineBorder;
 import com.viaoa.jfc.control.OAJfcController;
 import com.viaoa.jfc.control.OATreeTableController;
 import com.viaoa.jfc.dnd.OATransferable;
+import com.viaoa.jfc.model.OAColor;
 import com.viaoa.jfc.table.OATableCellEditor;
 import com.viaoa.jfc.table.OATableCellRenderer;
 import com.viaoa.jfc.table.OATableColumn;
@@ -119,13 +121,13 @@ import com.viaoa.jfc.table.OATableColumnCustomizer;
 import com.viaoa.jfc.table.OATableComponent;
 import com.viaoa.jfc.table.OATableFilterComponent;
 import com.viaoa.jfc.table.OATableListener;
+import com.viaoa.lang.OAString;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OASiblingHelper;
-import com.viaoa.object.OAThreadLocalDelegate;
+import com.viaoa.reflect.OAReflect;
+import com.viaoa.runtime.OARuntime;
 import com.viaoa.template.OATemplate;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
-import com.viaoa.util.*;
 
 /**
  * Used for building a Table of columns/rows listing Objects. All columns are created by adding an OATableComponent as a column to the
@@ -543,12 +545,14 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 	}
 
 	protected void performSort() {
-		boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
+		boolean bx = OARuntime.thread().getThreadLocalService().addSiblingHelper(siblingHelper);
+		//was: boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
 		try {
 			_performSort();
 		} finally {
 			if (bx) {
-				OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
+				OARuntime.thread().getThreadLocalService().removeSiblingHelper(siblingHelper);
+				//was: OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
 			}
 		}
 	}
@@ -610,7 +614,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 			}
 		}
 
-		final Object[] objs = new Object[hubSelect == null ? 0 : hubSelect.getSize()];
+		final OAObject[] objs = new OAObject[hubSelect == null ? 0 : hubSelect.getSize()];
 		if (hubSelect != null) {
 			hubSelect.copyInto(objs);
 		}
@@ -678,10 +682,16 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		// reset AO
 		// 20111008 add if
 		if (hub.getAO() != null && hubSelect == null) {
-			HubAODelegate.setActiveObjectForce(hub, hub.getAO());
+			getGraph().hubsInternal().callHubAOSetActiveObjectForce(hub, hub.getAO());
+			//was: HubAODelegate.setActiveObjectForce(hub, hub.getAO());
 		}
 	}
 
+	
+	public OAGraphInternal getGraph() {
+		return (OAGraphInternal) OARuntime.graph(hub);
+	}
+	
 	/**
 	 * Returns Hub that is bound to Table.
 	 */
@@ -825,9 +835,12 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		rec.translate(0, rec.height);
 		int rowBottom = rowAtPoint(rec.getLocation());
 
-		boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
+		
+		boolean bx = OARuntime.thread().getThreadLocalService().addSiblingHelper(siblingHelper);
+		//was: boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
 		hubViewable.clear();
-		OAThreadLocalDelegate.setLoading(true);
+		OARuntime.thread().getThreadLocalService().setLoading(true);
+		//was: OAThreadLocalDelegate.setLoading(true);
 		try {
 			int x = rowBottom;
 			for (int i = rowTop; i <= x; i++) {
@@ -835,14 +848,18 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 				if (objx == null) {
 					break;
 				}
-				hubViewable.add(objx);
+				hubViewable.add((OAObject) objx);
 			}
 		} finally {
 			if (bx) {
-				OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
+				OARuntime.thread().getThreadLocalService().removeSiblingHelper(siblingHelper);
+				//was: OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
 			}
-			OAThreadLocalDelegate.setLoading(false);
-			HubEventDelegate.fireOnNewListEvent(hubViewable, true);
+			OARuntime.thread().getThreadLocalService().setLoading(false);
+			//was: OAThreadLocalDelegate.setLoading(false);
+			
+			getGraph().hubsInternal().callHubEventFireOnNewListEvent(hubViewable, true);
+			//was: HubEventDelegate.fireOnNewListEvent(hubViewable, true);
 		}
 	}
 
@@ -1085,7 +1102,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 					((OAObject) dragObject).setProperty(ttc.getOneLinkInfo().getName(), objx);
 				} else {
 					Hub h = (Hub) ttc.getManyLinkInfo().getValue(hub.getAt(row));
-					h.add(dragObject);
+					h.add((OAObject) dragObject);
 				}
 				ttc.refresh();
 			} else if (hub.getObjectClass().isAssignableFrom(dragObject.getClass())) {
@@ -1106,11 +1123,11 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 					}
 				} else {
 					if (hub.isSorted()) {
-						hub.add(dragObject);
+						hub.add((OAObject) dragObject);
 						// 20091214
 						OAUndoManager.add(OAUndoableEdit.createUndoableAdd(null, hub, dragObject));
 					} else {
-						hub.insert(dragObject, row);
+						hub.insert((OAObject) dragObject, row);
 						// 20091214
 						OAUndoManager.add(OAUndoableEdit.createUndoableInsert(null, hub, dragObject, row));
 					}
@@ -1413,7 +1430,8 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		}
 		String k = row + "." + col;
 		if (newValue == null) {
-			newValue = OANullObject.instance;
+			newValue = OAMatchNull.instance;
+			//was: newValue = OAMatchNullObject.instance;
 		}
 		Object old = hmRowColumnValue.get(k);
 		if (!OACompare.isEqual(old, newValue)) {
@@ -2466,12 +2484,14 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		boolean loadingMoreFlag;
 
 		public Object getValueAt(int row, int col) {
-			boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
+			boolean bx = OARuntime.thread().getThreadLocalService().addSiblingHelper(siblingHelper);
+		    //was: boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
 			try {
 				return _getValueAt(row, col);
 			} finally {
 				if (bx) {
-					OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
+					OARuntime.thread().getThreadLocalService().removeSiblingHelper(siblingHelper);
+					//was: OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
 				}
 			}
 		}
@@ -2850,7 +2870,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 			}
 
 			@Override
-			public boolean isUsed(Object obj) {
+			public boolean isUsed(OAObject obj) {
 				boolean b = _isUsed(obj);
 				return b;
 			}
@@ -2885,7 +2905,8 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 			@Override
 			protected Void doInBackground() throws Exception {
 				boolean b = false;
-				boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
+				boolean bx = OARuntime.thread().getThreadLocalService().addSiblingHelper(siblingHelper);
+				//was: boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
 				try {
 					if (control != null) {
 						b = true;
@@ -2897,7 +2918,8 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 						control.aiIgnoreValueChanged.decrementAndGet();
 					}
 					if (bx) {
-						OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
+						OARuntime.thread().getThreadLocalService().removeSiblingHelper(siblingHelper);
+						//was: OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
 					}
 				}
 				oaTableModel.fireTableStructureChanged();
@@ -3003,11 +3025,13 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 
 		boolean b = getEnableUndo() && hub != null && hub.getLinkHub(true) != null;
 		if (b) {
+			String s = getGraph().hubsInternal().callHubLinkGetLinkToProperty(hub);
+			//was: String s = HubLinkDelegate.getLinkToProperty(hub);
 			OAUndoableEdit ue = OAUndoableEdit.createUndoablePropertyChange(
-																			"Change " + HubLinkDelegate.getLinkToProperty(hub),
-																			hub.getLinkHub(true).getAO(),
-																			HubLinkDelegate.getLinkToProperty(hub),
-																			hub.getAO(), hub.getAt(row), false);
+				"Change " + s,
+				hub.getLinkHub(true).getAO(),
+				s,
+				hub.getAO(), hub.getAt(row), false);
 
 			OAUndoManager.add(ue);
 		}
@@ -3020,24 +3044,30 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 		// 20180305 set AO, but not detailHubs
-		boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
+		boolean bx = OARuntime.thread().getThreadLocalService().addSiblingHelper(siblingHelper);
+		//was: boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
 		try {
-			HubAODelegate.setActiveObject(hub, hub.getAt(row), row, true, false, false, false);
+			getGraph().services().hubs().ao().setActiveObject(hub, hub.getAt(row), row, true, false, false, false);
+			//was: HubAODelegate.setActiveObject(hub, hub.getAt(row), row, true, false, false, false);
 		} finally {
 			if (bx) {
-				OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
+				OARuntime.thread().getThreadLocalService().removeSiblingHelper(siblingHelper);
+				//was: OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
 			}
 		}
 
 		SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 			@Override
 			protected Void doInBackground() throws Exception {
-				boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
+				boolean bx = OARuntime.thread().getThreadLocalService().addSiblingHelper(siblingHelper);
+				//was: boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
 				try {
-					HubDetailDelegate.preloadDetailData(hub, row);
+					getGraph().services().hubs().detail().preloadDetailData(hub, row);
+					//was: HubDetailDelegate.preloadDetailData(hub, row);
 				} finally {
 					if (bx) {
-						OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
+						OARuntime.thread().getThreadLocalService().removeSiblingHelper(siblingHelper);
+						//was: OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
 					}
 				}
 				return null;
@@ -3046,14 +3076,15 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 			@Override
 			protected void done() {
 				if (aiRow.get() == row) {
-					boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
+					boolean bx = OARuntime.thread().getThreadLocalService().addSiblingHelper(siblingHelper);
 					try {
 						control._bIsRunningValueChanged = true;
-						HubAODelegate.updateDetailHubs(hub);
+						getGraph().services().hubs().ao().updateDetailHubs(hub);
+						//was: HubAODelegate.updateDetailHubs(hub);
 					} finally {
 						control._bIsRunningValueChanged = false;
 						if (bx) {
-							OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
+							OARuntime.thread().getThreadLocalService().removeSiblingHelper(siblingHelper);
 						}
 					}
 					setCursor(Cursor.getDefaultCursor());
@@ -4169,12 +4200,12 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 	public Component getRenderer(Component comp, JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column,
 			boolean wasChanged, boolean wasMouseOver) {
 		try {
-			boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
+			boolean bx = OARuntime.thread().getThreadLocalService().addSiblingHelper(siblingHelper);
 			try {
 				comp = _getRenderer(comp, table, value, isSelected, hasFocus, row, column, wasChanged, wasMouseOver);
 			} finally {
 				if (bx) {
-					OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
+					OARuntime.thread().getThreadLocalService().removeSiblingHelper(siblingHelper);
 				}
 			}
 		} catch (Exception e) {
@@ -4459,8 +4490,10 @@ class TableController extends OAJfcController implements ListSelectionListener {
 				if (table.chkSelection != null) {
 					table.repaint(100);
 				}
-				int pos = HubDataDelegate.getPos(hub, e.getObject(), false, false);
-				// int pos = hub.getPos(e.getObject());
+				
+				int pos = getGraph().services().hubs().data().getPos(hub, e.getObject(), false, false);
+				//was: int pos = HubDataDelegate.getPos(hub, e.getObject(), false, false);
+				
 				if (pos >= 0) {
 					try {
 						aiIgnoreValueChanged.incrementAndGet();
@@ -4545,13 +4578,18 @@ class TableController extends OAJfcController implements ListSelectionListener {
 	}
 
 	private void _rebuildListSelectionModel(final int cnt) {
+		if (getGraph().services().hubs().status().getCurrentState(hubSelect, null, null) != HubStatusService.HubCurrentStateEnum.InSync) return;
 
+		if (getGraph().services().hubs().status().getCurrentState(table.hub, null, null) != HubStatusService.HubCurrentStateEnum.InSync) return;
+
+		/*was:
 		if (HubDelegate.getCurrentState(hubSelect, null, null) != HubDelegate.HubCurrentStateEnum.InSync) {
 			return;
 		}
 		if (HubDelegate.getCurrentState(table.hub, null, null) != HubDelegate.HubCurrentStateEnum.InSync) {
 			return;
 		}
+		*/
 
 		ListSelectionModel lsm = table.getSelectionModel();
 		lsm.clearSelection();
@@ -4648,7 +4686,8 @@ class TableController extends OAJfcController implements ListSelectionListener {
 				}
 			}
 			if (bWasEmpty) {
-				OAThreadLocalDelegate.setLoading(true);
+				OARuntime.thread().getThreadLocalService().setLoading(true);
+				//was: OAThreadLocalDelegate.setLoading(true);
 			}
 
 			Object objClicked = null;
@@ -4671,7 +4710,7 @@ class TableController extends OAJfcController implements ListSelectionListener {
 					if (obj != null) {
 						if (b) {
 							if (bWasEmpty || !hubSelect.contains(obj)) {
-								hubSelect.add(obj);
+								hubSelect.add((OAObject) obj);
 							}
 						} else {
 							hubSelect.remove(obj);
@@ -4692,8 +4731,11 @@ class TableController extends OAJfcController implements ListSelectionListener {
 				}
 			} finally {
 				if (bWasEmpty) {
-					OAThreadLocalDelegate.setLoading(false);
-					HubEventDelegate.fireOnNewListEvent(hubSelect, true);
+					OARuntime.thread().getThreadLocalService().setLoading(false);
+					//was: OAThreadLocalDelegate.setLoading(false);
+					
+					getGraph().hubsInternal().callHubEventFireOnNewListEvent(hubSelect, true);
+					//was: HubEventDelegate.fireOnNewListEvent(hubSelect, true);
 				}
 			}
 			Object objx = hubSelect.getAt(hubSelect.size() - 1);

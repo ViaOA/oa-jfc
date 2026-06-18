@@ -47,13 +47,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubAODelegate;
-import com.viaoa.hub.HubAddRemoveDelegate;
-import com.viaoa.hub.HubChangeListener;
-import com.viaoa.hub.HubDelegate;
-import com.viaoa.hub.HubDetailDelegate;
 import com.viaoa.hub.HubEvent;
-import com.viaoa.hub.HubLinkDelegate;
 import com.viaoa.jfc.OAButton;
 import com.viaoa.jfc.OACommand;
 import com.viaoa.jfc.OAConsole;
@@ -64,21 +58,12 @@ import com.viaoa.jfc.dialog.OAConfirmDialog;
 import com.viaoa.jfc.dialog.OAPasswordDialog;
 import com.viaoa.jfc.dnd.OATransferable;
 import com.viaoa.jfc.table.OATableComponent;
-import com.viaoa.object.OALinkInfo;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectCallback;
-import com.viaoa.object.OAObjectCallbackDelegate;
-import com.viaoa.object.OAObjectDelegate;
-import com.viaoa.object.OAObjectDeleteDelegate;
-import com.viaoa.object.OAObjectInfo;
-import com.viaoa.object.OAObjectInfoDelegate;
-import com.viaoa.object.OAObjectReflectDelegate;
-import com.viaoa.object.OAThreadLocalDelegate;
 import com.viaoa.process.OAProcess;
 import com.viaoa.template.OATemplate;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
-import com.viaoa.util.*;
 
 /**
  * Functionality for binding JButton to OA. Note: order of tasks for actionPerformed event: actionPerformed, [password dialog]
@@ -115,11 +100,9 @@ public class ButtonController extends OAJfcController implements ActionListener 
 	public String processingTitle, processingMessage;
 
 	public ButtonController(Hub hub, AbstractButton button, OAButton.ButtonEnabledMode enabledMode, OAButton.ButtonCommand command,
-			HubChangeListener.Type type, boolean bDirectlySetsAO, boolean bIncludeExtendedChecks) {
-		super(hub, null, null, button,
-				type,
-				bDirectlySetsAO,
-				bIncludeExtendedChecks);
+			HubChangeListener.Type type, boolean bDirectlySetsAO, boolean bIncludeExtendedChecks) 
+	{
+		super(hub, null, null, button, type,bDirectlySetsAO,bIncludeExtendedChecks);
 		create(button, enabledMode, command);
 	}
 

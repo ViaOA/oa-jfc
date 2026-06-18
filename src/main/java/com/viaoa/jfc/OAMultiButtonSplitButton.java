@@ -19,7 +19,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.*;
-import com.viaoa.util.OAArray;
+import com.viaoa.lang.OAArray;
 
 /**
  * Manages multiple buttons to be choosen from a dropdown, displaying an active button.

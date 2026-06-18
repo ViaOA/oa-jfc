@@ -20,7 +20,7 @@ import javax.swing.table.*;
 import javax.swing.event.*;
 
 import com.viaoa.object.*;
-import com.viaoa.util.OAString;
+import com.viaoa.lang.OAString;
 import com.viaoa.hub.*;
 import com.viaoa.jfc.control.*;
 import com.viaoa.jfc.table.*;

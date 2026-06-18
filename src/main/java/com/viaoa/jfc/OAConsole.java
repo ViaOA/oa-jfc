@@ -36,17 +36,16 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
-import com.viaoa.hub.HubDetailDelegate;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.hub.HubEvent;
 import com.viaoa.hub.HubListener;
 import com.viaoa.hub.HubListenerAdapter;
-import com.viaoa.hub.HubMerger;
+import com.viaoa.hub.merge.HubMerger;
 import com.viaoa.jfc.console.Console;
 import com.viaoa.jfc.control.OAJfcController;
 import com.viaoa.jfc.dnd.OATransferable;
 import com.viaoa.object.OAObject;
-import com.viaoa.util.OAString;
+import com.viaoa.lang.OAString;
 
 /**
  * Acts as a console to display and scroll changes to a property. Ex: Message.text, where each change to text will be added to the display.

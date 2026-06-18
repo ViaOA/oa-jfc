@@ -44,9 +44,7 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.ColorUIResource;
 
-import com.viaoa.datasource.OASelect;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubAODelegate;
 import com.viaoa.hub.HubEvent;
 import com.viaoa.hub.HubListenerAdapter;
 import com.viaoa.jfc.OAButton;
@@ -55,15 +53,15 @@ import com.viaoa.jfc.OADateComboBox;
 import com.viaoa.jfc.OAJfcUtil;
 import com.viaoa.jfc.OAList;
 import com.viaoa.jfc.OATextField;
-import com.viaoa.model.oa.VDate;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectReflectDelegate;
-import com.viaoa.scheduler.OAScheduler;
-import com.viaoa.scheduler.OASchedulerPlan;
-import com.viaoa.util.OADate;
-import com.viaoa.util.OADateTime;
-import com.viaoa.util.OAPropertyPath;
-import com.viaoa.util.OAString;
+import com.viaoa.path.OAPath;
+import com.viaoa.runtime.OARuntime;
+import com.viaoa.schedule.OAScheduler;
+import com.viaoa.select.OASelect;
+import com.viaoa.datetime.*;
+import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.lang.OAString;
+import com.viaoa.lang.oa.VDate;
 
 /**
  * UI for displaying items in a Calendar.
@@ -209,19 +207,19 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
         lastSelectedDate = new OADate(dx);
         vdCalendar.setValue(new OADate(dx));
         
-        final int month = bFromDayPanel ? alDayPanel.get(40).date.getMonth() :dx.getMonth(); 
+        final int month = bFromDayPanel ? alDayPanel.get(40).date.getMonthValue() :dx.getMonthValue(); 
         boolean bNewMonth;
         if (bFromDayPanel) {
             dx = dateLastBegin;
             bNewMonth = false;
         }
         else {
-            dx = (OADate) dx.addMonths(-1);
-            dx.setDay(1);
-            int dow = dx.getDayOfWeek();
+            dx = (OADate) dx.plusMonths(-1);
+            dx = (OADate) dx.withDayOfMonth(1);
+            int dow = dx.getDayOfWeek().getValue();
             
             int x = (dow-Calendar.SUNDAY);
-            dx = (OADate) dx.addDays(-x);
+            dx = (OADate) dx.plusDays(-x);
             
             bNewMonth = !dx.equals(dateLastBegin);
             dateLastBegin = dx;
@@ -241,7 +239,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                 }
                 */
                 dp.setVisible(bVis);
-                dx = (OADate) dx.addDay();
+                dx = (OADate) dx.plusDay();
 
                 dp.hub.clear();
             }
@@ -278,7 +276,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                 dp.scrollRectToVisible(new Rectangle(0, 0, 10, dp.getHeight()));
             }
             else {
-                if (dp.date.getMonth() != month) {
+                if (dp.date.getMonthValue() != month) {
                     dp.lbl.setForeground(Color.GRAY);
                     if (dp.bLabelSetText || dp.hub.getSize() == 0) {
                         // dp.lbl.setIcon(null);
@@ -642,7 +640,8 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                     sel.select(OAMonthCalendar.this.datePropertyPaths[0] +" = ?", new Object[] {dateOrig});
                     obj = sel.next();
                     if (obj == null) {
-                        obj = (OAObject) OAObjectReflectDelegate.createNewObject(c);
+                    	obj = (OAObject) OARuntime.graph(c).create(c);
+                        //was: obj = (OAObject) OAObjectReflectDelegate.createNewObject(c);
                         obj.setProperty(OAMonthCalendar.this.datePropertyPaths[0], dateOrig);
                         obj.save();
                     }                    
@@ -677,15 +676,18 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
             hubForList = this.hub;
             String propPath = propertyPath;
             if (OAMonthCalendar.this.getDetailHub() != null) {
-                HubAODelegate.keepActiveObject(this.hub);
+            	OARuntime.graph(this.hub).services().hubs().ao().keepActiveObject(this.hub);
+                //was: HubAODelegate.keepActiveObject(this.hub);
                 hubForList = hub.getDetailHub(OAMonthCalendar.this.getDetailHub().getObjectClass()).createSharedHub();
             }
             else {
                 // propertyPath could be using hub
                 if (propertyPath != null && propertyPath.indexOf('.') > 0) {
-                    OAPropertyPath ppx = new OAPropertyPath(hub.getObjectClass(), propertyPath);
+                    OAPath ppx = new OAPath(hub.getObjectClass(), propertyPath);
+                    //was: OAPropertyPath ppx = new OAPropertyPath(hub.getObjectClass(), propertyPath);
                     if (ppx.getHasHubProperty()) {
-                        HubAODelegate.keepActiveObject(this.hub);
+                    	OARuntime.graph(this.hub).services().hubs().ao().keepActiveObject(this.hub);
+                        //was: HubAODelegate.keepActiveObject(this.hub);
                         
                         int x = OAString.dcount(propertyPath, '.');
                         if (x == 1) {

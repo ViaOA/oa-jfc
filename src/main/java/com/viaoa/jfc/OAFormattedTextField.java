@@ -15,11 +15,11 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
+import com.viaoa.converter.OAConv;
 import com.viaoa.hub.*;
 import com.viaoa.jfc.control.*;
 import com.viaoa.jfc.table.*;
-import com.viaoa.util.OAConv;
-import com.viaoa.util.OAString;
+import com.viaoa.lang.OAString;
 
 public class OAFormattedTextField extends BaseFormattedTextField implements OATableComponent, OAJfcComponent {
     private FormattedTextFieldController control;

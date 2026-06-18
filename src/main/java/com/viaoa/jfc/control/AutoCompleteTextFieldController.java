@@ -22,12 +22,12 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
 import com.viaoa.hub.HubEvent;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.text.autocomplete.AutoCompleteList;
+import com.viaoa.lang.OAString;
 import com.viaoa.object.OAObject;
 import com.viaoa.template.OATemplate;
-import com.viaoa.util.OAString;
 
 /**
  * Controller OAAutoComplete.

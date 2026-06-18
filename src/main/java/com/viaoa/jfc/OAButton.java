@@ -36,17 +36,16 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableCellEditor;
 
+import com.viaoa.graph.service.object.OAObjectEventService;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
-import com.viaoa.hub.HubChangeListener.Type;
-import com.viaoa.hub.HubDetailDelegate;
+import com.viaoa.hub.listener.HubChangeListener;
+import com.viaoa.hub.listener.HubChangeListener.Type;
 import com.viaoa.jfc.control.ButtonController;
 import com.viaoa.jfc.dialog.OAPasswordDialog;
 import com.viaoa.jfc.table.OAButtonTableCellEditor;
 import com.viaoa.jfc.table.OATableComponent;
+import com.viaoa.lang.OAString;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectDelegate;
-import com.viaoa.util.OAString;
 
 public class OAButton extends JButton implements OATableComponent, OAJfcComponent {
 	public boolean DEBUG;
@@ -222,7 +221,8 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 				} else {
 					hubx = hub.getMasterHub();
 					if (hubx != null) {
-						propx = HubDetailDelegate.callHubDetailGetPropertyFromMasterToDetail(hub);
+						propx = control.getGraph().hubsInternal().callHubDetailGetPropertyFromMasterToDetail(hub);
+						//was: propx = HubDetailDelegate.callHubDetailGetPropertyFromMasterToDetail(hub);
 					}
 				}
 			}
@@ -233,7 +233,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 			control = new OAButtonController(hub, OAButton.ButtonEnabledMode.HubIsValid, command, HubChangeListener.Type.HubValid, false,
 					false);
 			//was: control = new OAButtonController(hub, OAButton.ButtonEnabledMode.ActiveObjectNotNull, command, HubChangeListener.Type.AoNotNull, false, false);
-			control.getEnabledChangeListener().add(hub, OAObjectDelegate.WORD_Changed, true);
+			control.getEnabledChangeListener().add(hub, OAObjectEventService.WORD_CHANGED, true);
 		} else if (command == ButtonCommand.New || command == ButtonCommand.WizardNew) {
 			control = new OAButtonController(hub, OAButton.ButtonEnabledMode.HubIsValid, command, HubChangeListener.Type.HubValid, true,
 					true);
@@ -543,7 +543,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 			String s = "";
 			if (getHub() != null) {
 				s = getHub().getObjectClass().getSimpleName();
-				s = com.viaoa.util.OAString.convertToHungarian(s);
+				s = OAString.convertToHungarian(s);
 			}
 
 			if (cmd == ButtonCommand.ObjectMethod || cmd == ButtonCommand.HubMethod) {
@@ -1043,7 +1043,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 	}
 
 	public void addEnabledOnlyIfNew() {
-		control.getEnabledChangeListener().add(control.getHub(), Type.AoNew);
+		control.getEnabledChangeListener().add(control.getHub(), HubChangeListener.Type.AoNew);
 	}
 
 	/*

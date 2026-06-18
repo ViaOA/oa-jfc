@@ -24,9 +24,8 @@ import javax.swing.plaf.metal.MetalComboBoxUI;
 //import com.sun.java.swing.plaf.motif.MotifComboBoxUI;
 //import com.sun.java.swing.plaf.windows.WindowsComboBoxUI;
 
-
 import com.viaoa.hub.*;
-import com.viaoa.util.*;
+import com.viaoa.hub.listener.HubChangeListener;
 
 /**
     ComboBox with drop down tree.

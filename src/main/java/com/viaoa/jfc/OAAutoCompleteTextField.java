@@ -27,7 +27,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.TableCellEditor;
 
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.control.AutoCompleteTextFieldController;
 import com.viaoa.jfc.table.OATableCellEditor;
 import com.viaoa.jfc.table.OATableComponent;

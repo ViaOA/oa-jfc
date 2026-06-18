@@ -11,10 +11,11 @@
 package com.viaoa.jfc;
 
 import javax.swing.*;
+
+import com.viaoa.lang.OAString;
+
 import java.net.*;
 import java.io.*;
-
-import com.viaoa.util.*;
 
 /**
     JProgressBar component used to copy a file, and visually display the progress.

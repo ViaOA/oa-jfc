@@ -13,6 +13,7 @@ package com.viaoa.jfc.control;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Window;
@@ -50,13 +51,11 @@ import javax.swing.text.JTextComponent;
 import com.viaoa.annotation.OAOne;
 import com.viaoa.datasource.OADataSource;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
-import com.viaoa.hub.HubChangeListener.HubProp;
-import com.viaoa.hub.HubDetailDelegate;
+import com.viaoa.hub.listener.*;
+import com.viaoa.hub.listener.HubChangeListener.HubProp;
+import com.viaoa.hub.util.HubTemp;
 import com.viaoa.hub.HubEvent;
-import com.viaoa.hub.HubLinkDelegate;
 import com.viaoa.hub.HubListenerAdapter;
-import com.viaoa.hub.HubTemp;
 import com.viaoa.image.ColorIcon;
 import com.viaoa.image.MultiIcon;
 import com.viaoa.image.OAImageUtil;
@@ -67,27 +66,24 @@ import com.viaoa.jfc.OAJfcUtil;
 import com.viaoa.jfc.OALabel;
 import com.viaoa.jfc.OAResizePanel;
 import com.viaoa.jfc.OATable;
+import com.viaoa.jfc.converter.*;
 import com.viaoa.jfc.table.OATableComponent;
-import com.viaoa.model.oa.VString;
-import com.viaoa.object.OAFinder;
-import com.viaoa.object.OALinkInfo;
+import com.viaoa.lang.OAString;
+import com.viaoa.lang.oa.VString;
+import com.viaoa.find.OAFinder;
+import com.viaoa.graph.OAGraph;
+import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.metadata.*;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectCallback;
-import com.viaoa.object.OAObjectCallbackDelegate;
-import com.viaoa.object.OAObjectInfo;
-import com.viaoa.object.OAObjectInfoDelegate;
-import com.viaoa.object.OAObjectReflectDelegate;
-import com.viaoa.object.OAPropertyInfo;
-import com.viaoa.object.OAThreadLocalDelegate;
+import com.viaoa.path.OAPath;
+import com.viaoa.runtime.OARuntime;
+import com.viaoa.callback.OACallbackLabel;
+import com.viaoa.callback.OAObjectCallback;
 import com.viaoa.template.OATemplate;
 import com.viaoa.undo.OAUndoableEdit;
-import com.viaoa.util.OACompare;
-import com.viaoa.util.OAConv;
-import com.viaoa.util.OAConverter;
-import com.viaoa.util.OADate;
-import com.viaoa.util.OANullObject;
-import com.viaoa.util.OAPropertyPath;
-import com.viaoa.util.OAString;
+import com.viaoa.compare.*;
+import com.viaoa.compare.match.OAMatchNull;
+import com.viaoa.converter.*;
 
 /**
  * Base controller class for OA JFC/Swing components. Implements the HubListener and provides most of the methods required for creating
@@ -96,6 +92,15 @@ import com.viaoa.util.OAString;
 public class OAJfcController extends HubListenerAdapter {
 	private static Logger LOG = Logger.getLogger(OAJfcController.class.getName());
 
+	// add JFC UI specific classes to converter. 
+	static {
+		OAConverter.addConverter(java.awt.Point.class, new OAConverterPoint());
+		OAConverter.addConverter(java.awt.Dimension.class, new OAConverterDimension());
+		OAConverter.addConverter(java.awt.Rectangle.class, new OAConverterRectangle());
+		OAConverter.addConverter(java.awt.Color.class, new OAConverterColor());
+		OAConverter.addConverter(java.awt.Font.class, new OAConverterFont());
+	}	
+	
 	public boolean DEBUG; // used for debugging a single component. ex: ((OALabel)lbl).setDebug(true)
 	public static boolean DEBUGUI = false; // used by debug() to show info
 
@@ -104,7 +109,7 @@ public class OAJfcController extends HubListenerAdapter {
 	protected Hub hub;
 	protected final boolean bAoOnly;
 	protected String propertyPath;
-	protected OAPropertyPath oaPropertyPath;
+	protected OAPath oaPropertyPath;
 
 	//protected Hub<String> hubNameValue;  // used by name/value properties to display value, use *.typeAsString as property
 
@@ -285,7 +290,7 @@ public class OAJfcController extends HubListenerAdapter {
 			}
 		}
 
-		oaPropertyPath = new OAPropertyPath(hub.getObjectClass(), propertyPath);
+		oaPropertyPath = new OAPath(hub.getObjectClass(), propertyPath);
 		final String[] properties = oaPropertyPath.getProperties();
 		endPropertyName = (properties == null || properties.length == 0) ? null : properties[properties.length - 1];
 
@@ -334,10 +339,11 @@ public class OAJfcController extends HubListenerAdapter {
 						addEnabledObjectCallbackCheck(hub, prop);
 						addVisibleObjectCallbackCheck(hub, prop);
 					} else {
-						OAObjectCallbackDelegate.addObjectCallbackChangeListeners(	hub, cz, prop, ppPrefix, getEnabledChangeListener(),
-																					true);
-						OAObjectCallbackDelegate.addObjectCallbackChangeListeners(	hub, cz, prop, ppPrefix, getVisibleChangeListener(),
-																					false);
+						getGraph().services().objects().callback().addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getEnabledChangeListener(), true);
+						//was: OAObjectCallbackDelegate.addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getEnabledChangeListener(), true);
+						
+						getGraph().services().objects().callback().addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getVisibleChangeListener(), false);
+						//was: OAObjectCallbackDelegate.addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getVisibleChangeListener(), false);
 					}
 					ppPrefix += prop + ".";
 					cz = oaPropertyPath.getClasses()[cnt++];
@@ -354,9 +360,12 @@ public class OAJfcController extends HubListenerAdapter {
 			if (hubLink != null) {
 				linkPropertyName = hub.getLinkPath(true);
 			} else {
-				Hub hubx = HubDetailDelegate.getMasterHub(hub);
+				Hub hubx = hub.getMasterHub();
+				//was: Hub hubx = HubDetailDelegate.getMasterHub(hub);
 				if (hubx != null) {
-					OALinkInfo li = HubDetailDelegate.getLinkInfoFromMasterToDetail(hub);
+					OALinkInfo li = getGraph().hubsInternal().callHubDetailGetLinkInfoFromMasterToDetail(hub);
+					
+					//was: OALinkInfo li = HubDetailDelegate.getLinkInfoFromMasterToDetail(hub);
 					if (li != null && li.getType() == li.TYPE_ONE) {
 						hubLink = hubx;
 						linkPropertyName = li.getName();
@@ -514,6 +523,13 @@ public class OAJfcController extends HubListenerAdapter {
 	private Class fromParentClass;
 	private String fromParentPropertyPath;
 
+	public OAGraphInternal getGraph() {
+		Class<?> c = null;
+		if (hub != null) c = hub.getObjectClass();
+		if (c == null && hubObject != null) c = hubObject.getClass();
+		return (OAGraphInternal) OARuntime.graph(c);
+	}
+	
 	protected Object getRealObject(Object fromObject) {
 		if (fromObject == null || hub == null) {
 			return fromObject;
@@ -531,9 +547,11 @@ public class OAJfcController extends HubListenerAdapter {
 
 		if (fromParentClass == null || !fromParentClass.equals(fromObject.getClass())) {
 			fromParentClass = fromObject.getClass();
-			fromParentPropertyPath = OAObjectReflectDelegate.getPropertyPathFromMaster((OAObject) fromObject, getHub());
+			fromParentPropertyPath = getGraph().services().objects().reflect().getPropertyPathFromMaster((OAObject) fromObject, getHub());
+			// was: fromParentPropertyPath = OAObjectReflectDelegate.getPropertyPathFromMaster((OAObject) fromObject, getHub());
 		}
-		return OAObjectReflectDelegate.getProperty((OAObject) fromObject, fromParentPropertyPath);
+		return getGraph().services().objects().reflect().getProperty((OAObject) fromObject, fromParentPropertyPath);
+		// was: return OAObjectReflectDelegate.getProperty((OAObject) fromObject, fromParentPropertyPath);
 	}
 
 	public Object getValue(Object obj) {
@@ -547,7 +565,8 @@ public class OAJfcController extends HubListenerAdapter {
 		}
 
 		if (bIsHubCalc) {
-			obj = OAObjectReflectDelegate.getProperty(getHub(), propertyPath);
+			obj = getGraph().services().objects().reflect().getProperty(getHub(), propertyPath);
+			//was: obj = OAObjectReflectDelegate.getProperty(getHub(), propertyPath);
 		} else {
 			if (OAString.isEmpty(propertyPath)) {
 				return obj;
@@ -648,14 +667,14 @@ public class OAJfcController extends HubListenerAdapter {
 			} else {
 				if (oaPropertyPath != null && oaPropertyPath.hasLinks()) {
 					prop = endPropertyName;
-					objx = oaPropertyPath.getLastLinkValue(obj);
+					objx = oaPropertyPath.getLastLinkValue((OAObject) obj);
 				} else {
 					prop = propertyPath;
 				}
 			}
 			if (objx instanceof OAObject) {
-				OAObjectCallback em = OAObjectCallbackDelegate.getConfirmPropertyChangeObjectCallback(	(OAObject) objx, prop, newValue,
-																										confirmMessage, confirmTitle);
+				OAObjectCallback em = getGraph().objectsInternal().callObjectCallbackGetConfirmPropertyChangeObjectCallback((OAObject) objx, prop, newValue, confirmMessage, confirmTitle);
+				//was: OAObjectCallback em = OAObjectCallbackDelegate.getConfirmPropertyChangeObjectCallback((OAObject) objx, prop, newValue, confirmMessage, confirmTitle);
 				confirmMessage = em.getConfirmMessage();
 				confirmTitle = em.getConfirmTitle();
 			}
@@ -722,8 +741,9 @@ public class OAJfcController extends HubListenerAdapter {
 		}
 
 		OAObject oaObj = (OAObject) obj;
-		OAObjectCallback em = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(	OAObjectCallback.CHECK_ALL, oaObj,
-																								linkPropertyName, null, objNew);
+		
+		OAObjectCallback em = getGraph().objectsInternal().callObjectCallbackGetVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, oaObj, linkPropertyName, null, objNew);
+		//was: OAObjectCallback em = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, oaObj, linkPropertyName, null, objNew);
 
 		String result = null;
 		if (!em.getAllowed()) {
@@ -758,7 +778,7 @@ public class OAJfcController extends HubListenerAdapter {
 		return value;
 	}
 
-	private HubProp hpViewOnly;
+	private HubChangeListener.HubProp hpViewOnly;
 
 	public void setViewOnly(boolean b) {
 		if (b) {
@@ -801,16 +821,15 @@ public class OAJfcController extends HubListenerAdapter {
 		} else {
 			if (oaPropertyPath != null && oaPropertyPath.hasLinks()) {
 				prop = endPropertyName;
-				objx = oaPropertyPath.getLastLinkValue(obj);
+				objx = oaPropertyPath.getLastLinkValue((OAObject)obj);
 			} else {
 				prop = propertyPath;
 			}
 		}
 		String result = null;
 		if (objx instanceof OAObject) {
-			OAObjectCallback em = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(	OAObjectCallback.CHECK_ALL,
-																									(OAObject) objx,
-																									prop, null, newValue);
+			OAObjectCallback em = getGraph().objectsInternal().callObjectCallbackGetVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) objx, prop, null, newValue);
+			//was: OAObjectCallback em = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) objx, prop, null, newValue);
 			if (!em.getAllowed()) {
 				result = em.getResponse();
 				Throwable t = em.getThrowable();
@@ -861,10 +880,11 @@ public class OAJfcController extends HubListenerAdapter {
 			if (objx instanceof OAObject) {
 				String prop;
 				if (oaPropertyPath != null && oaPropertyPath.hasLinks()) {
-					objx = oaPropertyPath.getLastLinkValue(objx);
+					objx = oaPropertyPath.getLastLinkValue((OAObject) objx);
 				}
 				if (objx instanceof OAObject) {
-					return OAObjectCallbackDelegate.getFormat((OAObject) objx, endPropertyName, defaultFormat);
+					return getGraph().objectsInternal().callObjectCallbackGetFormat((OAObject) objx, endPropertyName, defaultFormat);
+					//was: return OAObjectCallbackDelegate.getFormat((OAObject) objx, endPropertyName, defaultFormat);
 				}
 			}
 		}
@@ -944,7 +964,7 @@ public class OAJfcController extends HubListenerAdapter {
 			return this.font;
 		}
 		obj = getRealObject(obj);
-		if (obj == null || obj instanceof OANullObject) {
+		if (obj == null || obj instanceof OAMatchNull) {  //was: OANullObject
 			return this.font;
 		}
 		if (!(obj instanceof OAObject)) {
@@ -991,7 +1011,7 @@ public class OAJfcController extends HubListenerAdapter {
 			return this.colorForeground;
 		}
 		obj = getRealObject(obj);
-		if (obj == null || obj instanceof OANullObject) {
+		if (obj == null || obj instanceof OAMatchNull) { //was: OANullObject
 			return this.colorForeground;
 		}
 		if (!(obj instanceof OAObject)) {
@@ -1038,7 +1058,7 @@ public class OAJfcController extends HubListenerAdapter {
 			return this.colorBackground;
 		}
 		obj = getRealObject(obj);
-		if (obj == null || obj instanceof OANullObject) {
+		if (obj == null || obj instanceof OAMatchNull) { //was: OANullObject
 			return this.colorBackground;
 		}
 		if (!(obj instanceof OAObject)) {
@@ -1085,7 +1105,7 @@ public class OAJfcController extends HubListenerAdapter {
 			return this.colorIcon;
 		}
 		obj = getRealObject(obj);
-		if (obj == null || obj instanceof OANullObject) {
+		if (obj == null || obj instanceof OAMatchNull) { //was: OANullObject
 			return this.colorIcon;
 		}
 		if (!(obj instanceof OAObject)) {
@@ -1202,7 +1222,7 @@ public class OAJfcController extends HubListenerAdapter {
 
 	private Icon _getIcon(Object object) {
 		object = getRealObject(object);
-		if (object == null || object instanceof OANullObject) {
+		if (object == null || object instanceof OAMatchNull) { //was: OANullObject
 			return null;
 		}
 		if (!(object instanceof OAObject)) {
@@ -1404,7 +1424,8 @@ public class OAJfcController extends HubListenerAdapter {
 		if (bIgnoreUpdate) {
 			return;
 		}
-		final HubEvent he = OAThreadLocalDelegate.getCurrentHubEvent();
+		final HubEvent he = OARuntime.thread().getThreadLocalService().getCurrentHubEvent();
+		//was: final HubEvent he = OAThreadLocalDelegate.getCurrentHubEvent();
 		if (lastUpdateHubEvent != null && (he == lastUpdateHubEvent)) {
 			return;
 		}
@@ -1493,17 +1514,157 @@ public class OAJfcController extends HubListenerAdapter {
 	}
 
 	public void updateLabel(final JComponent comp, Object object) {
-		JLabel lbl = getLabel();
+		final JLabel lbl = getLabel();
 		if (lbl != null) {
 			OAObject oaobj = null;
 			if (object instanceof OAObject) {
 				oaobj = (OAObject) object;
 			}
 			String s = bUseLinkHub ? linkPropertyName : propertyPath;
-			OAObjectCallbackDelegate.updateLabel(oaobj, s, lbl);
+
+			OACallbackLabel lblx = createCallbackLabel(lbl);
+			getGraph().services().objects().callback().updateLabel(oaobj, s, lblx);
+			//was: OAObjectCallbackDelegate.updateLabel(oaobj, s, lbl);
 		}
 	}
 
+	/**
+	 * OA's UI neutral Label for getting callback update for an JLabel (for Swing)
+	 * @param lbl
+	 * @return
+	 */
+	protected OACallbackLabel createCallbackLabel(final JLabel lbl) {
+		if (lbl == null) return null;
+		OACallbackLabel lblx = new OACallbackLabel() {
+			private String fixHtml(String s) {
+				if (s != null && s.indexOf('<') >= 0 && s.toLowerCase().indexOf("<html>") < 0) {
+					s = "<html>" + s;
+				}
+				return s;
+			}
+
+			private Color getColor(String s) {
+				if (OAString.isEmpty(s)) {
+					return null;
+				}
+				return (Color) OAConv.convert(Color.class, s);
+			}
+
+			private float getFontSize(String s, float defaultSize) {
+				if (OAString.isEmpty(s)) {
+					return defaultSize;
+				}
+				String sx = s.trim().toLowerCase();
+				if (sx.endsWith("px") || sx.endsWith("pt")) {
+					sx = sx.substring(0, sx.length() - 2);
+				}
+				Number num = (Number) OAConv.convert(Number.class, sx);
+				return num == null ? defaultSize : num.floatValue();
+			}
+
+			@Override
+			public void setText(String text) {
+				super.setText(text);
+				lbl.setText(fixHtml(text));
+			}
+
+			@Override
+			public void setTooltip(String tooltip) {
+				super.setTooltip(tooltip);
+				lbl.setToolTipText(fixHtml(tooltip));
+			}
+
+			@Override
+			public void setColor(String color) {
+				super.setColor(color);
+				Color c = getColor(color);
+				if (c != null) {
+					lbl.setForeground(c);
+				}
+			}
+
+			@Override
+			public void setBackground(String background) {
+				super.setBackground(background);
+				Color c = getColor(background);
+				if (c != null) {
+					lbl.setOpaque(true);
+					lbl.setBackground(c);
+				}
+			}
+
+			@Override
+			public void setFontFamily(String fontFamily) {
+				super.setFontFamily(fontFamily);
+				if (OAString.isNotEmpty(fontFamily)) {
+					Font f = lbl.getFont();
+					lbl.setFont(new Font(fontFamily, f.getStyle(), f.getSize()));
+				}
+			}
+
+			@Override
+			public void setFontSize(String fontSize) {
+				super.setFontSize(fontSize);
+				Font f = lbl.getFont();
+				lbl.setFont(f.deriveFont(getFontSize(fontSize, f.getSize2D())));
+			}
+
+			@Override
+			public void setFontWeight(String fontWeight) {
+				super.setFontWeight(fontWeight);
+				if (OAString.isNotEmpty(fontWeight)) {
+					Font f = lbl.getFont();
+					int style = "bold".equalsIgnoreCase(fontWeight) ? Font.BOLD : Font.PLAIN;
+					lbl.setFont(f.deriveFont(style));
+				}
+			}
+
+			@Override
+			public void setAlign(String align) {
+				super.setAlign(align);
+				if ("center".equalsIgnoreCase(align)) {
+					lbl.setHorizontalAlignment(JLabel.CENTER);
+				} else if ("right".equalsIgnoreCase(align)) {
+					lbl.setHorizontalAlignment(JLabel.RIGHT);
+				} else if ("left".equalsIgnoreCase(align)) {
+					lbl.setHorizontalAlignment(JLabel.LEFT);
+				}
+			}
+
+			@Override
+			public void setWidth(int width) {
+				super.setWidth(width);
+				if (width > 0) {
+					Dimension d = lbl.getPreferredSize();
+					lbl.setPreferredSize(new Dimension(width, d.height));
+				}
+			}
+
+			@Override
+			public void setHeight(int height) {
+				super.setHeight(height);
+				if (height > 0) {
+					Dimension d = lbl.getPreferredSize();
+					lbl.setPreferredSize(new Dimension(d.width, height));
+				}
+			}
+
+			@Override
+			public void setVisible(boolean visible) {
+				super.setVisible(visible);
+				lbl.setVisible(visible);
+			}
+
+			@Override
+			public void setEnabled(boolean enabled) {
+				super.setEnabled(enabled);
+				lbl.setEnabled(enabled);
+			}
+		};
+		return lblx;
+	}
+	
+	
 	/**
 	 * @param comp can be used for this.component, or another, ex: an OAList renderer (label)
 	 */
@@ -1549,7 +1710,8 @@ public class OAJfcController extends HubListenerAdapter {
 			}
 		}
 
-		if (lblThis != null && (getPropertyPath() != null || object instanceof String) && !HubLinkDelegate.getLinkedOnPos(hub)) {
+		if (lblThis != null && (getPropertyPath() != null || object instanceof String) && !getGraph().hubsInternal().callHubLinkGetLinkedOnPos(hub)) {
+		//was: if (lblThis != null && (getPropertyPath() != null || object instanceof String) && !HubLinkDelegate.getLinkedOnPos(hub)) {
 			String text;
 			if (object == null) {
 				text = "";
@@ -1564,7 +1726,7 @@ public class OAJfcController extends HubListenerAdapter {
 					if ((object instanceof OAObject) && oaPropertyPath != null && oaPropertyPath.getHasHubProperty()) {
 						// 20190110 useFinder for pp with hubs
 						VString vs = new VString();
-						OAFinder finder = new OAFinder(oaPropertyPath.getPropertyPathLinksOnly()) {
+						OAFinder finder = new OAFinder(oaPropertyPath.getPathLinksOnly()) {
 							@Override
 							protected void onFound(OAObject obj) {
 								Object objx = obj.getProperty(oaPropertyPath.getLastPropertyName());
@@ -1594,10 +1756,12 @@ public class OAJfcController extends HubListenerAdapter {
 						if (object instanceof OAObject) {
 							Object objx = object;
 							if (oaPropertyPath != null && oaPropertyPath.hasLinks()) {
-								objx = oaPropertyPath.getLastLinkValue(objx);
+								objx = oaPropertyPath.getLastLinkValue((OAObject) objx);
 							}
 							if (objx instanceof OAObject) {
-								OAObjectCallbackDelegate.renderLabel((OAObject) objx, endPropertyName, lblThis);
+								OACallbackLabel lblx = createCallbackLabel(lblThis);
+								getGraph().services().objects().callback().renderLabel((OAObject) objx, endPropertyName, lblx);
+								//was: OAObjectCallbackDelegate.renderLabel((OAObject) objx, endPropertyName, lblThis);
 							}
 						}
 					} catch (Exception e) {
@@ -1627,7 +1791,8 @@ public class OAJfcController extends HubListenerAdapter {
 	private boolean bLastUpdateEnabled;
 
 	public boolean updateEnabled() {
-		final HubEvent he = OAThreadLocalDelegate.getCurrentHubEvent();
+		final HubEvent he = OARuntime.thread().getThreadLocalService().getCurrentHubEvent();
+		//was: final HubEvent he = OAThreadLocalDelegate.getCurrentHubEvent();
 		if (he == null || he != lastUpdateEnabledHubEvent) {
 			lastUpdateEnabledHubEvent = he;
 			bLastUpdateEnabled = updateEnabled(component, hub == null ? null : hub.getAO());
@@ -1695,7 +1860,8 @@ public class OAJfcController extends HubListenerAdapter {
 	private boolean bLastUpdateVisible;
 
 	public boolean updateVisible() {
-		final HubEvent he = OAThreadLocalDelegate.getCurrentHubEvent();
+		final HubEvent he = OARuntime.thread().getThreadLocalService().getCurrentHubEvent();
+		//was: final HubEvent he = OAThreadLocalDelegate.getCurrentHubEvent();
 		if (he == null || he != lastUpdateVisibleHubEvent) {
 			lastUpdateVisibleHubEvent = he;
 			Object obj;
@@ -1829,7 +1995,8 @@ public class OAJfcController extends HubListenerAdapter {
 				return propertyInfoMaxColumns;
 			}
 
-			OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(h.getObjectClass());
+			OAObjectInfo oi = getGraph().info(h);
+			//was: OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(h.getObjectClass());
 			OAPropertyInfo pi = oi.getPropertyInfo(endPropertyName);
 
 			propertyInfoMaxColumns = (pi == null) ? -1 : pi.getMaxLength();
@@ -1862,7 +2029,8 @@ public class OAJfcController extends HubListenerAdapter {
 			if (h == null) {
 				return dataSourceMaxColumns;
 			}
-			OADataSource ds = OADataSource.getDataSource(h.getObjectClass());
+			OADataSource ds = OARuntime.datasource().get(h.getObjectClass());
+			//was: OADataSource ds = OADataSource.getDataSource(h.getObjectClass());
 			if (ds != null) {
 				dataSourceMaxColumns = -1;
 				dataSourceMaxColumns = ds.getMaxLength(h.getObjectClass(), endPropertyName);
@@ -2196,10 +2364,11 @@ public class OAJfcController extends HubListenerAdapter {
 
 			String prop;
 			if (oaPropertyPath != null && oaPropertyPath.hasLinks()) {
-				objx = oaPropertyPath.getLastLinkValue(objx);
+				objx = oaPropertyPath.getLastLinkValue((OAObject) objx);
 			}
 			if (objx instanceof OAObject) {
-				ttDefault = OAObjectCallbackDelegate.getToolTip((OAObject) objx, endPropertyName, ttDefault);
+				ttDefault = getGraph().objectsInternal().callObjectCallbackGetToolTip((OAObject) objx, endPropertyName, ttDefault);
+				//was: ttDefault = OAObjectCallbackDelegate.getToolTip((OAObject) objx, endPropertyName, ttDefault);
 			}
 		} else {
 			if (OAString.isNotEmpty(toolTipTextPropertyPath) || OAString.isNotEmpty(getToolTipTextTemplate())) {

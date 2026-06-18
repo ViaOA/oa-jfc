@@ -18,7 +18,6 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 import java.beans.*;
 import com.viaoa.hub.*;
-import com.viaoa.util.*;
 
 
 /**

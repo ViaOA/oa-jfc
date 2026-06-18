@@ -26,8 +26,8 @@ import com.viaoa.jfc.control.TextFieldController;
 import com.viaoa.jfc.table.OAPasswordFieldTableCellEditor;
 import com.viaoa.jfc.table.OATableComponent;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAPropertyInfo;
-import com.viaoa.util.OAPropertyPath;
+import com.viaoa.metadata.OAPropertyInfo;
+import com.viaoa.path.OAPath;
 
 public class OAPasswordField extends JPasswordField implements OATableComponent, OAJfcComponent {
 	private OAPasswordFieldController control;
@@ -74,7 +74,7 @@ public class OAPasswordField extends JPasswordField implements OATableComponent,
 		if (h == null) {
 			return;
 		}
-		OAPropertyPath pp = new OAPropertyPath(h.getObjectClass(), getController().getPropertyPath());
+		OAPath pp = new OAPath(h.getObjectClass(), getController().getPropertyPath());
 
 		OAPropertyInfo pi = pp.getEndPropertyInfo();
 		if (pi != null) {

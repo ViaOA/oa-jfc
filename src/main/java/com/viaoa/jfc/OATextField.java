@@ -22,14 +22,14 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 
-import com.viaoa.converter.OAConverterNumber;
+import com.viaoa.converter.internal.OAConverterNumber;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener.Type;
+import com.viaoa.hub.listener.HubChangeListener.Type;
 import com.viaoa.jfc.control.TextFieldController;
 import com.viaoa.jfc.table.OATableComponent;
 import com.viaoa.jfc.table.OATextFieldTableCellEditor;
 import com.viaoa.object.OAObject;
-import com.viaoa.util.OADate;
+import com.viaoa.datetime.OADate;
 
 public class OATextField extends JTextField implements OATableComponent, OAJfcComponent {
 	protected TextFieldController control; // 20110408 was OATextFieldController (internally defined)

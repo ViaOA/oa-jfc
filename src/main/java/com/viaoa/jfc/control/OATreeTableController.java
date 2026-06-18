@@ -30,12 +30,13 @@ import com.viaoa.jfc.table.OATableComponent;
 import com.viaoa.jfc.table.OATreeTableCellEditor;
 import com.viaoa.jfc.tree.OATreeModel;
 import com.viaoa.jfc.tree.OATreeNodeData;
-import com.viaoa.object.OALinkInfo;
+import com.viaoa.metadata.OALinkInfo;
+import com.viaoa.metadata.OAObjectInfo;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectInfo;
-import com.viaoa.object.OAThreadLocalDelegate;
+import com.viaoa.runtime.OARuntime;
 import com.viaoa.hub.*;
 import com.viaoa.hub.HubListener.InsertLocation;
+import com.viaoa.hub.util.HLA;
 
 /**
  * Creates a Tree to use as a column in a Table.
@@ -207,17 +208,21 @@ public class OATreeTableController extends OATree implements OATableComponent {
     
     protected void refreshHub() {
         if (bIgnoreFlag) return;
-        if (OAThreadLocalDelegate.callThreadLocalIsLoading()) {
+        
+        if (OARuntime.thread().getThreadLocalService().isLoading()) {
+        //was: if (OAThreadLocalDelegate.callThreadLocalIsLoading()) {
             if (hubTable.size() > 0) return;
         }
         
         try {
             bIgnoreFlag = true;
-            OAThreadLocalDelegate.setLoading(true);  // 20171214
+            OARuntime.thread().getThreadLocalService().setLoading(true);
+            //was: OAThreadLocalDelegate.setLoading(true);  // 20171214
             _doRefreshHub();
         }
         finally {
-            OAThreadLocalDelegate.setLoading(false);
+            OARuntime.thread().getThreadLocalService().setLoading(false);
+            //was: OAThreadLocalDelegate.setLoading(false);
             bIgnoreFlag = false;
         }
     }
@@ -238,10 +243,10 @@ public class OATreeTableController extends OATree implements OATableComponent {
             hubTable.removeAt(row);
             if (bValid) {
                 if (row >= hubTable.size()) {
-                    hubTable.add(objx);
+                    hubTable.add((OAObject) objx);
                 }
                 else {
-                    hubTable.insert(objx, row);
+                    hubTable.insert((OAObject) objx, row);
                 }
             }
         }
@@ -347,11 +352,13 @@ public class OATreeTableController extends OATree implements OATableComponent {
                 public void onNewList(HubEvent e) {
                     hubTable.clear();
                     try {
-                        OAThreadLocalDelegate.setLoading(true);
+                        OARuntime.thread().getThreadLocalService().setLoading(true);
+                    	//was: OAThreadLocalDelegate.setLoading(true);
                         refreshHub();
                     }
                     finally {
-                        OAThreadLocalDelegate.setLoading(false);
+                        OARuntime.thread().getThreadLocalService().setLoading(false);
+                        //was: OAThreadLocalDelegate.setLoading(false);
                     }
                 }
             };        

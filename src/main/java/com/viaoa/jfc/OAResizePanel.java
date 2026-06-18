@@ -28,7 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 
-import com.viaoa.util.OAArray;
+import com.viaoa.lang.OAArray;
 
 /**
  * Panel that "lets" a UI component grow a percentage of the available space. This is useful when using a gridbagLayout, and gc.fill =

@@ -36,10 +36,10 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener.Type;
+import com.viaoa.hub.listener.HubChangeListener.Type;
 import com.viaoa.jfc.control.DateChooserController;
 import com.viaoa.jfc.control.OAJfcController;
-import com.viaoa.util.OADate;
+import com.viaoa.datetime.OADate;
 
 /**
  * Popup calendar component. You can set the preferredSize directly or by changing the font, which will change the preferredSize
@@ -140,9 +140,9 @@ public class OADateChooser extends JPanel implements OAJfcComponent {
 			d = new OADate();
 		}
 		displayDate = d;
-		displayDate.setDay(1);
+		displayDate = (OADate) displayDate.withDayOfMonth(1);
 
-		firstDayInWeek = displayDate.getDayOfWeek();
+		firstDayInWeek = displayDate.getDayOfWeek().getValue();
 		daysInMonth = displayDate.getDaysInMonth();
 
 		rowsForWeeks = 1; // first week
@@ -359,10 +359,10 @@ public class OADateChooser extends JPanel implements OAJfcComponent {
 
 			OADate onDate = displayDate;
 			if (day < 1 || day > daysInMonth) {
-				displayDate.setDay(1);
-				onDate = (OADate) displayDate.addDays((day - 1));
+				displayDate = (OADate) displayDate.withDayOfMonth(1);
+				onDate = (OADate) displayDate.plusDays((day - 1));
 			} else {
-				displayDate.setDay(day);
+				displayDate = (OADate) displayDate.withDayOfMonth(day);
 			}
 
 			boolean b = (date != null && date.equals(onDate));
@@ -384,17 +384,17 @@ public class OADateChooser extends JPanel implements OAJfcComponent {
 			}
 
 			extraX = ((cellWidth - fm.stringWidth("" + day)) / 2);
-			g.drawString("" + (onDate.getDay()), x + extraX, y + extraY);
+			g.drawString("" + (onDate.getDayOfMonth()), x + extraX, y + extraY);
 			x += cellWidth;
 			g.setColor(fg);
 		}
 		if (newDay > -10) {
 			OADate d = new OADate(displayDate);
 			if (newDay < 1 || newDay > daysInMonth) {
-				d.setDay(1);
-				d = (OADate) d.addDays((newDay - 1));
+				d = (OADate) d.withDayOfMonth(1);
+				d = (OADate) d.plusDays((newDay - 1));
 			} else {
-				d.setDay(newDay);
+				d  = (OADate) d.withDayOfMonth(newDay);
 			}
 			setDate(d);
 		}
@@ -416,7 +416,7 @@ public class OADateChooser extends JPanel implements OAJfcComponent {
 			// see if mouse was pressed
 			if (recLeft.contains(ptMousePressed)) {
 				ptMousePressed = null;
-				displayDate = (OADate) displayDate.addMonths(-1);
+				displayDate = (OADate) displayDate.plusMonths(-1);
 				setDisplayDate(displayDate);
 				return;
 			}
@@ -433,7 +433,7 @@ public class OADateChooser extends JPanel implements OAJfcComponent {
 			// see if mouse was pressed
 			if (recRight.contains(ptMousePressed)) {
 				ptMousePressed = null;
-				displayDate = (OADate) displayDate.addMonths(1);
+				displayDate = (OADate) displayDate.plusMonths(1);
 				setDisplayDate(displayDate);
 				return;
 			}

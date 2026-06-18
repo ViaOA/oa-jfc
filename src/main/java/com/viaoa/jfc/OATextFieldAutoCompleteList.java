@@ -24,8 +24,9 @@ import com.viaoa.hub.*;
 import com.viaoa.jfc.text.autocomplete.AutoCompleteList;
 import com.viaoa.jfc.table.*;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectReflectDelegate;
-import com.viaoa.util.OAConv;
+import com.viaoa.runtime.OARuntime;
+import com.viaoa.converter.OAConv;
+import com.viaoa.graph.api.internal.OAGraphInternal;
 
 public abstract class OATextFieldAutoCompleteList extends JTextField implements OATableComponent {
     OATable table;
@@ -48,7 +49,12 @@ public abstract class OATextFieldAutoCompleteList extends JTextField implements 
         setup();
     }
     
-
+	public OAGraphInternal getGraph() {
+		Class<?> c = null;
+		if (hub != null) c = hub.getObjectClass();
+		return (OAGraphInternal) OARuntime.graph(c);
+	}
+    
     protected void setup() {
         
         addFocusListener(new FocusAdapter() {
@@ -57,7 +63,8 @@ public abstract class OATextFieldAutoCompleteList extends JTextField implements 
                 if (editObject == null) return;
                 String t = getText();
                 Object val = getPropertyValueForText(t);
-                OAObjectReflectDelegate.setProperty(editObject, updatePropertyPath, val, null);
+                getGraph().objectsInternal().callObjectReflectSetProperty(editObject, updatePropertyPath, val, null);
+                //was: OAObjectReflectDelegate.setProperty(editObject, updatePropertyPath, val, null);
             }
         });
         addActionListener(new ActionListener() {
@@ -66,7 +73,8 @@ public abstract class OATextFieldAutoCompleteList extends JTextField implements 
                 if (editObject != null) {
                     String t = getText();
                     Object val = getPropertyValueForText(t);
-                    OAObjectReflectDelegate.setProperty(editObject, updatePropertyPath, val, null);
+                    getGraph().objectsInternal().callObjectReflectSetProperty(editObject, updatePropertyPath, val, null);
+                    //OAObjectReflectDelegate.setProperty(editObject, updatePropertyPath, val, null);
                 }
             }
         });
@@ -112,14 +120,17 @@ public abstract class OATextFieldAutoCompleteList extends JTextField implements 
             if (editObject != null) {
                 String t = getText();
                 Object val = getPropertyValueForText(t);
-                OAObjectReflectDelegate.setProperty(editObject, updatePropertyPath, val, null);
+                getGraph().objectsInternal().callObjectReflectSetProperty(editObject, updatePropertyPath, val, null);
+                //was: OAObjectReflectDelegate.setProperty(editObject, updatePropertyPath, val, null);
             }
         }
 
         String s = null;
         OAObject oaObj = (OAObject) hub.getAO();
         if (oaObj != null) {
-            s = OAConv.toString(OAObjectReflectDelegate.getProperty(oaObj, displayPropertyPath));
+        	Object objx = getGraph().objectsInternal().callObjectReflectGetProperty(oaObj, displayPropertyPath);
+        	s = OAConv.toString(objx);
+            //was: s = OAConv.toString(OAObjectReflectDelegate.getProperty(oaObj, displayPropertyPath));
         }
         if (s == null) s = "";
         bSettingText = true;
@@ -148,12 +159,11 @@ public abstract class OATextFieldAutoCompleteList extends JTextField implements 
         OAObject oaObj = (OAObject) hub.getAO();
         if (oaObj != null) {
             Object val = getPropertyValueForText(t);
-            OAObjectReflectDelegate.setProperty(oaObj, updatePropertyPath, val, null);
+            getGraph().objectsInternal().callObjectReflectSetProperty(oaObj, updatePropertyPath, val, null);
+            //was: OAObjectReflectDelegate.setProperty(oaObj, updatePropertyPath, val, null);
         }
         editObject = oaObj;
     }  
-    
-    
     
     
     // ----- OATableComponent Interface methods -----------------------

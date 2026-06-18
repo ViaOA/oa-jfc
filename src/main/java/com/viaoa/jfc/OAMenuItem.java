@@ -22,14 +22,12 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
-import com.viaoa.hub.HubDetailDelegate;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.OAButton.ButtonCommand;
 import com.viaoa.jfc.OAButton.ButtonEnabledMode;
 import com.viaoa.jfc.control.ButtonController;
+import com.viaoa.lang.OAString;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectDelegate;
-import com.viaoa.util.OAString;
 
 // See OAButton - this is a copy of the same code
 public class OAMenuItem extends JMenuItem implements OAJfcComponent {
@@ -138,7 +136,8 @@ public class OAMenuItem extends JMenuItem implements OAJfcComponent {
 					} else {
 						hubx = hub.getMasterHub();
 						if (hubx != null) {
-							prop = HubDetailDelegate.callHubDetailGetPropertyFromMasterToDetail(hub);
+							prop = control.getGraph().hubsInternal().callHubDetailGetPropertyFromMasterToDetail(hub);
+							//was: prop = HubDetailDelegate.callHubDetailGetPropertyFromMasterToDetail(hub);
 						}
 					}
 					if (hubx == null || prop == null) {
@@ -161,7 +160,7 @@ public class OAMenuItem extends JMenuItem implements OAJfcComponent {
 			control = new OAMenuItemController(hub, OAButton.ButtonEnabledMode.HubIsValid, command, HubChangeListener.Type.HubValid, false,
 					false);
 			//was: control = new OAButtonController(hub, OAButton.ButtonEnabledMode.ActiveObjectNotNull, command, HubChangeListener.Type.AoNotNull, false, false);
-			control.getEnabledChangeListener().add(hub, OAObjectDelegate.WORD_Changed, true);
+			control.getEnabledChangeListener().add(hub, "Changed", true);
 			//was: control = new OAMenuItemController(hub, OAButton.ButtonEnabledMode.ActiveObjectNotNull, command, HubChangeListener.Type.AoNotNull, false, false);
 			//was: control.getEnabledChangeListener().add(hub, OAObjectDelegate.WORD_Changed, true);
 		} else if (command == ButtonCommand.New || command == ButtonCommand.WizardNew) {
@@ -450,7 +449,7 @@ public class OAMenuItem extends JMenuItem implements OAJfcComponent {
 			}
 			if (getHub() != null) {
 				String s2 = getHub().getObjectClass().getSimpleName();
-				s2 = com.viaoa.util.OAString.convertHungarian(s2);
+				s2 = OAString.convertToHungarian(s2);
 				s += " " + s2;
 			}
 			setToolTipText(s);

@@ -18,11 +18,13 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.table.*;
 
 import com.viaoa.object.*;
-import com.viaoa.util.OAString;
 import com.viaoa.hub.*;
 import com.viaoa.jfc.border.CustomLineBorder;
 import com.viaoa.jfc.control.*;
 import com.viaoa.jfc.table.*;
+import com.viaoa.lang.OAString;
+import com.viaoa.metadata.OACalcInfo;
+import com.viaoa.metadata.OAObjectInfo;
 
 public class OALabel extends JLabel implements OATableComponent, OAJfcComponent {
     private OALabelController control;
@@ -77,7 +79,8 @@ public class OALabel extends JLabel implements OATableComponent, OAJfcComponent 
         boolean bIsCalc = false;
         Hub h = getHub();
         if (h != null) {
-            OAObjectInfo oi = h.getOAObjectInfo();
+        	OAObjectInfo oi = getController().getGraph().info(h);
+            //was: OAObjectInfo oi = h.getOAObjectInfo();
             String prop = control.getPropertyPath();
             OACalcInfo ci = oi.getCalcInfo(prop);
             bIsCalc = (ci != null);

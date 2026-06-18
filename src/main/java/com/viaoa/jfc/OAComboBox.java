@@ -39,15 +39,14 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.plaf.metal.MetalComboBoxButton;
 import javax.swing.table.TableCellEditor;
 
+import com.viaoa.converter.OAConv;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener.Type;
-import com.viaoa.hub.HubLinkDelegate;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.control.ComboBoxController;
 import com.viaoa.jfc.table.OAComboBoxTableCellEditor;
 import com.viaoa.jfc.table.OATableComponent;
 import com.viaoa.object.OAObject;
 import com.viaoa.undo.OAUndoableEdit;
-import com.viaoa.util.OAConv;
 
 public class OAComboBox extends JComboBox implements OATableComponent, OAJfcComponent {
 	private OAComboBoxController control;
@@ -692,11 +691,15 @@ public class OAComboBox extends JComboBox implements OATableComponent, OAJfcComp
 			String s;
 			Object obj = value;
 			// 20110116 when using linkFromProperty, dont get prop value. Ex: Breed.name linked to Pet.breed (string)
-			Hub hx = HubLinkDelegate.getHubWithLink(h2, true);
-			if (hx != null && hx.getLinkHub(false) != null && HubLinkDelegate.getLinkFromProperty(hx) == null) {
+			Hub hx = control.getGraph().hubsInternal().callHubLinkGetHubWithLink(h2, true);
+			//was: Hub hx = HubLinkDelegate.getHubWithLink(h2, true);
+
+			if (hx != null && hx.getLinkHub(false) != null && control.getGraph().hubsInternal().callHubLinkGetLinkFromProperty(hx) == null) {
+			//was: if (hx != null && hx.getLinkHub(false) != null && HubLinkDelegate.getLinkFromProperty(hx) == null) {
 				// was: if (h2.getLinkHub() != null) {
 				try { // 20081010 add catch, in case the propertyPath for tableColumn is being used instead of using the link value
-					obj = HubLinkDelegate.getPropertyValueInLinkedToHub(h2, h.elementAt(row));
+					obj = control.getGraph().hubsInternal().callHubLinkGetPropertyValueInLinkedToHub(h2, h.elementAt(row));
+					//was: obj = HubLinkDelegate.getPropertyValueInLinkedToHub(h2, h.elementAt(row));
 					s = control.getValueAsString(obj, control.getFormat());
 					//was: s = OAReflect.getPropertyValueAsString(obj, control.getGetMethods());
 				} catch (Exception e) {
@@ -992,7 +995,7 @@ public class OAComboBox extends JComboBox implements OATableComponent, OAJfcComp
 	}
 
 	public void addEnabledOnlyIfNew() {
-		control.getEnabledChangeListener().add(control.getHub(), Type.AoNew);
+		control.getEnabledChangeListener().add(control.getHub(), HubChangeListener.Type.AoNew);
 	}
 
 	protected boolean isEnabled(boolean defaultValue) {

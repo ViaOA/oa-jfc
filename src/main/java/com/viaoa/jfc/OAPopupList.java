@@ -18,7 +18,6 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 
 import com.viaoa.hub.*;
-import com.viaoa.util.*;
 
 /**
     Popup List that is bound to a property in a Hub.
