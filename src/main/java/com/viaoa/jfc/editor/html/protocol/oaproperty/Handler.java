@@ -18,12 +18,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Logger;
 
-import com.viaoa.datasource.OASelect;
+import com.viaoa.converter.OAConv;
+import com.viaoa.graph.api.internal.OAGraphInternal;
 import com.viaoa.image.OAImageUtil;
+import com.viaoa.lang.OAString;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectCacheDelegate;
-import com.viaoa.util.OAConv;
-import com.viaoa.util.OAString;
+import com.viaoa.runtime.OARuntime;
+import com.viaoa.select.OASelect;
 
 // see:
 //  http://doc.novsu.ac.ru/oreilly/java/exp/ch09_06.htm
@@ -85,20 +86,22 @@ public class Handler extends com.viaoa.jfc.editor.html.protocol.classpath.Handle
 			}
 		}
 
-		Class c;
+		Class<? extends OAObject> c;
 		try {
-			c = Class.forName(className);
+			c = (Class<? extends OAObject>) Class.forName(className);
 		} catch (ClassNotFoundException e) {
 			String s = "class not found for image property, class=" + className;
 			LOG.fine(s);
 			throw new IOException(s);
 		}
-		final Class clazz = c;
+		final Class<? extends OAObject> clazz = c;
 
 		LOG.fine("getting image, class=" + className + ", property=" + propName + ", id=" + id);
 
 		OAObject obj;
-		obj = (OAObject) OAObjectCacheDelegate.get(c, id);
+    	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(c);
+		
+		obj = (OAObject) og.internal().objects().cache().getObject(c, id);
 		if (obj == null) {
 			OASelect sel = new OASelect(clazz);
 			sel.select("ID = ?", new Object[] { id });

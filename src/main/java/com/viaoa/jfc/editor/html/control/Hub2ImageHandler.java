@@ -15,14 +15,15 @@ import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.viaoa.graph.api.internal.OAGraphInternal;
 import com.viaoa.hub.Hub;
 import com.viaoa.image.OAImageUtil;
 import com.viaoa.jfc.editor.html.OAHTMLTextPane;
-import com.viaoa.object.OALinkInfo;
+import com.viaoa.lang.OAString;
+import com.viaoa.metadata.OALinkInfo;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectReflectDelegate;
-import com.viaoa.util.OAPropertyPath;
-import com.viaoa.util.OAString;
+import com.viaoa.path.OAPath;
+import com.viaoa.runtime.OARuntime;
 
 /**
  * Used by OAHTMLTextPane to use OAObjects to store images. This will use an Image src protocol/scheme of "oaproperty://.../prop?id" and
@@ -148,19 +149,21 @@ public class Hub2ImageHandler implements ImageHandlerInterface {
 
 		OAObject objNew;
 		if (OAString.isEmpty(propertyPathToImageObject)) {
-			objNew = (OAObject) OAObjectReflectDelegate.createNewObject(hub.getObjectClass());
+        	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(hub);
+			objNew = og.internal().objects().reflect().createNewObject(hub.getObjectClass());
 			hub.add(objNew);
 		} else {
-			OAPropertyPath pp = new OAPropertyPath(hub.getObjectClass(), propertyPathToImageObject);
+			OAPath pp = new OAPath(hub.getObjectClass(), propertyPathToImageObject);
 			OALinkInfo li = pp.getEndLinkInfo();
-			objNew = (OAObject) OAObjectReflectDelegate.createNewObject(li.getToClass());
+        	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(li.getToClass());
+			objNew = og.internal().objects().reflect().createNewObject(li.getToClass());
 
-			Object objAo = hub.getAO();
+			OAObject objAo = hub.getAO();
 			if (li.getType() == li.TYPE_MANY) {
 				Hub hubx = (Hub) li.getValue(objAo);
 				hubx.add(objNew);
 			} else {
-				OAObjectReflectDelegate.setProperty((OAObject) objAo, propertyPathToImageObject, objNew, null);
+				og.internal().objects().reflect().setProperty((OAObject) objAo, propertyPathToImageObject, objNew, null);
 			}
 		}
 		objNew.setProperty(byteArrayPropertyName, OAImageUtil.convertToBytes(bi));

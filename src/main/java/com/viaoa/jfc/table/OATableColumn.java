@@ -20,20 +20,20 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import com.viaoa.converter.OAConv;
+import com.viaoa.graph.api.internal.OAGraphInternal;
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubEvent;
-import com.viaoa.hub.HubLinkDelegate;
 import com.viaoa.hub.HubListener;
 import com.viaoa.hub.HubListenerAdapter;
 import com.viaoa.jfc.OAJfcComponent;
 import com.viaoa.jfc.OATable;
+import com.viaoa.lang.OAString;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectReflectDelegate;
+import com.viaoa.path.OAPath;
+import com.viaoa.reflect.OAReflect;
+import com.viaoa.runtime.OARuntime;
 import com.viaoa.template.OATemplate;
-import com.viaoa.util.OAConv;
-import com.viaoa.util.OAPropertyPath;
-import com.viaoa.util.OAReflect;
-import com.viaoa.util.OAString;
 
 /**
  * Class used to <i>wrap</i> a Table column to work with an OATableComponent.
@@ -375,10 +375,11 @@ public class OATableColumn {
 		// changed so that it will only change the path when the component hub
 		//    is linked back to the table.hub
 		if (oaComp != null && oaComp.getHub() != null && !bIsAlreadyExpanded) {
-			bLinkOnPos = HubLinkDelegate.getLinkedOnPos(oaComp.getHub(), true);
+	    	final OAGraphInternal og = (OAGraphInternal) OARuntime.graph(oaComp.getHub());
+			bLinkOnPos = og.internal().hubs().link().getLinkedOnPos(oaComp.getHub(), true);
 			path = origPath;
 			if (!bIsAlreadyExpanded) {
-				pathBetweenHubs = OAObjectReflectDelegate.getPropertyPathBetweenHubs(hubTable, oaComp.getHub());
+				pathBetweenHubs = og.internal().objects().reflect().getPropertyPathBetweenHubs(hubTable, oaComp.getHub());
 				betweenHubPropertyPathCount = OAString.dcount(pathBetweenHubs, ".");
 
 				// adjust the number of properties to get from table hub to "base" hub for this column
@@ -406,14 +407,14 @@ public class OATableColumn {
 					} else {
 						s += ".";
 					}
-					pathIntValue = s + HubLinkDelegate.getLinkToProperty(oaComp.getHub());
+					pathIntValue = s + og.internal().hubs().link().getLinkToProperty(oaComp.getHub());
 				}
 			}
 		}
 
 		// if path == null then getMethods() will use "toString"
 		if (bLinkOnPos) {
-			OAPropertyPath opp = new OAPropertyPath(pathIntValue);
+			OAPath opp = new OAPath(pathIntValue);
 			try {
 				opp.setup(hubTable.getObjectClass());
 			} catch (Exception e) {
@@ -421,7 +422,7 @@ public class OATableColumn {
 			}
 			methodsIntValue = opp.getMethods();
 
-			opp = new OAPropertyPath(path);
+			opp = new OAPath(path);
 			try {
 				opp.setup(oaComp.getHub().getObjectClass());
 			} catch (Exception e) {
@@ -429,7 +430,7 @@ public class OATableColumn {
 			}
 			methods = opp.getMethods();
 		} else {
-			OAPropertyPath opp = new OAPropertyPath(path);
+			OAPath opp = new OAPath(path);
 			try {
 				//qqqqqqqqqqqqqqqqqqqqqqqqqq
 				opp.setup(null, hubTable.getObjectClass(), oaComp.getHub().getObjectClass(), false);

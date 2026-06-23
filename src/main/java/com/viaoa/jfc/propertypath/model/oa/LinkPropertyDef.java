@@ -4,7 +4,7 @@ package com.viaoa.jfc.propertypath.model.oa;
 import java.sql.*;
 import com.viaoa.object.*;
 import com.viaoa.hub.*;
-import com.viaoa.util.*;
+import com.viaoa.lang.oa.VString;
 import com.viaoa.annotation.*;
  
 @OAClass(
@@ -31,11 +31,11 @@ public class LinkPropertyDef extends OAObject {
     protected int type;
     public static final int TYPE_One = 0;
     public static final int TYPE_Many = 1;
-    public static final Hub<String> hubType;
+    public static final Hub<VString> hubType;
     static {
-        hubType = new Hub<String>(String.class);
-        hubType.addElement("One");
-        hubType.addElement("Many");
+        hubType = new Hub<VString>(VString.class);
+        hubType.addElement(new VString("One"));
+        hubType.addElement(new VString("Many"));
     }
      
     // Links to other objects.

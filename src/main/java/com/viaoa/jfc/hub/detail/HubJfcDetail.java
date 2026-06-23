@@ -53,7 +53,7 @@ public class HubJfcDetail {
 
     protected void setup() {
 		final OAGraphInternal og = (OAGraphInternal) OARuntime.graph(hubMaster);
-        OAObjectInfo oi = og.objectsInternal().callObjectInfoGetOAObjectInfo(hubMaster.getObjectClass());
+        OAObjectInfo oi = og.internal().objects().info().getOAObjectInfo(hubMaster.getObjectClass());
         this.li = oi.getLinkInfo(prop);
         this.li = this.li.getReverseLinkInfo();
         HubListener hl = new HubListenerAdapter() {

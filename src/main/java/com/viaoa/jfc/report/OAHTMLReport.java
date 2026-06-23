@@ -32,8 +32,11 @@ import javax.swing.text.html.HTMLDocument;
 import com.viaoa.jfc.editor.html.OAHTMLTextPane;
 import com.viaoa.object.*;
 import com.viaoa.template.OATemplate;
+import com.viaoa.config.OAProperties;
+import com.viaoa.datetime.OADate;
+import com.viaoa.datetime.OATime;
 import com.viaoa.hub.*;
-import com.viaoa.util.*;
+import com.viaoa.io.OAFile;
 
 /**
  * Creates a printable report, that uses html as the data to create a report with heading and footing.

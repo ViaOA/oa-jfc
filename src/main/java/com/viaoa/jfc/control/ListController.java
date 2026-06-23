@@ -15,10 +15,13 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import com.viaoa.graph.api.internal.OAGraphInternal;
 import com.viaoa.hub.*;
+import com.viaoa.hub.listener.HubChangeListener;
+import com.viaoa.lang.OAString;
 import com.viaoa.undo.*;
 import com.viaoa.object.*;
-import com.viaoa.util.*;
+import com.viaoa.runtime.OARuntime;
 
 /**
  * Controller for binding OA to JList.
@@ -163,11 +166,12 @@ public class ListController extends OAJfcController implements ListSelectionList
         list.registerKeyboardAction( new ActionListener() {
             public void actionPerformed(ActionEvent e) {  
                 Hub h = getHub();
-                Object ho = h.getActiveObject();
+                OAObject ho = h.getActiveObject();
                 int pos = h.getPos();
                 if (ho != null && pos > 0) {
                     h.move(pos,pos-1);
-                    HubAODelegate.setActiveObjectForce(h, ho);
+                	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(ho);
+                    og.internal().hubs().ao().setActiveObjectForce(h, ho);
                 }
             }
         },  KeyStroke.getKeyStroke(KeyEvent.VK_UP, Event.CTRL_MASK, false), JComponent.WHEN_FOCUSED);
@@ -175,11 +179,12 @@ public class ListController extends OAJfcController implements ListSelectionList
         list.registerKeyboardAction( new ActionListener() {
             public void actionPerformed(ActionEvent e) {  
                 Hub h = getHub();
-                Object ho = h.getActiveObject();
+                OAObject ho = h.getActiveObject();
                 int pos = h.getPos();
                 if (ho != null && pos+1 != h.getSize()) {
                     h.move(pos,pos+1);
-                    HubAODelegate.setActiveObjectForce(h, ho);
+                	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(ho);
+                    og.internal().hubs().ao().setActiveObjectForce(h, ho);
                 }
             }
         },  KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, Event.CTRL_MASK, false), JComponent.WHEN_FOCUSED);
@@ -201,9 +206,10 @@ public class ListController extends OAJfcController implements ListSelectionList
                 if (!bAllowInsert) return;
                 Hub hub = getHub();
                 if (hub == null) return;
-                Class c = hub.getObjectClass();
+                Class<? extends OAObject> c = hub.getObjectClass();
                 if (c == null) return;
-                Object obj = OAObjectReflectDelegate.createNewObject(c);
+            	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(c);
+                OAObject obj = og.internal().objects().reflect().createNewObject(c);
 
                 int pos = hub.getPos();
                 if (pos < 0) pos = 0;
@@ -280,7 +286,7 @@ public class ListController extends OAJfcController implements ListSelectionList
                 int pos2 = e.getLastIndex();
                 ListSelectionModel model = list.getSelectionModel();
                 for (int i=pos1; i<=pos2; i++) {
-                    Object obj = getHub().elementAt(i);
+                    OAObject obj = getHub().elementAt(i);
                     if (model.isSelectedIndex(i)) {
                         if (!hubSelect.contains(obj)) hubSelect.add(obj);
                     }

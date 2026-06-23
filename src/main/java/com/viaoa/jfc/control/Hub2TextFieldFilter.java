@@ -20,7 +20,6 @@ import javax.swing.event.*;
 
 import com.viaoa.object.*;
 import com.viaoa.hub.*;
-import com.viaoa.util.*;
 import com.viaoa.jfc.*;
 
 /** 

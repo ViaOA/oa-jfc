@@ -32,20 +32,19 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
+import com.viaoa.converter.OAConv;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.OAPlainDocument;
 import com.viaoa.jfc.OATextField;
+import com.viaoa.lang.OAString;
+import com.viaoa.metadata.OAObjectInfo;
+import com.viaoa.metadata.OAPropertyInfo;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectInfo;
-import com.viaoa.object.OAObjectInfoDelegate;
-import com.viaoa.object.OAPropertyInfo;
+import com.viaoa.reflect.OAReflect;
+import com.viaoa.secure.OAEncryption;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
-import com.viaoa.util.OAConv;
-import com.viaoa.util.OAEncryption;
-import com.viaoa.util.OAReflect;
-import com.viaoa.util.OAString;
 
 /**
  * Controller for binding OA to JTextField.
@@ -211,7 +210,7 @@ public class TextFieldController extends OAJfcController implements FocusListene
 		if (OAReflect.isNumber(endPropertyClass)) {
 			final boolean bFloat = !OAReflect.isInteger(endPropertyClass);
 
-			OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(getHub().getObjectClass());
+			OAObjectInfo oi = getGraph().internal().objects().info().getObjectInfo(getHub().getObjectClass());
 			OAPropertyInfo pi = oi.getPropertyInfo(endPropertyName);
 
 			final boolean isCurrency = pi != null && pi.isCurrency();
@@ -499,7 +498,7 @@ public class TextFieldController extends OAJfcController implements FocusListene
 
 			if (endPropertyName == null || endPropertyName.length() == 0) { // use object.  (ex: String.class)
 				Object oldObj = activeObject;
-				Object newObj = OAReflect.convertParameterFromString(hub.getObjectClass(), text);
+				OAObject newObj = (OAObject) OAReflect.convertParameterFromString(hub.getObjectClass(), text);
 				if (newObj != null) {
 					int pos = hub.getPos(oldObj);
 					hub.replace(pos, newObj);

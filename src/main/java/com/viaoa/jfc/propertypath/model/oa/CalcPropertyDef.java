@@ -4,7 +4,6 @@ package com.viaoa.jfc.propertypath.model.oa;
 import java.sql.*;
 import com.viaoa.object.*;
 import com.viaoa.hub.*;
-import com.viaoa.util.*;
 import com.viaoa.annotation.*;
  
 @OAClass(

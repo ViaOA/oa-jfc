@@ -14,8 +14,10 @@ import java.awt.Color;
 
 import com.viaoa.annotation.OAClass;
 import com.viaoa.hub.Hub;
+import com.viaoa.lang.OAStr;
+import com.viaoa.lang.OAString;
+import com.viaoa.lang.oa.VString;
 import com.viaoa.object.OAObject;
-import com.viaoa.util.*;
 
 /**
  * OAObject used for BlockDialog.
@@ -91,13 +93,13 @@ public class Block extends OAObject {
     protected String borderBottomStyle;
     protected String borderLeftStyle;
     
-    private static Hub<String> hubBorderStyles;
-    public static Hub<String> getBorderStyles() {
+    private static Hub<VString> hubBorderStyles;
+    public static Hub<VString> getBorderStyles() {
         if (hubBorderStyles == null) {
-            hubBorderStyles = new Hub<String>(String.class);
-            hubBorderStyles.add("solid");
-            hubBorderStyles.add("dashed");
-            hubBorderStyles.add("none");
+            hubBorderStyles = new Hub<VString>(VString.class);
+            hubBorderStyles.add(new VString("solid"));
+            hubBorderStyles.add(new VString("dashed"));
+            hubBorderStyles.add(new VString("none"));
         }
         return hubBorderStyles.createSharedHub();
     }

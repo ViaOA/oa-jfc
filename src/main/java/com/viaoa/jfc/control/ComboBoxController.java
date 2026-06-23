@@ -24,17 +24,15 @@ import javax.swing.JOptionPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 
+import com.viaoa.compare.match.OAMatchNull;
+import com.viaoa.converter.OAConv;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubAODelegate;
-import com.viaoa.hub.HubChangeListener;
 import com.viaoa.hub.HubEvent;
-import com.viaoa.hub.HubLinkDelegate;
+import com.viaoa.hub.listener.HubChangeListener;
+import com.viaoa.lang.OAString;
 import com.viaoa.object.OAObject;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
-import com.viaoa.util.OAConv;
-import com.viaoa.util.OANullObject;
-import com.viaoa.util.OAString;
 
 /**
  * Functionality for binding JComboBox to OA.
@@ -198,7 +196,7 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 
 		if (list != null) {
 			if (oaObject == null) {
-				oaObject = OANullObject.instance;
+				oaObject = OAMatchNull.instance;
 			}
 			myComboBoxModel.flag = true;
 			try {
@@ -221,7 +219,7 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 	// note: these need to be ran in the AWT Thread, use
 	// SwingUtilities.invokeLater() to call these
 	class MyComboBoxModel extends DefaultListModel implements ComboBoxModel {
-		OANullObject empty = OANullObject.instance;
+		OAMatchNull empty = OAMatchNull.instance;
 		boolean flag;
 
 		public synchronized void fireChange(int index0, int index1) {
@@ -259,7 +257,7 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 		}
 
 		public synchronized void setSelectedItem(Object obj) {
-			if (obj instanceof OANullObject) {
+			if (obj instanceof OAMatchNull) {
 				obj = null;
 			}
 			if (flag) {
@@ -285,7 +283,7 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 			if (hubx != null) {
 				activeObject = hubx.getAO();
 			}
-			if (HubLinkDelegate.getLinkedOnPos(h)) {
+			if (getGraph().internal().hubs().link().getLinkedOnPos(h)) {
 				obj = h.getPos(obj);
 			}
 			final boolean wasChanged = (activeObject instanceof OAObject) && ((OAObject) activeObject).getChanged();
@@ -301,9 +299,9 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 				try {
 					if (b) {
 						OAUndoableEdit ue = OAUndoableEdit.createUndoablePropertyChange(
-																						"Change " + HubLinkDelegate.getLinkToProperty(hub),
+																						"Change " + getGraph().internal().hubs().link().getLinkToProperty(hub),
 																						activeObject,
-																						HubLinkDelegate.getLinkToProperty(hub),
+																						getGraph().internal().hubs().link().getLinkToProperty(hub),
 																						oldValue, obj, wasChanged);
 
 						OAUndoManager.add(ue);
@@ -316,7 +314,7 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 						OAUndoManager.add(ue);
 						*/
 					}
-					HubAODelegate.setActiveObjectForce(getHub(), objOrig);
+					getGraph().internal().hubs().ao().setActiveObjectForce(getHub(), (OAObject) objOrig);
 					//getHub().setActiveObject(objOrig);
 				} finally {
 					if (b) {
@@ -410,7 +408,7 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 			return null;
 		}
 
-		Object objx = HubLinkDelegate.getPropertyValueInLinkedToHub(h, hx.getAO());
+		Object objx = getGraph().internal().hubs().link().getPropertyValueInLinkedToHub(h, hx.getAO());
 		if (!(objx instanceof OAObject)) {
 			return null;
 		}
@@ -436,7 +434,7 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 		boolean bDone = false;
 		String s = null;
 
-		if (index < 0 && value instanceof OANullObject) {
+		if (index < 0 && value instanceof OAMatchNull) {
 			// 20120711 see if it needs to show the selected value (if it is not
 			// in the Hub)
 			Object objx = getLinkedToValue();
@@ -447,7 +445,7 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 
 		if (value == null) {
 			s = null;
-		} else if (value instanceof OANullObject) {
+		} else if (value instanceof OAMatchNull) {
 			s = nullDescription;
 			if (hub != null && hub.getAO() != null) {
 				s = OAString.convert(s, "select", "clear current value");

@@ -24,11 +24,12 @@ import javax.swing.event.*;
 import javax.swing.tree.*;
 
 import com.viaoa.hub.*;
+import com.viaoa.hub.filter.HubFilter;
 import com.viaoa.jfc.*;
 import com.viaoa.jfc.propertypath.model.oa.*;
 import com.viaoa.jfc.tree.*;
+import com.viaoa.lang.OAString;
 import com.viaoa.object.OAObject;
-import com.viaoa.util.OAString;
 
 /**
  * Used to create a Tree for selecting ObjectDef, PropertyDef, CalcPropertyDef, etc.
@@ -647,7 +648,7 @@ public class OAPropertyPathTree extends OATree {
             Hub h = new Hub(CalcPropertyDef.class);
             HubFilter hf = new HubFilter(hub, h) {
                 @Override
-                public boolean isUsed(Object object) {
+                public boolean isUsed(OAObject object) {
                     CalcPropertyDef cp = (CalcPropertyDef) object;
 
                     Object objx = parentTnd.getObject();

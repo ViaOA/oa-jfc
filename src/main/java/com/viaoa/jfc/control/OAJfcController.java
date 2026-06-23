@@ -339,10 +339,10 @@ public class OAJfcController extends HubListenerAdapter {
 						addEnabledObjectCallbackCheck(hub, prop);
 						addVisibleObjectCallbackCheck(hub, prop);
 					} else {
-						getGraph().services().objects().callback().addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getEnabledChangeListener(), true);
+						getGraph().services().objects().callbacks().addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getEnabledChangeListener(), true);
 						//was: OAObjectCallbackDelegate.addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getEnabledChangeListener(), true);
 						
-						getGraph().services().objects().callback().addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getVisibleChangeListener(), false);
+						getGraph().services().objects().callbacks().addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getVisibleChangeListener(), false);
 						//was: OAObjectCallbackDelegate.addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getVisibleChangeListener(), false);
 					}
 					ppPrefix += prop + ".";
@@ -363,7 +363,7 @@ public class OAJfcController extends HubListenerAdapter {
 				Hub hubx = hub.getMasterHub();
 				//was: Hub hubx = HubDetailDelegate.getMasterHub(hub);
 				if (hubx != null) {
-					OALinkInfo li = getGraph().hubsInternal().callHubDetailGetLinkInfoFromMasterToDetail(hub);
+					OALinkInfo li = getGraph().internal().hubs().detail().getLinkInfoFromMasterToDetail(hub);
 					
 					//was: OALinkInfo li = HubDetailDelegate.getLinkInfoFromMasterToDetail(hub);
 					if (li != null && li.getType() == li.TYPE_ONE) {
@@ -673,7 +673,7 @@ public class OAJfcController extends HubListenerAdapter {
 				}
 			}
 			if (objx instanceof OAObject) {
-				OAObjectCallback em = getGraph().objectsInternal().callObjectCallbackGetConfirmPropertyChangeObjectCallback((OAObject) objx, prop, newValue, confirmMessage, confirmTitle);
+				OAObjectCallback em = getGraph().internal().objects().callbacks().getConfirmPropertyChangeObjectCallback((OAObject) objx, prop, newValue, confirmMessage, confirmTitle);
 				//was: OAObjectCallback em = OAObjectCallbackDelegate.getConfirmPropertyChangeObjectCallback((OAObject) objx, prop, newValue, confirmMessage, confirmTitle);
 				confirmMessage = em.getConfirmMessage();
 				confirmTitle = em.getConfirmTitle();
@@ -742,7 +742,7 @@ public class OAJfcController extends HubListenerAdapter {
 
 		OAObject oaObj = (OAObject) obj;
 		
-		OAObjectCallback em = getGraph().objectsInternal().callObjectCallbackGetVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, oaObj, linkPropertyName, null, objNew);
+		OAObjectCallback em = getGraph().internal().objects().callbacks().getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, oaObj, linkPropertyName, null, objNew);
 		//was: OAObjectCallback em = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, oaObj, linkPropertyName, null, objNew);
 
 		String result = null;
@@ -828,7 +828,7 @@ public class OAJfcController extends HubListenerAdapter {
 		}
 		String result = null;
 		if (objx instanceof OAObject) {
-			OAObjectCallback em = getGraph().objectsInternal().callObjectCallbackGetVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) objx, prop, null, newValue);
+			OAObjectCallback em = getGraph().internal().objects().callbacks().getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) objx, prop, null, newValue);
 			//was: OAObjectCallback em = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) objx, prop, null, newValue);
 			if (!em.getAllowed()) {
 				result = em.getResponse();
@@ -883,7 +883,7 @@ public class OAJfcController extends HubListenerAdapter {
 					objx = oaPropertyPath.getLastLinkValue((OAObject) objx);
 				}
 				if (objx instanceof OAObject) {
-					return getGraph().objectsInternal().callObjectCallbackGetFormat((OAObject) objx, endPropertyName, defaultFormat);
+					return getGraph().internal().objects().callbacks().getFormat((OAObject) objx, endPropertyName, defaultFormat);
 					//was: return OAObjectCallbackDelegate.getFormat((OAObject) objx, endPropertyName, defaultFormat);
 				}
 			}
@@ -1523,7 +1523,7 @@ public class OAJfcController extends HubListenerAdapter {
 			String s = bUseLinkHub ? linkPropertyName : propertyPath;
 
 			OACallbackLabel lblx = createCallbackLabel(lbl);
-			getGraph().services().objects().callback().updateLabel(oaobj, s, lblx);
+			getGraph().services().objects().callbacks().updateLabel(oaobj, s, lblx);
 			//was: OAObjectCallbackDelegate.updateLabel(oaobj, s, lbl);
 		}
 	}
@@ -1710,7 +1710,7 @@ public class OAJfcController extends HubListenerAdapter {
 			}
 		}
 
-		if (lblThis != null && (getPropertyPath() != null || object instanceof String) && !getGraph().hubsInternal().callHubLinkGetLinkedOnPos(hub)) {
+		if (lblThis != null && (getPropertyPath() != null || object instanceof String) && !getGraph().internal().hubs().link().getLinkedOnPos(hub)) {
 		//was: if (lblThis != null && (getPropertyPath() != null || object instanceof String) && !HubLinkDelegate.getLinkedOnPos(hub)) {
 			String text;
 			if (object == null) {
@@ -1760,7 +1760,7 @@ public class OAJfcController extends HubListenerAdapter {
 							}
 							if (objx instanceof OAObject) {
 								OACallbackLabel lblx = createCallbackLabel(lblThis);
-								getGraph().services().objects().callback().renderLabel((OAObject) objx, endPropertyName, lblx);
+								getGraph().services().objects().callbacks().renderLabel((OAObject) objx, endPropertyName, lblx);
 								//was: OAObjectCallbackDelegate.renderLabel((OAObject) objx, endPropertyName, lblThis);
 							}
 						}
@@ -2367,7 +2367,7 @@ public class OAJfcController extends HubListenerAdapter {
 				objx = oaPropertyPath.getLastLinkValue((OAObject) objx);
 			}
 			if (objx instanceof OAObject) {
-				ttDefault = getGraph().objectsInternal().callObjectCallbackGetToolTip((OAObject) objx, endPropertyName, ttDefault);
+				ttDefault = getGraph().internal().objects().callbacks().getToolTip((OAObject) objx, endPropertyName, ttDefault);
 				//was: ttDefault = OAObjectCallbackDelegate.getToolTip((OAObject) objx, endPropertyName, ttDefault);
 			}
 		} else {

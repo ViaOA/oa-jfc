@@ -13,6 +13,7 @@ package com.viaoa.jfc.editor.html.oa;
 
 import com.viaoa.annotation.OAClass;
 import com.viaoa.hub.Hub;
+import com.viaoa.lang.oa.VString;
 import com.viaoa.object.OAObject;
 
 /**
@@ -32,12 +33,12 @@ public class Insert extends OAObject {
     public static final int TYPE_DIV = 1;
     public static final int TYPE_P = 2;
     
-    public static final Hub<String> hubType;
+    public static final Hub<VString> hubType;
     static {
-        hubType = new Hub<String>(String.class);
-        hubType.addElement("Break");
-        hubType.addElement("Div");
-        hubType.addElement("Paragraph");
+        hubType = new Hub<VString>(VString.class);
+        hubType.addElement(new VString("Break"));
+        hubType.addElement(new VString("Div"));
+        hubType.addElement(new VString("Paragraph"));
     }
 
     protected int location;
@@ -45,12 +46,12 @@ public class Insert extends OAObject {
     public static final int LOCATION_Before = 1;
     public static final int LOCATION_After = 2;
     
-    public static final Hub<String> hubLocation;
+    public static final Hub<VString> hubLocation;
     static {
-        hubLocation = new Hub<String>(String.class);
-        hubLocation.addElement("Inside");
-        hubLocation.addElement("Before");
-        hubLocation.addElement("After");
+        hubLocation = new Hub<VString>(VString.class);
+        hubLocation.addElement(new VString("Inside"));
+        hubLocation.addElement(new VString("Before"));
+        hubLocation.addElement(new VString("After"));
     }
     
     public int getType() {

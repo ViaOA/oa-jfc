@@ -38,7 +38,6 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import com.viaoa.jfc.OACommand;
-import com.viaoa.util.OAString;
 
 /**
  * Controller for handling all aspects of printing.

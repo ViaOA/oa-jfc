@@ -776,7 +776,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 		
 		
 		if (dragToHub != null) {
-			if (!getGraph((OAObject) dragObject).hubsInternal().callHubAddRemoveCanAdd(dragToHub, (OAObject) dragObject)) {
+			if (!getGraph((OAObject) dragObject).internal().hubs().addRemove().canAdd(dragToHub, (OAObject) dragObject)) {
 			//was: if (!HubAddRemoveDelegate.canAdd(dragToHub, dragObject)) {
 				dragToHub = null; // 2008/04/18
 			}
@@ -837,7 +837,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 				// 20091214
 				OAUndoManager.add(OAUndoableEdit.createUndoableMove(null, dragHub, pos1, pos2));
 			} else {
-				if (getGraph((OAObject) dragObject).hubsInternal().callHubAddRemoveCanAdd(dragToHub, (OAObject) dragObject)) {
+				if (getGraph((OAObject) dragObject).internal().hubs().addRemove().canAdd(dragToHub, (OAObject) dragObject)) {
 				//was: if (HubAddRemoveDelegate.canAdd(dragToHub, dragObject)) { // 2008/04/18
 					if (getConfirmMove()) {
 						int x = JOptionPane.showOptionDialog(	OAJfcUtil.getWindow(OATree.this), "Ok to move?", "Confirmation", 0,
@@ -2006,7 +2006,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 							// 20140421,20170823 dont change if hub is from a type=ONE.  OAObject.setAO will handle it.
 							
 							
-							OALinkInfo li = getGraph(tndUse.node.def.updateHub).hubsInternal().callHubDetailGetLinkInfoFromDetailToMaster(tndUse.node.def.updateHub);
+							OALinkInfo li = getGraph(tndUse.node.def.updateHub).internal().hubs().detail().getLinkInfoFromDetailToMaster(tndUse.node.def.updateHub);
 							//was: OALinkInfo li = HubDetailDelegate.callDetailGetLinkInfoFromDetailToMaster(tndUse.node.def.updateHub);
 							OALinkInfo liRev;
 							boolean b = true;
@@ -2015,7 +2015,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 								liRev = li.getReverseLinkInfo();
 								//was: liRev = OAObjectInfoDelegate.getReverseLinkInfo(li);
 							} else {
-								liRev = getGraph(tndUse.node.def.updateHub).hubsInternal().callHubDetailGetLinkInfoFromMasterToDetail(tndUse.node.def.updateHub);
+								liRev = getGraph(tndUse.node.def.updateHub).internal().hubs().detail().getLinkInfoFromMasterToDetail(tndUse.node.def.updateHub);
 								//was: liRev = HubDetailDelegate.callHubDetailGetLinkInfoFromMasterHubToDetail(tndUse.node.def.updateHub);
 							}
 							if (liRev != null && liRev.getType() == li.ONE) {
@@ -2035,10 +2035,10 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 					// 20120228 if selected treeNodeTitle, then tnd.object will be null - set AO=null
 					if (bLastNode) {
 						if (tnd.node instanceof OATreeTitleNode) {
-							getGraph(tndUse.node.def.updateHub).hubsInternal().setActiveObjectForce(tndUse.node.def.updateHub, null);
+							getGraph(tndUse.node.def.updateHub).internal().hubs().ao().setActiveObjectForce(tndUse.node.def.updateHub, null);
 							//was: HubAODelegate.setActiveObjectForce(tndUse.node.def.updateHub, null);
 						} else {
-							getGraph(tndUse.node.def.updateHub).hubsInternal().setActiveObjectForce(tndUse.node.def.updateHub, (OAObject) tndUse.object);
+							getGraph(tndUse.node.def.updateHub).internal().hubs().ao().setActiveObjectForce(tndUse.node.def.updateHub, (OAObject) tndUse.object);
 							//was:HubAODelegate.setActiveObjectForce(tndUse.node.def.updateHub, tndUse.object);
 						}
 						hubForceAO = tndUse.node.def.updateHub;
@@ -2063,7 +2063,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 					// 20120228 if selected treeNodeTitle, then tnd.object will be null - set AO=null
 					if (bLastNode) {
 						if (hubForceAO != tndUse.node.hub) {
-							getGraph(tndUse.node.hub).hubsInternal().setActiveObjectForce(tndUse.node.hub, (OAObject) tnd.object);
+							getGraph(tndUse.node.hub).internal().hubs().ao().setActiveObjectForce(tndUse.node.hub, (OAObject) tnd.object);
 							//was: HubAODelegate.setActiveObjectForce(tndUse.node.hub, tnd.object);
 							hubForceAO = tndUse.node.hub;
 						}
@@ -2076,7 +2076,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 
 			if (hubAdditonalUpdate != null) {
 				if (hubForceAO != hubAdditonalUpdate) {
-					getGraph(hubAdditonalUpdate).hubsInternal().setActiveObjectForce(hubAdditonalUpdate, null);
+					getGraph(hubAdditonalUpdate).internal().hubs().ao().setActiveObjectForce(hubAdditonalUpdate, null);
 					//was: HubAODelegate.setActiveObjectForce(hubAdditonalUpdate, null);
 				}
 			}
@@ -2126,7 +2126,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 			}
 			hsHub.add(hx);
 
-			OALinkInfo li = getGraph(hx).hubsInternal().callHubDetailGetLinkInfoFromDetailToMaster(hx);
+			OALinkInfo li = getGraph(hx).internal().hubs().detail().getLinkInfoFromDetailToMaster(hx);
 			//was: OALinkInfo li = HubDetailDelegate.callDetailGetLinkInfoFromDetailToMaster(hx);
 
 			OALinkInfo liRev;
@@ -2136,7 +2136,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 				liRev = li.getReverseLinkInfo();
 				//was: liRev = OAObjectInfoDelegate.getReverseLinkInfo(li);
 			} else {
-				liRev = getGraph(hx).hubsInternal().callHubDetailGetLinkInfoFromMasterHubToDetail(hx);
+				liRev = getGraph(hx).internal().hubs().detail().getLinkInfoFromMasterToDetail(hx);
 				//was: liRev = HubDetailDelegate.callHubDetailGetLinkInfoFromMasterHubToDetail(hx);
 			}
 			if (liRev != null && liRev.getType() == li.ONE) {
@@ -2165,7 +2165,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 						hsHub.add(hx);
 
 						// 20140421,20170823 dont change if hub is from a type=ONE.  OAObject.setAO will handle it.
-						OALinkInfo li = getGraph(hx).hubsInternal().callHubDetailGetLinkInfoFromDetailToMaster(hx);
+						OALinkInfo li = getGraph(hx).internal().hubs().detail().getLinkInfoFromDetailToMaster(hx);
 						//was: OALinkInfo li = HubDetailDelegate.callDetailGetLinkInfoFromDetailToMaster(hx);
 						OALinkInfo liRev;
 						boolean b = true;
@@ -2174,7 +2174,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 							liRev = li.getReverseLinkInfo();
 							//was: liRev = OAObjectInfoDelegate.getReverseLinkInfo(li);
 						} else {
-							liRev = getGraph(hx).hubsInternal().callHubDetailGetLinkInfoFromMasterToDetail(hx);
+							liRev = getGraph(hx).internal().hubs().detail().getLinkInfoFromMasterToDetail(hx);
 							//was: liRev = HubDetailDelegate.callHubDetailGetLinkInfoFromMasterHubToDetail(hx);
 						}
 						if (liRev != null && liRev.getType() == li.ONE) {
@@ -2216,7 +2216,7 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 				hsHub.add(h);
 
 				// dont set to null if it is a Hub used by a LinkOne detail
-				OALinkInfo li = getGraph(h).hubsInternal().callHubDetailGetLinkInfoFromDetailToMaster(h);
+				OALinkInfo li = getGraph(h).internal().hubs().detail().getLinkInfoFromDetailToMaster(h);
 				//was: OALinkInfo li = HubDetailDelegate.callDetailGetLinkInfoFromDetailToMaster(h);
 				if (li != null) {
 					li = li.getReverseLinkInfo();

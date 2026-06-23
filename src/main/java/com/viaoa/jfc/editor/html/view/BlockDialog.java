@@ -23,6 +23,7 @@ import com.viaoa.hub.Hub;
 import com.viaoa.jfc.*;
 import com.viaoa.jfc.editor.html.oa.Block;
 import com.viaoa.jfc.editor.html.oa.DocElement;
+import com.viaoa.lang.oa.VString;
 
 
 /**
@@ -248,7 +249,7 @@ public class BlockDialog extends JDialog {
         
         
         pan.add(new JLabel("Border Style"), gc);
-        Hub<String> h = Block.getBorderStyles();
+        Hub<VString> h = Block.getBorderStyles();
         h.setLinkHub(hubBlock, Block.P_BorderStyle);
         OAComboBox cbo = new OAComboBox(h, "", 7);
         pan.add(cbo, gc);
@@ -369,7 +370,7 @@ public class BlockDialog extends JDialog {
     }
     
 
-    public static void main(String[] args) {
+    public static void main(VString[] args) {
         Hub hub = new Hub<Block>(Block.class);
         hub.add(new Block());
         hub.setPos(0);

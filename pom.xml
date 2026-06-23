@@ -73,6 +73,11 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>com.oreillyauto.pos</groupId>
+    	<artifactId>oapos</artifactId>
+    	<version>0.0.1</version>
+    </dependency>
   </dependencies>
 
   <distributionManagement>

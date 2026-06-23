@@ -24,15 +24,15 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import com.viaoa.compare.match.OAMatchNull;
+import com.viaoa.converter.OAConv;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.OAFormattedTextField;
 import com.viaoa.object.OAObject;
+import com.viaoa.reflect.OAReflect;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
-import com.viaoa.util.OAConv;
-import com.viaoa.util.OANullObject;
-import com.viaoa.util.OAReflect;
 
 /**
  * Functionality for binding OAFormattedTextField to OA.
@@ -209,7 +209,7 @@ public class FormattedTextFieldController extends OAJfcController implements Foc
 				if (newObj != null) {
 					int posx = h.getPos(oldObj);
 					h.remove(posx);
-					h.insert(newObj, posx);
+					h.insert((OAObject) newObj, posx);
 				}
 			} else {
 				setValue(activeObject, convertedValue);
@@ -319,7 +319,7 @@ public class FormattedTextFieldController extends OAJfcController implements Foc
 			return null;
 		}
 		Object value = getValue(obj);
-		if (value instanceof OANullObject) {
+		if (value instanceof OAMatchNull) {
 			value = null;
 		}
 		return value;

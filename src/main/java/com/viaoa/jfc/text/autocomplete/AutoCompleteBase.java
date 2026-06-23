@@ -37,7 +37,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 
-import com.viaoa.util.OAString;
+import com.viaoa.lang.OAString;
 
 /**
  * Base class for building an autocomplete lookup. This class does not know the component used in the popup, so it will manage the textField

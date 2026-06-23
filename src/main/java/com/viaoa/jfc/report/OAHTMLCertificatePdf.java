@@ -25,7 +25,7 @@ import com.viaoa.jfc.editor.html.OAHTMLTextPane;
 import com.viaoa.image.OAImageUtil;
 import com.viaoa.jfc.print.OAPrintUtil;
 import com.viaoa.jfc.print.OAPrintable;
-import com.viaoa.util.OAString;
+import com.viaoa.lang.OAString;
 
 /*
  

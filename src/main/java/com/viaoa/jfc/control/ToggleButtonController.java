@@ -18,15 +18,15 @@ import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import com.viaoa.compare.OACompare;
+import com.viaoa.compare.match.OAMatchNull;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
 import com.viaoa.hub.HubEvent;
 import com.viaoa.hub.HubListenerAdapter;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.object.OAObject;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
-import com.viaoa.util.OACompare;
-import com.viaoa.util.OANullObject;
 
 /**
  * Controller for binding OA to AbstratButton.
@@ -118,7 +118,7 @@ public class ToggleButtonController extends OAJfcController implements ItemListe
 	public ToggleButtonController(Hub hub, AbstractButton button, String propertyPath, boolean value) {
 		super(hub, null, propertyPath, button, HubChangeListener.Type.AoNotNull, false, true); // this will add hub listener
 		this.valueOn = new Boolean(value);
-		this.valueOff = OANullObject.instance;
+		this.valueOff = OAMatchNull.instance;
 		create(button);
 	}
 
@@ -129,7 +129,7 @@ public class ToggleButtonController extends OAJfcController implements ItemListe
 	public ToggleButtonController(Hub hub, AbstractButton button, String propertyPath, Object value) {
 		super(hub, null, propertyPath, button, HubChangeListener.Type.AoNotNull, false, true); // this will add hub listener
 		this.valueOn = value;
-		this.valueOff = OANullObject.instance;
+		this.valueOff = OAMatchNull.instance;
 		create(button);
 	}
 
@@ -324,7 +324,7 @@ public class ToggleButtonController extends OAJfcController implements ItemListe
 		Object value;
 
 		if ((hubSelect != null) || hub != null) {
-			Object obj = hub.getActiveObject();
+			OAObject obj = hub.getActiveObject();
 			if (obj != null) {
 
 				int type = evt.getStateChange();
@@ -333,7 +333,7 @@ public class ToggleButtonController extends OAJfcController implements ItemListe
 				} else {
 					value = valueOff;
 				}
-				if (value instanceof OANullObject) {
+				if (value instanceof OAMatchNull) {
 					return true;
 				}
 

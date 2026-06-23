@@ -17,8 +17,10 @@ import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.*;
 
-import com.viaoa.util.*;
+import com.viaoa.converter.OAConv;
+import com.viaoa.converter.OAConverter;
 import com.viaoa.jfc.*;
+import com.viaoa.reflect.OAReflect;
 
 
 /** 
@@ -53,10 +55,10 @@ public class OATableCellRenderer implements TableCellRenderer {
             if ((s == null || s.length() == 0) && value != null) {
                 s = tableColumn.getOATableComponent().getFormat();
                 if ((s == null || s.length() == 0) && value != null) {
-                	s = com.viaoa.util.OAConv.getFormat(value.getClass());
+                	s = OAConv.getFormat(value.getClass());
                 }
             }
-            s = com.viaoa.util.OAConv.toString(value,s);
+            s = OAConv.toString(value,s);
         
             if (lblRenderer == null) {
                 lblRenderer = new JLabel();
@@ -82,7 +84,7 @@ public class OATableCellRenderer implements TableCellRenderer {
                 if ((s == null || s.length() == 0) && value != null) {
                     if (tableColumn.getOATableComponent() != null) s = tableColumn.getOATableComponent().getFormat();
                     if ((s == null || s.length() == 0) && value != null) {
-                    	s = com.viaoa.util.OAConv.getFormat(value.getClass());
+                    	s = OAConv.getFormat(value.getClass());
                     }
                 }
                 value = OAConverter.toString(value, s);

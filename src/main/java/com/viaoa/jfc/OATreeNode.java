@@ -564,6 +564,9 @@ public class OATreeNode implements Cloneable {
 	public OAGraphInternal getGraph(OAObject obj) {
 		return (OAGraphInternal) OARuntime.graph(obj);
 	}
+	public OAGraphInternal getGraph(Class c) {
+		return (OAGraphInternal) OARuntime.graph(c);
+	}
 	
 	/**
 	 * if there is an updateHub, then the sharedHub that it is using needs to have its activeObject in sync with the updateHub. Hub2TreeNode
@@ -590,7 +593,7 @@ public class OATreeNode implements Cloneable {
 					return;
 				}
 				
-				if (hub != null && !getGraph(hub).hubsInternal().callHubShareIsUsingSameSharedHub(def.updateHub, hub)) {
+				if (hub != null && !getGraph(hub).internal().hubs().share().isUsingSameSharedHub(def.updateHub, hub)) {
 				//was: if (hub != null && !HubShareDelegate.isUsingSameSharedHub(def.updateHub, hub)) {
 					return;
 				}
@@ -601,14 +604,14 @@ public class OATreeNode implements Cloneable {
 					h = OATreeNode.this.hub;
 				} else {
 					// this will "hit" the same hub that the OATreeNodeData is listening to - since it is listening to the "real" Hub.
-					h = getGraph(def.updateHub).hubsInternal().callHubShareGetMainSharedHub(def.updateHub);
+					h = getGraph(def.updateHub).internal().hubs().share().getMainSharedHub(def.updateHub);
 					//was: h = HubShareDelegate.getMainSharedHub(def.updateHub);
 				}
 				if (obj != h.getAO()) {
 					// 2l0190311 dont set AO, send hub event instead
 					try {
 						bSkip = true;
-						getGraph(h).hubsInternal().fireAfterChangeActiveObjectEvent(h, (OAObject) obj, h.getPos(obj), false);
+						getGraph(h).internal().hubs().events().fireAfterChangeActiveObjectEvent(h, (OAObject) obj, h.getPos(obj), false);
 						//was: HubEventDelegate.fireAfterChangeActiveObjectEvent(h, obj, h.getPos(obj), false);
 					} finally {
 						bSkip = false;
@@ -641,7 +644,7 @@ public class OATreeNode implements Cloneable {
 
 				// 20110106
 				boolean bHoldWasOnAnotherHub = bWasOnAnotherHub;
-				if (hub != null && !getGraph(def.updateHub).hubsInternal().callHubShareIsUsingSameSharedHub(def.updateHub, hub)) {				
+				if (hub != null && !getGraph(def.updateHub).internal().hubs().share().isUsingSameSharedHub(def.updateHub, hub)) {				
 				//was: if (hub != null && !HubShareDelegate.isUsingSameSharedHub(def.updateHub, hub)) {
 					bWasOnAnotherHub = true;
 					return;
@@ -651,7 +654,7 @@ public class OATreeNode implements Cloneable {
 					}
 				}
 
-				if (hub != null && getGraph(def.updateHub).hubsInternal().callHubShareIsUsingSameSharedAO(def.updateHub, hub)) {
+				if (hub != null && getGraph(def.updateHub).internal().hubs().share().isUsingSameSharedAO(def.updateHub, hub)) {
 				//was: if (hub != null && HubShareDelegate.isUsingSameSharedAO(def.updateHub, hub)) {
 					if (!bHoldWasOnAnotherHub) {
 						return;
@@ -665,7 +668,7 @@ public class OATreeNode implements Cloneable {
 					h = OATreeNode.this.hub;
 				} else {
 					// this next statement will "hit" the same hub that the OATreeNodeData is listening to - since it is listening to the "real" Hub.
-					h = getGraph(def.updateHub).hubsInternal().callHubShareGetMainSharedHub(def.updateHub);
+					h = getGraph(def.updateHub).internal().hubs().share().getMainSharedHub(def.updateHub);
 					//was: h = HubShareDelegate.getMainSharedHub(def.updateHub);
 				}
 				if (obj != h.getAO()) {
@@ -1030,7 +1033,8 @@ public class OATreeNode implements Cloneable {
 		// 20110802 recursive nodes
 		if (methodsToHub == null && bRecursive) {
 			Class clazz = object.getClass();
-			OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(clazz);
+			OAObjectInfo oi = getGraph((OAObject)  object).info(clazz);
+			//was: OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(clazz);
 			OALinkInfo li = oi.getRecursiveLinkInfo(OALinkInfo.MANY);
 
 			// find method
@@ -1064,7 +1068,8 @@ public class OATreeNode implements Cloneable {
 
 		// 20110802 recursive nodes
 		if (methodsToHub == null && bRecursive) {
-			OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(clazz);
+			OAObjectInfo oi = getGraph(clazz).info(clazz);
+			// OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(clazz);
 			OALinkInfo li = oi.getRecursiveLinkInfo(OALinkInfo.MANY);
 
 			// find method

@@ -36,8 +36,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
-import com.viaoa.hub.HubChangeListener.HubProp;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.OATable;
 
 /**

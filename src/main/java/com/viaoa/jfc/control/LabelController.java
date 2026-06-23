@@ -17,10 +17,15 @@ import javax.swing.border.*;
 
 import com.viaoa.annotation.OACalculatedProperty;
 import com.viaoa.annotation.OAProperty;
+import com.viaoa.graph.sibling.OASiblingHelper;
 import com.viaoa.hub.*;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.object.*;
-import com.viaoa.util.*;
+import com.viaoa.reflect.OAReflect;
+import com.viaoa.runtime.OARuntime;
 import com.viaoa.jfc.*;
+import com.viaoa.lang.OAString;
+import com.viaoa.metadata.OALinkInfo;
 
 /**
  * Controller for binding OA to JLabel.
@@ -132,13 +137,19 @@ public class LabelController extends OAJfcController {
 
     @Override
     public void update() {
-        boolean bx = (siblingHelper != null) && OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
+    	
+    	
+        boolean bx = (siblingHelper != null) && OARuntime.thread().getThreadLocalService().addSiblingHelper(siblingHelper);
+        //was: boolean bx = (siblingHelper != null) && OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
         try {
             super.update();
             _update();
         }
         finally {
-            if (bx) OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
+            if (bx) {
+            	OARuntime.thread().getThreadLocalService().removeSiblingHelper(siblingHelper);
+            	//was: OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
+            }
         }
     }
     

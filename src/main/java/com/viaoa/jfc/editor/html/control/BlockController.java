@@ -18,11 +18,17 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
 
+import com.viaoa.converter.OAConv;
+import com.viaoa.graph.api.internal.OAGraphInternal;
 import com.viaoa.hub.*;
+import com.viaoa.hub.detail.DetailHub;
 import com.viaoa.jfc.editor.html.*;
 import com.viaoa.jfc.editor.html.oa.*;
 import com.viaoa.jfc.editor.html.view.BlockDialog;
-import com.viaoa.util.*;
+import com.viaoa.lang.OAStr;
+import com.viaoa.lang.OAString;
+import com.viaoa.object.OAObject;
+import com.viaoa.runtime.OARuntime;
 
 /**
  * Controller for BlockDialog, used to edit a paragraph (block) attributes.

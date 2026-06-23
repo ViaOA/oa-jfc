@@ -23,7 +23,7 @@ import javax.swing.text.*;
 import javax.swing.text.html.*;
 import javax.swing.text.html.HTML.Tag;
 
-import com.viaoa.util.OAString;
+import com.viaoa.lang.OAString;
 
 /**
  * Document class used for OAHTMLTextPane. This should not be created directly,

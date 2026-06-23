@@ -26,17 +26,18 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
+import com.viaoa.converter.OAConv;
+import com.viaoa.graph.api.internal.OAGraphInternal;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.OAPlainDocument;
 import com.viaoa.jfc.OATextArea;
+import com.viaoa.lang.OAString;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectReflectDelegate;
+import com.viaoa.reflect.OAReflect;
+import com.viaoa.runtime.OARuntime;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
-import com.viaoa.util.OAConv;
-import com.viaoa.util.OAReflect;
-import com.viaoa.util.OAString;
 
 /**
  * Controller for binding OA to JTextArea.
@@ -294,7 +295,7 @@ public class TextAreaController extends OAJfcController implements FocusListener
 			if (prop == null || prop.length() == 0) { // use object.  (ex: String.class)
 				Object oldObj = activeObject;
 				Hub h = hub;
-				Object newObj = OAReflect.convertParameterFromString(h.getObjectClass(), text);
+				OAObject newObj = (OAObject) OAReflect.convertParameterFromString(h.getObjectClass(), text);
 				if (newObj != null) {
 					int posx = h.getPos(oldObj);
 					h.remove(posx);
@@ -305,7 +306,8 @@ public class TextAreaController extends OAJfcController implements FocusListener
 				// OAReflect.setPropertyValue(activeObject, getSetMethod(), convertedValue);
 				if (text == null || text.length() == 0) {
 					if (OAReflect.isNumber(endPropertyClass) && activeObject instanceof OAObject) {
-						OAObjectReflectDelegate.setProperty((OAObject) activeObject, endPropertyName, null, null); // was: setNull(prop)
+	                	OAGraphInternal og = (OAGraphInternal) OARuntime.graph((OAObject) activeObject);
+	                	og.internal().objects().reflect().setProperty((OAObject) activeObject, endPropertyName, null, null); // was: setNull(prop)
 					}
 				}
 			}

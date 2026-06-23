@@ -4,7 +4,7 @@ package com.viaoa.jfc.propertypath.model.oa;
 import java.sql.*;
 import com.viaoa.object.*;
 import com.viaoa.hub.*;
-import com.viaoa.util.*;
+import com.viaoa.hub.filter.HubFilter;
 import com.viaoa.annotation.*;
  
 @OAClass(
@@ -122,8 +122,8 @@ public class ObjectDef extends OAObject {
         if (hubOneLinkPropertyDefs == null) {
             hubOneLinkPropertyDefs = (Hub<LinkPropertyDef>) getHub(P_OneLinkPropertyDefs);
             HubFilter hf = new HubFilter(getLinkPropertyDefs(), hubOneLinkPropertyDefs, LinkPropertyDef.P_Type) {
-                @Override
-                public boolean isUsed(Object object) {
+                //@Override
+                public boolean isUsed(OAObject object) {
                     LinkPropertyDef lp = (LinkPropertyDef) object;
                     return lp.getType() == LinkPropertyDef.TYPE_One;
                 }
@@ -141,7 +141,7 @@ public class ObjectDef extends OAObject {
             hubManyLinkPropertyDefs = (Hub<LinkPropertyDef>) getHub(P_ManyLinkPropertyDefs);
             HubFilter hf = new HubFilter(getLinkPropertyDefs(), hubManyLinkPropertyDefs, LinkPropertyDef.P_Type) {
                 @Override
-                public boolean isUsed(Object object) {
+                public boolean isUsed(OAObject object) {
                     LinkPropertyDef lp = (LinkPropertyDef) object;
                     return lp.getType() == LinkPropertyDef.TYPE_Many;
                 }

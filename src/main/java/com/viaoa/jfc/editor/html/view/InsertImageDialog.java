@@ -31,12 +31,13 @@ import com.viaoa.jfc.OATreeComboBox;
 import com.viaoa.jfc.editor.html.OAHTMLTextPane;
 import com.viaoa.jfc.propertypath.OAPropertyPathTree;
 import com.viaoa.jfc.propertypath.model.oa.ObjectDef;
+import com.viaoa.lang.oa.VInteger;
 
 
 public class InsertImageDialog extends JDialog {
 
     protected boolean bCancelled;
-    private Hub<Integer> hubImageDpi;
+    private Hub<VInteger> hubImageDpi;
     private OATextField txtFileName;
     private OATextField txtImageDpi;
     private OAComboBox cboImageDpi;
@@ -46,11 +47,11 @@ public class InsertImageDialog extends JDialog {
         super(parent, "Insert Image", ModalityType.APPLICATION_MODAL);
 
         this.fileChooser = fc;
-        this.hubImageDpi = new Hub<Integer>(Integer.class);
-        hubImageDpi.add(72);
-        hubImageDpi.add(96);
-        hubImageDpi.add(300);
-        hubImageDpi.add(600);
+        this.hubImageDpi = new Hub<VInteger>(VInteger.class);
+        hubImageDpi.add(new VInteger(72));
+        hubImageDpi.add(new VInteger(96));
+        hubImageDpi.add(new VInteger(300));
+        hubImageDpi.add(new VInteger(600));
 
         hubImageDpi.addHubListener(new HubListenerAdapter() {
             @Override

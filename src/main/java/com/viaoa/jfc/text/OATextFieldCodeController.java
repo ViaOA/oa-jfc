@@ -14,7 +14,9 @@ import com.viaoa.jfc.propertypath.OAPropertyPathTree;
 import com.viaoa.jfc.propertypath.delegate.ObjectDefDelegate;
 import com.viaoa.jfc.propertypath.model.oa.*;
 import com.viaoa.jfc.text.autocomplete.AutoComplete;
-import com.viaoa.util.*;
+import com.viaoa.lang.OAStr;
+import com.viaoa.lang.OAString;
+import com.viaoa.lang.oa.VString;
 
 /**
  * Controller to allow a model object property to be inserted into text.
@@ -129,11 +131,11 @@ public class OATextFieldCodeController extends OATextController {
         // qqqqqq htmlEditor.insertString(field);
     }
 
-    private Hub<String> hubCustomField;
+    private Hub<VString> hubCustomField;
 
-    public Hub<String> getCustomFields() {
+    public Hub<VString> getCustomFields() {
         if (hubCustomField == null) {
-            hubCustomField = new Hub<String>(String.class);
+            hubCustomField = new Hub<VString>(VString.class);
             addDefaultCustomFields();
         }
         return hubCustomField;
@@ -141,28 +143,28 @@ public class OATextFieldCodeController extends OATextController {
 
     public void addDefaultCustomFields() {
         if (hubCustomField != null) {
-            hubCustomField.add("Date");
-            hubCustomField.add("Time");
-            hubCustomField.add("Page");
+            hubCustomField.add(new VString("Date"));
+            hubCustomField.add(new VString("Time"));
+            hubCustomField.add(new VString("Page"));
         }
     }
 
-    private Hub<String> hubCustomCommand;
+    private Hub<VString> hubCustomCommand;
 
-    public Hub<String> getCustomCommands() {
+    public Hub<VString> getCustomCommands() {
         if (hubCustomCommand == null) {
-            hubCustomCommand = new Hub<>(String.class);
-            hubCustomCommand.add("format: <%=prop[,width||fmt]%>");
-            hubCustomCommand.add("for each: <%=foreach [prop]%>..<%=end%>");
-            hubCustomCommand.add("if statement: <%=if prop%>..<%=end%>");
-            hubCustomCommand.add("ifnot statement: <%=ifnot prop%>..<%=end%>");
-            hubCustomCommand.add("if equals statement: <%=ifequals prop \"value to match\"%>..<%=end%>");
-            hubCustomCommand.add("format block: <%=format[X],'12 L'%>..<%=end%>");
-            hubCustomCommand.add("include file: <%=include filename%>");
-            hubCustomCommand.add("counter in foreach: <%=#counter, fmt%>");
-            hubCustomCommand.add("sum: <%=#sum [prop] prop fmt%>");
-            hubCustomCommand.add("count: <%=#count prop, fmt%>");
-            // hubCustomField.add("");
+            hubCustomCommand = new Hub<>(VString.class);
+            hubCustomCommand.add(new VString("format: <%=prop[,width||fmt]%>"));
+            hubCustomCommand.add(new VString("for each: <%=foreach [prop]%>..<%=end%>"));
+            hubCustomCommand.add(new VString("if statement: <%=if prop%>..<%=end%>"));
+            hubCustomCommand.add(new VString("ifnot statement: <%=ifnot prop%>..<%=end%>"));
+            hubCustomCommand.add(new VString("if equals statement: <%=ifequals prop \"value to match\"%>..<%=end%>"));
+            hubCustomCommand.add(new VString("format block: <%=format[X],'12 L'%>..<%=end%>"));
+            hubCustomCommand.add(new VString("include file: <%=include filename%>"));
+            hubCustomCommand.add(new VString("counter in foreach: <%=#counter, fmt%>"));
+            hubCustomCommand.add(new VString("sum: <%=#sum [prop] prop fmt%>"));
+            hubCustomCommand.add(new VString("count: <%=#count prop, fmt%>"));
+            // hubCustomField.add(new VString(""));
         }
         return hubCustomCommand;
     }

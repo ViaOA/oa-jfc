@@ -66,7 +66,7 @@ public class OACalendarComboBox extends OADateComboBox {
         // uses a temp hub
         super(new Hub(CalendarDate.class), CalendarDate.PROPERTY_Date, columns);
         
-        linkInfo = control.getGraph().hubsInternal().callHubDetailGetLinkInfoFromMasterHubToDetail(hubCalendar);
+        linkInfo = control.getGraph().internal().hubs().detail().getLinkInfoFromMasterToDetail(hubCalendar);
         //was: linkInfo = HubDetailDelegate.callHubDetailGetLinkInfoFromMasterHubToDetail(hubCalendar);
         if (linkInfo == null) throw new RuntimeException("must have a master hub to use calendar combo");
         if (linkInfo.getType() != linkInfo.ONE) throw new RuntimeException("can only be used with link.type=ONE");
@@ -153,7 +153,7 @@ public class OACalendarComboBox extends OADateComboBox {
 				}
 				
 				// find/create
-				OAObject objx = control.getGraph().objectsInternal().callObjectUniqueGetUnique(linkInfo.getToClass(), datePropertyName, date, true); 
+				OAObject objx = control.getGraph().internal().objects().unique().getUnique(linkInfo.getToClass(), datePropertyName, date, true); 
 				//was: OAObject objx = OAObjectUniqueDelegate.getUnique(linkInfo.getToClass(), datePropertyName, date, true);
                 obj.setProperty(linkName, objx);
 			}
@@ -208,7 +208,7 @@ public class OACalendarComboBox extends OADateComboBox {
 	    String pp = linkName+"."+datePropertyName;
 	    Hub h = hubMain;
 	    for ( ; h != null && h != hubTable1 && h != hubTable2; h=h.getMasterHub()) {
-	        OALinkInfo li = control.getGraph().hubsInternal().callHubDetailGetLinkInfoFromMasterHubToDetail(h);
+	        OALinkInfo li = control.getGraph().internal().hubs().detail().getLinkInfoFromMasterToDetail(h);
 	        //was: OALinkInfo li = HubDetailDelegate.callHubDetailGetLinkInfoFromMasterHubToDetail(h);
 	        if (li == null) break;
 	        pp = li.getName()+"."+pp;

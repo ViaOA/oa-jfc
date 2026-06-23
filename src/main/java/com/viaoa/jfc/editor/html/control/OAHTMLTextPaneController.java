@@ -93,6 +93,7 @@ import javax.swing.text.View;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 
+import com.viaoa.converter.OAConv;
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubEvent;
 import com.viaoa.image.OAImageUtil;
@@ -126,9 +127,9 @@ import com.viaoa.jfc.propertypath.delegate.ObjectDefDelegate;
 import com.viaoa.jfc.propertypath.model.oa.ObjectDef;
 import com.viaoa.jfc.text.OATextController;
 import com.viaoa.jfc.text.spellcheck.SpellChecker;
+import com.viaoa.lang.OAString;
+import com.viaoa.lang.oa.VString;
 import com.viaoa.object.OAObject;
-import com.viaoa.util.OAConv;
-import com.viaoa.util.OAString;
 
 /**
  * Expands on OATextController to create an HTML word processor. 
@@ -3042,8 +3043,7 @@ public class OAHTMLTextPaneController extends OATextController {
 
 	public InsertFieldDialog getInsertFieldDialog() {
 		if (dlgInsertField == null) {
-			dlgInsertField = new InsertFieldDialog(SwingUtilities.windowForComponent(editor), getObjectDefs(), getCustomFields(),
-					getCustomCommands());
+			dlgInsertField = new InsertFieldDialog(SwingUtilities.windowForComponent(editor), getObjectDefs(), getCustomFields(), getCustomCommands());
 		}
 		return dlgInsertField;
 	}
@@ -3057,11 +3057,11 @@ public class OAHTMLTextPaneController extends OATextController {
 		return hubObjectDef;
 	}
 
-	private Hub<String> hubCustomField;
+	private Hub<VString> hubCustomField;
 
-	public Hub<String> getCustomFields() {
+	public Hub<VString> getCustomFields() {
 		if (hubCustomField == null) {
-			hubCustomField = new Hub<String>(String.class);
+			hubCustomField = new Hub<VString>(VString.class);
 			addDefaultCustomFields();
 		}
 		return hubCustomField;
@@ -3069,27 +3069,27 @@ public class OAHTMLTextPaneController extends OATextController {
 
 	public void addDefaultCustomFields() {
 		if (hubCustomField != null) {
-			hubCustomField.add("Date");
-			hubCustomField.add("Time");
-			hubCustomField.add("Page");
+			hubCustomField.add(new VString("Date"));
+			hubCustomField.add(new VString("Time"));
+			hubCustomField.add(new VString("Page"));
 		}
 	}
 
-	private Hub<String> hubCustomCommand;
+	private Hub<VString> hubCustomCommand;
 
-	public Hub<String> getCustomCommands() {
+	public Hub<VString> getCustomCommands() {
 		if (hubCustomCommand == null) {
-			hubCustomCommand = new Hub<>(String.class);
-			hubCustomCommand.add("format: <%=prop[,width||fmt]%>");
-			hubCustomCommand.add("for each: <%=foreach [prop]%>..<%=end%>");
-			hubCustomCommand.add("if statement: <%=if prop%>..<%=end%>");
-			hubCustomCommand.add("ifnot statement: <%=ifnot prop%>..<%=end%>");
-			hubCustomCommand.add("if equals statement: <%=ifequals prop \"value to match\"%>..<%=end%>");
-			hubCustomCommand.add("format block: <%=format[X],'12 L'%>..<%=end%>");
-			hubCustomCommand.add("include file: <%=include filename%>");
-			hubCustomCommand.add("counter in foreach: <%=#counter, fmt%>");
-			hubCustomCommand.add("sum: <%=#sum [prop] prop fmt%>");
-			hubCustomCommand.add("count: <%=#count prop, fmt%>");
+			hubCustomCommand = new Hub(VString.class);
+			hubCustomCommand.add(new VString("format: <%=prop[,width||fmt]%>"));
+			hubCustomCommand.add(new VString("for each: <%=foreach [prop]%>..<%=end%>"));
+			hubCustomCommand.add(new VString("if statement: <%=if prop%>..<%=end%>"));
+			hubCustomCommand.add(new VString("ifnot statement: <%=ifnot prop%>..<%=end%>"));
+			hubCustomCommand.add(new VString("if equals statement: <%=ifequals prop \"value to match\"%>..<%=end%>"));
+			hubCustomCommand.add(new VString("format block: <%=format[X],'12 L'%>..<%=end%>"));
+			hubCustomCommand.add(new VString("include file: <%=include filename%>"));
+			hubCustomCommand.add(new VString("counter in foreach: <%=#counter, fmt%>"));
+			hubCustomCommand.add(new VString("sum: <%=#sum [prop] prop fmt%>"));
+			hubCustomCommand.add(new VString("count: <%=#count prop, fmt%>"));
 			//  hubCustomField.add("");
 		}
 		return hubCustomCommand;
@@ -3129,7 +3129,7 @@ public class OAHTMLTextPaneController extends OATextController {
 			getCustomFields().clear();
 			addDefaultCustomFields();
 			for (String s : sx) {
-				getCustomFields().add(s);
+				getCustomFields().add(new VString(s));
 			}
 		}
 
@@ -3143,13 +3143,17 @@ public class OAHTMLTextPaneController extends OATextController {
 		String field = getInsertFieldDialog().getTextField().getText();
 
 		if (OAString.isEmpty(field)) {
-			field = getCustomFields().getAO();
-			if (!OAString.isEmpty(field)) {
-				field = "$" + field;
+			VString vs = getCustomFields().getAO();
+			if (vs != null) {
+				field = vs.getValue();
+				if (!OAString.isEmpty(field)) {
+					field = "$" + field;
+				}
 			}
 		}
 
-		String cmd = getCustomCommands().getAO();
+		VString vs = getCustomCommands().getAO();
+		String cmd = vs.getValue();
 		if (getCustomFields().getAO() == null && OAString.isNotEmpty(cmd)) {
 			cmd = OAString.field(cmd, ":", 2, 99).trim();
 			if (OAString.isNotEmpty(field)) {

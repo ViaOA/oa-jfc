@@ -18,7 +18,8 @@ import javax.swing.*;
 import javax.swing.text.*;
 
 import com.viaoa.jfc.text.view.SpellCheckDialog;
-import com.viaoa.util.*;
+import com.viaoa.lang.OAArray;
+import com.viaoa.lang.OAString;
 
 /**
  * USed to add a spellchecker to a text component.

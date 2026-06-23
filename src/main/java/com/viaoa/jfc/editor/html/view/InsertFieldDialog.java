@@ -25,6 +25,7 @@ import com.viaoa.jfc.OATextField;
 import com.viaoa.jfc.OATreeComboBox;
 import com.viaoa.jfc.propertypath.OAPropertyPathTree;
 import com.viaoa.jfc.propertypath.model.oa.ObjectDef;
+import com.viaoa.lang.oa.VString;
 
 
 public class InsertFieldDialog extends JDialog {
@@ -34,12 +35,12 @@ public class InsertFieldDialog extends JDialog {
     private OATextField txt;
     private OATreeComboBox cboTree;
     private OAComboBox cboCustomFields;
-    private Hub<String> hubCustomFields;
+    private Hub<VString> hubCustomFields;
     private OAComboBox cboCustomCommands;
-    private Hub<String> hubCustomCommands;
+    private Hub<VString> hubCustomCommands;
     
 
-    public InsertFieldDialog(Window parent, Hub<ObjectDef> hub, Hub<String> hubCustomFields, Hub<String> hubCustomCommands) {
+    public InsertFieldDialog(Window parent, Hub<ObjectDef> hub, Hub<VString> hubCustomFields, Hub<VString> hubCustomCommands) {
         super(parent, "Insert Field", ModalityType.APPLICATION_MODAL);
 
         this.hub = hub;
@@ -238,8 +239,8 @@ public class InsertFieldDialog extends JDialog {
     
     public static void main(String[] args) {
         Hub<ObjectDef> hub = new Hub<ObjectDef>(ObjectDef.class);
-        Hub<String> hub2 = new Hub<>(String.class);
-        Hub<String> hub3 = new Hub<>(String.class);
+        Hub<VString> hub2 = new Hub<>(VString.class);
+        Hub<VString> hub3 = new Hub<>(VString.class);
         InsertFieldDialog dlg = new InsertFieldDialog(null, hub, hub2, hub3);
         dlg.setVisible(true);
     }

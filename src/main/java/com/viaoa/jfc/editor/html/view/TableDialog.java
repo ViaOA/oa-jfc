@@ -26,7 +26,7 @@ import javax.swing.event.*;
 
 import com.viaoa.jfc.*;
 import com.viaoa.jfc.text.view.DialogLayout2;
-import com.viaoa.util.*;
+import com.viaoa.lang.OAString;
 
 /**
  * Used to insert an HTML table into HTML document.

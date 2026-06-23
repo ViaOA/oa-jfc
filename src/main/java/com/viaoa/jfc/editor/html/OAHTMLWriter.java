@@ -16,7 +16,7 @@ import java.util.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
 
-import com.viaoa.util.OAStr;
+import com.viaoa.lang.OAStr;
 
 /**
  * This is a writer for HTMLDocuments.

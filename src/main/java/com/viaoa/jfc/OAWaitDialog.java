@@ -20,9 +20,9 @@ import javax.swing.border.TitledBorder;
 
 import com.viaoa.hub.Hub;
 import com.viaoa.jfc.console.Console;
-import com.viaoa.object.OAThreadLocalDelegate;
+import com.viaoa.lang.OAString;
 import com.viaoa.process.OAProcess;
-import com.viaoa.util.OAString;
+import com.viaoa.runtime.OARuntime;
 
 
 public class OAWaitDialog extends JDialog implements ActionListener {
@@ -477,7 +477,8 @@ public class OAWaitDialog extends JDialog implements ActionListener {
         Thread t = new Thread() {
             @Override
             public void run() {
-                OAThreadLocalDelegate.setProcess(dlg.getProcess());
+            	OARuntime.thread().getThreadLocalService().setProcess(dlg.getProcess());
+                //was: OAThreadLocalDelegate.setProcess(dlg.getProcess());
                 dlg.refreshProcess();
                 dlg.getProcess().setAllowCancel(true);
                 dlg.getProcess().setSteps("step 1", "step 2", "step 3");

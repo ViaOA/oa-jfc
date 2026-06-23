@@ -13,14 +13,14 @@ package com.viaoa.jfc.control;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import com.viaoa.datetime.OADate;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.OADateChooser;
 import com.viaoa.jfc.OADateComboBox;
 import com.viaoa.object.OAObject;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
-import com.viaoa.util.OADate;
 
 /**
  * Works directly with OADateChooser for binding an calendar component to an object property.

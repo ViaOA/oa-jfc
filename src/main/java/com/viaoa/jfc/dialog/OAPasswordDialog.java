@@ -10,7 +10,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 import com.viaoa.jfc.*;
-import com.viaoa.util.OAString;
+import com.viaoa.lang.OAString;
 
 public abstract class OAPasswordDialog extends JDialog {
 

@@ -25,10 +25,10 @@ import javax.swing.text.html.*;
 import javax.swing.event.*;
 // import javax.help.*;
 
+import com.viaoa.converter.OAConv;
 import com.viaoa.jfc.*;
 import com.viaoa.jfc.print.OAPrintUtil;
 import com.viaoa.jfc.text.view.OpenList;
-import com.viaoa.util.OAConv;
 
 public class FontDialog extends JDialog
 {

@@ -26,8 +26,8 @@ import javax.swing.event.MenuListener;
 
 import com.viaoa.jfc.OAButton;
 import com.viaoa.jfc.OATextField;
+import com.viaoa.lang.OAString;
 import com.viaoa.undo.OAUndoManager;
-import com.viaoa.util.OAString;
 
 /**
  * Works with OAUndoManager, supplies UI components with undo/redo functionality.

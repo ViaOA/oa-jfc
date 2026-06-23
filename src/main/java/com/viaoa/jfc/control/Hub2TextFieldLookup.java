@@ -19,7 +19,6 @@ import javax.swing.event.*;
 
 import com.viaoa.object.*;
 import com.viaoa.hub.*;
-import com.viaoa.util.*;
 import com.viaoa.jfc.*;
 
 
@@ -143,7 +142,7 @@ public class Hub2TextFieldLookup extends TextFieldController {
         h.select(s, "");
         
         if (hold != null) {
-        	if (!h.contains(hold)) h.add(hold);
+        	if (!h.contains(hold)) h.add((OAObject) hold);
         }
         if (showActiveObject) h.setAO(hold); 
         else h.setAO(null); 

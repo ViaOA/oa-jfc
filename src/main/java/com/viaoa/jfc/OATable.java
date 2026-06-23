@@ -682,7 +682,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		// reset AO
 		// 20111008 add if
 		if (hub.getAO() != null && hubSelect == null) {
-			getGraph().hubsInternal().callHubAOSetActiveObjectForce(hub, hub.getAO());
+			getGraph().internal().hubs().ao().setActiveObjectForce(hub, hub.getAO());
 			//was: HubAODelegate.setActiveObjectForce(hub, hub.getAO());
 		}
 	}
@@ -858,7 +858,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 			OARuntime.thread().getThreadLocalService().setLoading(false);
 			//was: OAThreadLocalDelegate.setLoading(false);
 			
-			getGraph().hubsInternal().callHubEventFireOnNewListEvent(hubViewable, true);
+			getGraph().internal().hubs().events().fireOnNewListEvent(hubViewable, true);
 			//was: HubEventDelegate.fireOnNewListEvent(hubViewable, true);
 		}
 	}
@@ -3025,7 +3025,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 
 		boolean b = getEnableUndo() && hub != null && hub.getLinkHub(true) != null;
 		if (b) {
-			String s = getGraph().hubsInternal().callHubLinkGetLinkToProperty(hub);
+			String s = getGraph().internal().hubs().link().getLinkToProperty(hub);
 			//was: String s = HubLinkDelegate.getLinkToProperty(hub);
 			OAUndoableEdit ue = OAUndoableEdit.createUndoablePropertyChange(
 				"Change " + s,
@@ -4578,9 +4578,9 @@ class TableController extends OAJfcController implements ListSelectionListener {
 	}
 
 	private void _rebuildListSelectionModel(final int cnt) {
-		if (getGraph().services().hubs().status().getCurrentState(hubSelect, null, null) != HubStatusService.HubCurrentStateEnum.InSync) return;
+		if (getGraph().services().hubs().status().getCurrentState(hubSelect, null, null) != Hub.HubCurrentStateEnum.InSync) return;
 
-		if (getGraph().services().hubs().status().getCurrentState(table.hub, null, null) != HubStatusService.HubCurrentStateEnum.InSync) return;
+		if (getGraph().services().hubs().status().getCurrentState(table.hub, null, null) != Hub.HubCurrentStateEnum.InSync) return;
 
 		/*was:
 		if (HubDelegate.getCurrentState(hubSelect, null, null) != HubDelegate.HubCurrentStateEnum.InSync) {
@@ -4734,7 +4734,7 @@ class TableController extends OAJfcController implements ListSelectionListener {
 					OARuntime.thread().getThreadLocalService().setLoading(false);
 					//was: OAThreadLocalDelegate.setLoading(false);
 					
-					getGraph().hubsInternal().callHubEventFireOnNewListEvent(hubSelect, true);
+					getGraph().internal().hubs().events().fireOnNewListEvent(hubSelect, true);
 					//was: HubEventDelegate.fireOnNewListEvent(hubSelect, true);
 				}
 			}

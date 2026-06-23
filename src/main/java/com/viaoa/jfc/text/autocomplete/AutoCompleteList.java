@@ -27,7 +27,7 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 
 import com.viaoa.jfc.OATable;
-import com.viaoa.util.OAString;
+import com.viaoa.lang.OAString;
 
 /**
  * Autocomplete that uses a JList for the popup component. This is used by OATextFieldAutoCompletList.java Note: abstract methods are used

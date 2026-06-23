@@ -221,7 +221,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 				} else {
 					hubx = hub.getMasterHub();
 					if (hubx != null) {
-						propx = control.getGraph().hubsInternal().callHubDetailGetPropertyFromMasterToDetail(hub);
+						propx = control.getGraph().internal().hubs().detail().getPropertyFromMasterToDetail(hub);
 						//was: propx = HubDetailDelegate.callHubDetailGetPropertyFromMasterToDetail(hub);
 					}
 				}

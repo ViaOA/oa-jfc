@@ -21,13 +21,14 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.html.HTML;
 
 import com.viaoa.hub.*;
-import com.viaoa.util.*;
+import com.viaoa.hub.detail.DetailHub;
 import com.viaoa.jfc.editor.html.OAHTMLDocument;
 import com.viaoa.jfc.editor.html.OAHTMLEditorKit;
 import com.viaoa.jfc.editor.html.OAHTMLTextPane;
 import com.viaoa.jfc.editor.html.oa.DocElement;
 import com.viaoa.jfc.editor.html.oa.Insert;
 import com.viaoa.jfc.editor.html.view.InsertDialog;
+import com.viaoa.lang.OAString;
 
 /**
  * Controller for InsertDialog, which allows inserting html &amp; attributes.

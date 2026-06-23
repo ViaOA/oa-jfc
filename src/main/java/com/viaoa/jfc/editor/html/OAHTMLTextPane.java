@@ -63,8 +63,10 @@ import com.viaoa.jfc.editor.html.view.PrintBoxView;
 import com.viaoa.jfc.print.OAPrintUtil;
 import com.viaoa.jfc.print.OAPrintable;
 import com.viaoa.jfc.text.spellcheck.SpellChecker;
+import com.viaoa.lang.OAStr;
+import com.viaoa.lang.OAString;
+import com.viaoa.lang.oa.VString;
 import com.viaoa.object.OAObject;
-import com.viaoa.util.*;
 
 /*
     see changes for converting/reading HTML
@@ -396,7 +398,7 @@ public class OAHTMLTextPane extends JTextPane implements OAPrintable {
 	public void setBase(String binDir, String jarURI) throws Exception {
 	    File file;
 	    if (OAStr.isEmpty(binDir)) file = null;
-	    else file = new File(com.viaoa.util.OAString.convertFileName(binDir));
+	    else file = new File(OAString.convertFileName(binDir));
 	    
 		URL url;
 		if (file != null && file.exists()) {
@@ -1629,7 +1631,7 @@ public class OAHTMLTextPane extends JTextPane implements OAPrintable {
 		}
 	}
 
-	public Hub<String> getCustomFields() {
+	public Hub<VString> getCustomFields() {
 		return getController().getCustomFields();
 	}
 

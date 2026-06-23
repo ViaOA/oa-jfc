@@ -10,17 +10,11 @@
 */
 package com.viaoa.jfc.report;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Logger;
 
+import com.viaoa.config.OAProperties;
 import com.viaoa.hub.*;
 import com.viaoa.object.*;
 import com.viaoa.template.OATemplate;
-import com.viaoa.util.*;
 
 /*
  *    ************* REPLACED with com.viaoa.util.OATemplate ***************

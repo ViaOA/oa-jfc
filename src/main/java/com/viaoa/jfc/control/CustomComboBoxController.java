@@ -21,17 +21,17 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.ListCellRenderer;
 
+import com.viaoa.compare.match.OAMatchNull;
+import com.viaoa.converter.OAConv;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
 import com.viaoa.hub.HubEvent;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.OACustomComboBox;
 import com.viaoa.jfc.OAJfcUtil;
+import com.viaoa.lang.OAString;
 import com.viaoa.object.OAObject;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
-import com.viaoa.util.OAConv;
-import com.viaoa.util.OANullObject;
-import com.viaoa.util.OAString;
 
 /**
  * Functionality for binding a custom JComboBox to OA.
@@ -177,9 +177,9 @@ public class CustomComboBoxController extends OAJfcController {
 	public Component getRenderer(Component renderer, JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 		boolean bDone = false;
 		String s = null;
-		if (value == null || value instanceof OANullObject) {
+		if (value == null || value instanceof OAMatchNull) {
 			s = "   ";
-		} else if (value instanceof OANullObject) {
+		} else if (value instanceof OAMatchNull) {
 			s = nullDescription;
 		} else if (value instanceof String) { // from prototype setting
 			s = (String) value;
@@ -225,7 +225,7 @@ public class CustomComboBoxController extends OAJfcController {
 	//==============================================================================
 	// note: these need to be ran in the AWT Thread, use SwingUtilities.invokeLater() to call these
 	class MyComboBoxModel extends DefaultListModel implements ComboBoxModel {
-		OANullObject empty = OANullObject.instance;
+		OAMatchNull empty = OAMatchNull.instance;
 
 		public synchronized void setSelectedItem(Object obj) {
 			if (comboBox instanceof OACustomComboBox) { // 20120508 hake to make sure that propertyChange does not happen more then once

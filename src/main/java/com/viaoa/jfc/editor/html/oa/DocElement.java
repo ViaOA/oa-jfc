@@ -12,6 +12,8 @@ package com.viaoa.jfc.editor.html.oa;
 
 import com.viaoa.annotation.OAClass;
 import com.viaoa.hub.Hub;
+import com.viaoa.metadata.OALinkInfo;
+import com.viaoa.metadata.OAObjectInfo;
 import com.viaoa.object.*;
 
 /**

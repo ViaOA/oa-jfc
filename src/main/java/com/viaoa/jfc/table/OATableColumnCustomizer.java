@@ -12,10 +12,11 @@ package com.viaoa.jfc.table;
 
 import javax.swing.JLabel;
 
+import com.viaoa.graph.api.internal.OAGraphInternal;
 import com.viaoa.hub.Hub;
 import com.viaoa.jfc.OATable;
 import com.viaoa.object.OAObject;
-import com.viaoa.object.OAObjectReflectDelegate;
+import com.viaoa.runtime.OARuntime;
 
 /** 
     Used by OATableColumn for customizing table column
@@ -86,7 +87,8 @@ public class OATableColumnCustomizer {
         if (hx == hubLocal) return obj;
         
         if (pathBetweenHubs == null) {
-            pathBetweenHubs = OAObjectReflectDelegate.getPropertyPathBetweenHubs(hx, hubLocal);
+        	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(hx);
+            pathBetweenHubs = og.internal().objects().reflect().getPropertyPathBetweenHubs(hx, hubLocal);
             if (pathBetweenHubs == null) return obj;
         }
         Object objx = ((OAObject) obj).getProperty(pathBetweenHubs);

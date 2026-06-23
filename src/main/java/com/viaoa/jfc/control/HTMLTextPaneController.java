@@ -17,16 +17,16 @@ import java.lang.reflect.Method;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import com.viaoa.converter.OAConv;
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
+import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.editor.html.OAHTMLParser;
 import com.viaoa.jfc.editor.html.OAHTMLTextPane;
+import com.viaoa.lang.OAString;
 import com.viaoa.object.OAObject;
+import com.viaoa.reflect.OAReflect;
 import com.viaoa.undo.OAUndoManager;
 import com.viaoa.undo.OAUndoableEdit;
-import com.viaoa.util.OAConv;
-import com.viaoa.util.OAReflect;
-import com.viaoa.util.OAString;
 
 /**
  * class for binding Editor to Object or Hub. NOTE: Use OAHTMLTextPaneController.bind(hub,prop) for more features.

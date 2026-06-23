@@ -19,7 +19,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.*;
 
 import com.viaoa.jfc.*;
-import com.viaoa.object.OAThreadLocalDelegate;
+import com.viaoa.runtime.OARuntime;
 
 
 public class OATreeModel implements TreeModel {
@@ -143,7 +143,8 @@ public class OATreeModel implements TreeModel {
                     }
                 }
             };
-            if (OAThreadLocalDelegate.callThreadLocalIsLoading()) {
+            
+            if (OARuntime.thread().getThreadLocalService().isLoading()) {
                  SwingUtilities.invokeLater(r);
             }
             else {

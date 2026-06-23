@@ -26,7 +26,8 @@ import javax.swing.*;
 import javax.swing.undo.AbstractUndoableEdit;
 
 import com.viaoa.image.OAImageUtil;
-import com.viaoa.util.Tuple;
+import com.viaoa.lang.Tuple;
+
 
 /**
  * Manages a BufferedImage that is based on an original image and a collection

@@ -13,7 +13,7 @@ package com.viaoa.jfc.control;
 import javax.swing.JComponent;
 
 import com.viaoa.hub.Hub;
-import com.viaoa.hub.HubChangeListener;
+import com.viaoa.hub.listener.HubChangeListener;
 
 /**
  * factory methods for OAJfcController.

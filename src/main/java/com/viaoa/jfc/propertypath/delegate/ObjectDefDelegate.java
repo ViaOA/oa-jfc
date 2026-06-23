@@ -10,14 +10,15 @@
 */
 package com.viaoa.jfc.propertypath.delegate;
 
+import com.viaoa.graph.api.internal.OAGraphInternal;
 import com.viaoa.hub.Hub;
 import com.viaoa.jfc.propertypath.model.oa.*;
-import com.viaoa.object.OACalcInfo;
-import com.viaoa.object.OALinkInfo;
-import com.viaoa.object.OAObjectInfo;
-import com.viaoa.object.OAObjectInfoDelegate;
-import com.viaoa.object.OAPropertyInfo;
-import com.viaoa.util.OAString;
+import com.viaoa.lang.OAString;
+import com.viaoa.metadata.OACalcInfo;
+import com.viaoa.metadata.OALinkInfo;
+import com.viaoa.metadata.OAObjectInfo;
+import com.viaoa.metadata.OAPropertyInfo;
+import com.viaoa.runtime.OARuntime;
 
 
 /**
@@ -41,7 +42,8 @@ public class ObjectDefDelegate {
             return od;
         }
         
-        OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(rootClass);
+    	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(rootClass);
+        OAObjectInfo oi = og.internal().objects().info().getObjectInfo(rootClass);
         od = new ObjectDef();
         od.setObjectClass(rootClass);
         String s = rootClass.getName();
