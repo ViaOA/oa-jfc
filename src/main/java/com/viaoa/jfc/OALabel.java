@@ -79,7 +79,7 @@ public class OALabel extends JLabel implements OATableComponent, OAJfcComponent 
         boolean bIsCalc = false;
         Hub h = getHub();
         if (h != null) {
-        	OAObjectInfo oi = getController().getGraph().info(h);
+        	OAObjectInfo oi = getController().getOA().info(h);
             //was: OAObjectInfo oi = h.getOAObjectInfo();
             String prop = control.getPropertyPath();
             OACalcInfo ci = oi.getCalcInfo(prop);

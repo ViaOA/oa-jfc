@@ -631,7 +631,7 @@ public class OAList extends JList implements OATableComponent, DragGestureListen
             Hub newHub = getDropHub();
             if (newHub == null) return;
             
-            if (!control.getGraph().internal().hubs().addRemove().isAllowAddRemove(newHub)) return;
+            if (!control.getOA().internal().hubs().addRemove().isAllowAddRemove(newHub)) return;
             //was: if (!HubAddRemoveDelegate.isAllowAddRemove(newHub)) return;
             if (!newHub.isValid()) return;
             
@@ -639,7 +639,7 @@ public class OAList extends JList implements OATableComponent, DragGestureListen
 
             if ( newHub.getObjectClass().isAssignableFrom(dragObject.getClass()) ) {
                 if (dragObject != toObject) {
-                	int pos = control.getGraph().internal().hubs().data().getPos(newHub, dragObject, false, false);
+                	int pos = control.getOA().internal().hubs().data().getPos(newHub, dragObject, false, false);
                 	//was: int pos = HubDataDelegate.getPos(newHub, dragObject, false, false);
                     if (pos >= 0) {
                         // move

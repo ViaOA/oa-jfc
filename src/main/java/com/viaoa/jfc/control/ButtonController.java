@@ -296,7 +296,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			return s;
 		}
 		if (hub != null) {
-			OAObjectInfo oi = getGraph().info(hub.getObjectClass());
+			OAObjectInfo oi = getOA().info(hub.getObjectClass());
 			//was: OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(hub.getObjectClass());
 			s = command.name() + " " + oi.getDisplayName();
 		}
@@ -355,10 +355,10 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			switch (command) {
 			case ClearAO:
 				if (obj != null) {
-					Hub hx = getGraph().internal().hubs().link().getHubWithLink(hub, true);
+					Hub hx = getOA().internal().hubs().link().getHubWithLink(hub, true);
 					//was: Hub hx = HubLinkDelegate.getHubWithLink(hub, true);
 					if (hx != null) {
-						eq = getGraph().services().objects().callbacks().getConfirmPropertyChangeObjectCallback((OAObject) hx.getLinkHub(false).getAO(), hx.getLinkPath(false), null, msg, title);
+						eq = getOA().services().objects().callbacks().getConfirmPropertyChangeObjectCallback((OAObject) hx.getLinkHub(false).getAO(), hx.getLinkPath(false), null, msg, title);
 						//was: eq = OAObjectCallbackDelegate.getConfirmPropertyChangeObjectCallback((OAObject) hx.getLinkHub(false).getAO(),hx.getLinkPath(false), null, msg, title);
 					}
 				}
@@ -382,7 +382,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						continue;
 					}
 
-					eq = getGraph().services().objects().callbacks().getConfirmDeleteObjectCallback((OAObject) objx, msg, title);
+					eq = getOA().services().objects().callbacks().getConfirmDeleteObjectCallback((OAObject) objx, msg, title);
 					//was: eq = OAObjectCallbackDelegate.getConfirmDeleteObjectCallback((OAObject) objx, msg, title);
 					msg = eq.getConfirmMessage();
 					title = eq.getConfirmTitle();
@@ -406,7 +406,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						}
 						continue;
 					}
-					eq = getGraph().services().objects().callbacks().getConfirmRemoveObjectCallback(getHub(), (OAObject) objx, msg, title);
+					eq = getOA().services().objects().callbacks().getConfirmRemoveObjectCallback(getHub(), (OAObject) objx, msg, title);
 					//was: eq = OAObjectCallbackDelegate.getConfirmRemoveObjectCallback(getHub(), (OAObject) objx, msg, title);
 					msg = eq.getConfirmMessage();
 					title = eq.getConfirmTitle();
@@ -414,7 +414,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				break;
 			case Add:
 			case Insert:
-				eq = getGraph().services().objects().callbacks().getVerifyAddObjectCallback(getHub(), null, OAObjectCallback.CHECK_ALL);
+				eq = getOA().services().objects().callbacks().getVerifyAddObjectCallback(getHub(), null, OAObjectCallback.CHECK_ALL);
 				//was: eq = OAObjectCallbackDelegate.getVerifyAddObjectCallback(getHub(), null, OAObjectCallback.CHECK_ALL);
 				if (!eq.getAllowed()) {
 					String s = eq.getDisplayResponse();
@@ -424,14 +424,14 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					JOptionPane.showMessageDialog(button, s, "Warning", JOptionPane.WARNING_MESSAGE);
 					return false;
 				}
-				eq = getGraph().services().objects().callbacks().getConfirmAddObjectCallback(getHub(), null, msg, title);
+				eq = getOA().services().objects().callbacks().getConfirmAddObjectCallback(getHub(), null, msg, title);
 				//was: eq = OAObjectCallbackDelegate.getConfirmAddObjectCallback(getHub(), null, msg, title);
 				msg = eq.getConfirmMessage();
 				title = eq.getConfirmTitle();
 				break;
 			case WizardNew:
 			case New:
-				eq = getGraph().services().objects().callbacks().getAllowNewObjectCallback(getHub());
+				eq = getOA().services().objects().callbacks().getAllowNewObjectCallback(getHub());
 				//was: eq = OAObjectCallbackDelegate.getAllowNewObjectCallback(getHub());
 				if (!eq.getAllowed()) {
 					String s = eq.getDisplayResponse();
@@ -441,13 +441,13 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					JOptionPane.showMessageDialog(button, s, "Warning", JOptionPane.WARNING_MESSAGE);
 					return false;
 				}
-				eq = getGraph().services().objects().callbacks().getConfirmAddObjectCallback(getHub(), null, msg, title);
+				eq = getOA().services().objects().callbacks().getConfirmAddObjectCallback(getHub(), null, msg, title);
 				//was: eq = OAObjectCallbackDelegate.getConfirmAddObjectCallback(getHub(), null, msg, title);
 				msg = eq.getConfirmMessage();
 				title = eq.getConfirmTitle();
 				break;
 			case Search:
-				Hub hubx = getGraph().services().hubs().link().getHubWithLink(hub, true);
+				Hub hubx = getOA().services().hubs().link().getHubWithLink(hub, true);
 				//was: Hub hubx = HubLinkDelegate.getHubWithLink(hub, true);
 				String propx = null;
 				if (hubx != null) {
@@ -456,7 +456,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				} else {
 					hubx = hub.getMasterHub();
 					if (hubx != null) {
-						propx = getGraph().internal().hubs().detail().getPropertyFromMasterToDetail(hub);
+						propx = getOA().internal().hubs().detail().getPropertyFromMasterToDetail(hub);
 						//was: propx = HubDetailDelegate.callHubDetailGetPropertyFromMasterToDetail(hub);
 					}
 				}
@@ -467,7 +467,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				if (!(objx instanceof OAObject)) {
 					break;
 				}
-				eq = getGraph().services().objects().callbacks().getConfirmPropertyChangeObjectCallback((OAObject) objx, propx, objSearch, msg, title);
+				eq = getOA().services().objects().callbacks().getConfirmPropertyChangeObjectCallback((OAObject) objx, propx, objSearch, msg, title);
 				//was: eq = OAObjectCallbackDelegate.getConfirmPropertyChangeObjectCallback((OAObject) objx, propx, objSearch, msg, title);
 				msg = eq.getConfirmMessage();
 				title = eq.getConfirmTitle();
@@ -490,7 +490,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						}
 						continue;
 					}
-					eq = getGraph().services().objects().callbacks().getVerifySaveObjectCallback((OAObject) objx, OAObjectCallback.CHECK_ALL);
+					eq = getOA().services().objects().callbacks().getVerifySaveObjectCallback((OAObject) objx, OAObjectCallback.CHECK_ALL);
 					//was: eq = OAObjectCallbackDelegate.getVerifySaveObjectCallback((OAObject) objx, OAObjectCallback.CHECK_ALL);
 					if (!eq.getAllowed()) {
 						String s = eq.getDisplayResponse();
@@ -500,7 +500,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						JOptionPane.showMessageDialog(button, s, "Warning", JOptionPane.WARNING_MESSAGE);
 						return false;
 					}
-					eq = getGraph().services().objects().callbacks().getConfirmSaveObjectCallback((OAObject) objx, msg, title);
+					eq = getOA().services().objects().callbacks().getConfirmSaveObjectCallback((OAObject) objx, msg, title);
 					//was: eq = OAObjectCallbackDelegate.getConfirmSaveObjectCallback((OAObject) objx, msg, title);
 					msg = eq.getConfirmMessage();
 					title = eq.getConfirmTitle();
@@ -510,14 +510,14 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		}
 
 		if (OAString.isNotEmpty(getMethodName())) {
-			eq = getGraph().services().objects().callbacks().getVerifyCommandObjectCallback(obj, getMethodName(), OAObjectCallback.CHECK_ALL);
+			eq = getOA().services().objects().callbacks().getVerifyCommandObjectCallback(obj, getMethodName(), OAObjectCallback.CHECK_ALL);
 			//was: eq = OAObjectCallbackDelegate.getVerifyCommandObjectCallback(obj, getMethodName(), OAObjectCallback.CHECK_ALL);
 			if (!eq.getAllowed()) {
 				String s = eq.getDisplayResponse();
 				JOptionPane.showMessageDialog(button, s, "Command Warning", JOptionPane.WARNING_MESSAGE);
 				return false;
 			}
-			eq = getGraph().services().objects().callbacks().getConfirmCommandObjectCallback(obj, getMethodName(), msg, title);
+			eq = getOA().services().objects().callbacks().getConfirmCommandObjectCallback(obj, getMethodName(), msg, title);
 			//was: eq = OAObjectCallbackDelegate.getConfirmCommandObjectCallback(obj, getMethodName(), msg, title);
 		}
 
@@ -563,7 +563,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		switch (command) {
 		case ClearAO:
 			if (hub.getLinkHub(true) != null) {
-				eq = getGraph().services().objects().callbacks().getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL,(OAObject) hub.getLinkHub(true).getAO(),hub.getLinkPath(true), obj, null);
+				eq = getOA().services().objects().callbacks().getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL,(OAObject) hub.getLinkHub(true).getAO(),hub.getLinkPath(true), obj, null);
 				//was: eq = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL,(OAObject) hub.getLinkHub(true).getAO(),hub.getLinkPath(true), obj, null);
 			}
 			break;
@@ -586,7 +586,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					continue;
 				}
 
-				eq = getGraph().services().objects().callbacks().getVerifyDeleteObjectCallback(getHub(), (OAObject) objx, OAObjectCallback.CHECK_ALL);
+				eq = getOA().services().objects().callbacks().getVerifyDeleteObjectCallback(getHub(), (OAObject) objx, OAObjectCallback.CHECK_ALL);
 				//was: eq = OAObjectCallbackDelegate.getVerifyDeleteObjectCallback(getHub(), (OAObject) objx, OAObjectCallback.CHECK_ALL);
 				if (eq != null && !eq.getAllowed()) {
 					break;
@@ -614,7 +614,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					}
 					continue;
 				}
-				eq = getGraph().services().objects().callbacks().getVerifyRemoveObjectCallback(getHub(), (OAObject) objx, OAObjectCallback.CHECK_ALL);
+				eq = getOA().services().objects().callbacks().getVerifyRemoveObjectCallback(getHub(), (OAObject) objx, OAObjectCallback.CHECK_ALL);
 				//was: eq = OAObjectCallbackDelegate.getVerifyRemoveObjectCallback(getHub(), (OAObject) objx, OAObjectCallback.CHECK_ALL);
 				if (!eq.getAllowed()) {
 					break;
@@ -626,11 +626,11 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		case WizardNew:
 		case New:
 			if (obj instanceof OAObject) {
-				eq = getGraph().services().objects().callbacks().getVerifyAddObjectCallback(getHub(), (OAObject) obj, OAObjectCallback.CHECK_ALL);
+				eq = getOA().services().objects().callbacks().getVerifyAddObjectCallback(getHub(), (OAObject) obj, OAObjectCallback.CHECK_ALL);
 				//was: eq = OAObjectCallbackDelegate.getVerifyAddObjectCallback(getHub(), (OAObject) obj, OAObjectCallback.CHECK_ALL);
 			}
 		case Search:
-			Hub hubx = getGraph().internal().hubs().link().getHubWithLink(hub, true);
+			Hub hubx = getOA().internal().hubs().link().getHubWithLink(hub, true);
 			//was: Hub hubx = HubLinkDelegate.getHubWithLink(hub, true);
 			String propx = null;
 			if (hubx != null) {
@@ -639,7 +639,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			} else {
 				hubx = hub.getMasterHub();
 				if (hubx != null) {
-					propx = getGraph().internal().hubs().detail().getPropertyFromMasterToDetail(hub);
+					propx = getOA().internal().hubs().detail().getPropertyFromMasterToDetail(hub);
 					//was: propx = HubDetailDelegate.callHubDetailGetPropertyFromMasterToDetail(hub);
 				}
 			}
@@ -650,13 +650,13 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			if (!(objx instanceof OAObject)) {
 				return null;
 			}
-			eq = getGraph().services().objects().callbacks().getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) objx, propx, null, obj);
+			eq = getOA().services().objects().callbacks().getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) objx, propx, null, obj);
 			//was: eq = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) objx, propx, null, obj);
 			break;
 		}
 
 		if (OAString.isNotEmpty(getMethodName()) && (obj instanceof OAObject) && (eq == null || eq.isAllowed())) {
-			eq = getGraph().services().objects().callbacks().getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) obj, getMethodName(), null, updateValue);
+			eq = getOA().services().objects().callbacks().getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) obj, getMethodName(), null, updateValue);
 			//was: eq = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) obj, getMethodName(), null, updateValue);
 		}
 		return eq;
@@ -959,14 +959,14 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			OAObject currentAO = (OAObject) hub.getAO();
 			if (currentAO != null) {
 				
-				OALinkInfo[] lis = getGraph().services().objects().delete().getMustBeEmptyBeforeDelete(currentAO);
+				OALinkInfo[] lis = getOA().services().objects().delete().getMustBeEmptyBeforeDelete(currentAO);
 				//was: OALinkInfo[] lis = OAObjectDeleteDelegate.getMustBeEmptyBeforeDelete(currentAO);
 
 				if (mhub != null && (lis == null || lis.length == 0)) {
 					Object[] objs = mhub.toArray();
 					for (Object obj : objs) {
 						if (obj instanceof OAObject) {
-							lis = getGraph().services().objects().delete().getMustBeEmptyBeforeDelete((OAObject) obj);
+							lis = getOA().services().objects().delete().getMustBeEmptyBeforeDelete((OAObject) obj);
 							//was: lis = OAObjectDeleteDelegate.getMustBeEmptyBeforeDelete((OAObject) obj);
 							if (lis != null && lis.length > 0) {
 								break;
@@ -1310,7 +1310,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 								continue;
 							}
 							int posx = hub.getPos(obj);
-							if (getGraph().internal().hubs().addRemove().isAllowAddRemove(getHub())) {
+							if (getOA().internal().hubs().addRemove().isAllowAddRemove(getHub())) {
 							//was: if (HubAddRemoveDelegate.isAllowAddRemove(getHub())) {
 								getHub().remove(obj); // keep "noise" down
 							}
@@ -1343,7 +1343,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 							if (bEnableUndo) {
 								OAUndoManager.add(OAUndoableEdit.createUndoableRemove(getUndoDescription(), hub, ho, hub.getPos()));
 							}
-							if (getGraph().internal().hubs().addRemove().isAllowRemove(getHub())) {
+							if (getOA().internal().hubs().addRemove().isAllowRemove(getHub())) {
 							//was: if (HubAddRemoveDelegate.isAllowRemove(getHub())) { // 20211211
 								getHub().remove(ho); // 20110215 remove first, so that cascading deletes are not so "noisy"
 							}
@@ -1374,7 +1374,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						Object[] objs = mhub.toArray();
 						for (Object obj : objs) {
 							if (obj instanceof OAObject) {
-								if (getGraph().internal().hubs().addRemove().isAllowAddRemove(getHub())) {
+								if (getOA().internal().hubs().addRemove().isAllowAddRemove(getHub())) {
 								//was: if (HubAddRemoveDelegate.isAllowAddRemove(getHub())) {
 									int posx = hub.getPos(obj);
 									OAUndoManager.add(OAUndoableEdit.createUndoableRemove(getUndoDescription(), hub, obj, posx));
@@ -1423,7 +1423,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					if (bEnableUndo) {
 						OAUndoManager.add(OAUndoableEdit.createUndoableMove(getUndoDescription(), hub, pos, pos - 1));
 					}
-					getGraph().internal().hubs().ao().setActiveObjectForce(hub, (OAObject) ho);
+					getOA().internal().hubs().ao().setActiveObjectForce(hub, (OAObject) ho);
 					//was: HubAODelegate.setActiveObjectForce(hub, ho);
 				}
 				break;
@@ -1435,7 +1435,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					if (bEnableUndo) {
 						OAUndoManager.add(OAUndoableEdit.createUndoableMove(getUndoDescription(), hub, pos, pos + 1));
 					}
-					getGraph().internal().hubs().ao().setActiveObjectForce(hub, (OAObject) ho);
+					getOA().internal().hubs().ao().setActiveObjectForce(hub, (OAObject) ho);
 					//was: HubAODelegate.setActiveObjectForce(hub, ho);
 				}
 				break;
@@ -1478,7 +1478,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					obj = getClipboardObject(false);
 					if (obj != null) {
 						if (obj.getClass().equals(hub.getObjectClass())) {
-							obj = getGraph().services().objects().callbacks().getCopy(obj);
+							obj = getOA().services().objects().callbacks().getCopy(obj);
 							//was: obj = OAObjectCallbackDelegate.getCopy(obj);
 						}
 					}
@@ -1490,7 +1490,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					if (!hub.contains(obj)) {
 						if (bEnableUndo) {
 							if (hub.getMasterObject() != null) {
-								String propx = getGraph().internal().hubs().detail().getPropertyFromDetailToMaster(hub);
+								String propx = getOA().internal().hubs().detail().getPropertyFromDetailToMaster(hub);
 								//was: String propx = HubDetailDelegate.getPropertyFromDetailToMaster(hub);
 								final boolean wasChanged = (obj instanceof OAObject) && ((OAObject) obj).getChanged();
 								OAUndoManager.add(OAUndoableEdit
@@ -1516,7 +1516,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 							if (!objxx.getClass().equals(hub.getObjectClass())) {
 								break;
 							}
-							objxx = getGraph().services().objects().callbacks().getCopy((OAObject) objxx);
+							objxx = getOA().services().objects().callbacks().getCopy((OAObject) objxx);
 							//was: objxx = OAObjectCallbackDelegate.getCopy((OAObject) objxx);
 							if (pos < 0) {
 								hub.add((OAObject) objxx);
@@ -1554,7 +1554,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				} else {
 					hubx = hub.getMasterHub();
 					if (hubx != null) {
-						propx = getGraph().internal().hubs().detail().getPropertyFromMasterToDetail(hub);
+						propx = getOA().internal().hubs().detail().getPropertyFromMasterToDetail(hub);
 						//was: propx = HubDetailDelegate.callHubDetailGetPropertyFromMasterToDetail(hub);
 					}
 				}
@@ -1731,7 +1731,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				OARuntime.thread().getThreadLocalService().setLoading(true);
 				//was: OAThreadLocalDelegate.setLoading(true);
 			}
-			obj = getGraph().internal().objects().reflect().createNewObject(c);
+			obj = getOA().internal().objects().reflect().createNewObject(c);
 			//was: obj = OAObjectReflectDelegate.createNewObject(c);
 		} finally {
 			if (!bAssignId) {
@@ -1741,7 +1741,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		}
 		if (!bAssignId && obj instanceof OAObject) {
 			// dont assign Id yet
-			getGraph().internal().objects().initialize().initializeAfterLoading((OAObject) obj, false, true, false);
+			getOA().internal().objects().initialize().initializeAfterLoading((OAObject) obj, false, true, false);
 			//was: OAObjectDelegate.initializeAfterLoading((OAObject) obj, false, true, false);
 		}
 
@@ -1993,7 +1993,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						objx = hub.getMasterObject();
 						if (objx instanceof OAObject) {
 							if (((OAObject) objx).isNew()) {
-								OALinkInfo li = getGraph().internal().hubs().detail().getLinkInfoFromMasterToDetail(hub);
+								OALinkInfo li = getOA().internal().hubs().detail().getLinkInfoFromMasterToDetail(hub);
 								//was: OALinkInfo li = HubDetailDelegate.callHubDetailGetLinkInfoFromMasterHubToDetail(hub);
 								if (li != null && li.getOwner()) {
 									flag = false;
@@ -2013,11 +2013,11 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			case Remove:
 				flag = (obj != null) || (hubSelect != null && hubSelect.size() > 0);
 				
-				if (flag && !getGraph().internal().hubs().addRemove().isAllowAddRemove(getHub())) {
+				if (flag && !getOA().internal().hubs().addRemove().isAllowAddRemove(getHub())) {
 				//was: if (flag && !HubAddRemoveDelegate.isAllowAddRemove(getHub())) {
 					flag = false;
 				}
-				flag = flag && getGraph().services().objects().callbacks().getAllowRemove(hub, null, OAObjectCallback.CHECK_ALL);
+				flag = flag && getOA().services().objects().callbacks().getAllowRemove(hub, null, OAObjectCallback.CHECK_ALL);
 				//was: flag = flag && OAObjectCallbackDelegate.getAllowRemove(hub, null, OAObjectCallback.CHECK_ALL);
 
 				break;
@@ -2055,7 +2055,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						continue;
 					}
 					// 20190220
-					flag = getGraph().services().objects().callbacks().getAllowDelete(hub, (OAObject) objx);
+					flag = getOA().services().objects().callbacks().getAllowDelete(hub, (OAObject) objx);
 					//was: flag = OAObjectCallbackDelegate.getAllowDelete(hub, (OAObject) objx);
 					//was: flag = ((OAObject)objx).canDelete();
 				}
@@ -2070,12 +2070,12 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				if (flag && !bAnyTime && !bMasterControl && oaObj.getChanged()) {
 					flag = false;
 				}
-				if (flag && !getGraph().internal().hubs().addRemove().isAllowAddRemove(getHub())) {
+				if (flag && !getOA().internal().hubs().addRemove().isAllowAddRemove(getHub())) {
 				//was: if (flag && !HubAddRemoveDelegate.isAllowAddRemove(getHub())) {
 					flag = (hub.getSize() == 0);
 					break;
 				}
-				flag = flag && getGraph().services().objects().callbacks().getAllowAdd(getHub(), null, OAObjectCallback.CHECK_ALL);
+				flag = flag && getOA().services().objects().callbacks().getAllowAdd(getHub(), null, OAObjectCallback.CHECK_ALL);
 				//was: flag = flag && OAObjectCallbackDelegate.getAllowAdd(getHub(), null, OAObjectCallback.CHECK_ALL);
 				//was: flag = flag && getHub().canAdd();
 				break;
@@ -2086,7 +2086,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				flag = (obj != null && (hub.isMoreData() || hub.getPos() < (hub.getSize() - 1)));
 				break;
 			case Cut:
-				OAObjectCallback eq = getGraph().services().objects().callbacks().getAllowRemoveObjectCallback(hub, null, OAObjectCallback.CHECK_ALL);
+				OAObjectCallback eq = getOA().services().objects().callbacks().getAllowRemoveObjectCallback(hub, null, OAObjectCallback.CHECK_ALL);
 				//was: OAObjectCallback eq = OAObjectCallbackDelegate.getAllowRemoveObjectCallback(hub, null, OAObjectCallback.CHECK_ALL);
 				flag = eq.getAllowed();
 				if (!flag) {
@@ -2117,7 +2117,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						}
 						continue;
 					}
-					eq = getGraph().services().objects().callbacks().getAllowCopyObjectCallback((OAObject) objx);
+					eq = getOA().services().objects().callbacks().getAllowCopyObjectCallback((OAObject) objx);
 					//was: eq = OAObjectCallbackDelegate.getAllowCopyObjectCallback((OAObject) objx);
 					flag = eq.getAllowed();
 				}
@@ -2172,7 +2172,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				    }
 				}
 				*/
-				if (flag && !getGraph().internal().hubs().addRemove().isAllowAddRemove(getHub())) {
+				if (flag && !getOA().internal().hubs().addRemove().isAllowAddRemove(getHub())) {
 				//was: if (flag && !HubAddRemoveDelegate.isAllowAddRemove(getHub())) {
 					flag = (hub.getSize() == 0);
 					break;
@@ -2185,7 +2185,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				}
 			default:
 			}
-			if (flag && !getGraph().internal().hubs().status().isValid(hub)) {
+			if (flag && !getOA().internal().hubs().status().isValid(hub)) {
 			//was: if (flag && !HubDelegate.isValid(hub)) {
 				flag = false;
 			}
@@ -2429,7 +2429,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 	public String getToolTipText(Object obj, String ttDefault) {
 		ttDefault = super.getToolTipText(obj, ttDefault);
 		if (obj instanceof OAObject && OAString.isNotEmpty(methodName)) {
-			ttDefault = getGraph().services().objects().callbacks().getToolTip((OAObject) obj, methodName, ttDefault);
+			ttDefault = getOA().services().objects().callbacks().getToolTip((OAObject) obj, methodName, ttDefault);
 			//was: ttDefault = OAObjectCallbackDelegate.getToolTip((OAObject) obj, methodName, ttDefault);
 		}
 		return ttDefault;

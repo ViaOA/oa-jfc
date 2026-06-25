@@ -24,11 +24,11 @@ import javax.swing.*;
 import com.viaoa.jfc.dnd.OATransferable;
 import com.viaoa.jfc.tree.*;
 import com.viaoa.lang.OAString;
+import com.viaoa.oa.OA;
 import com.viaoa.jfc.*;
 import com.viaoa.jfc.OAButton.ButtonCommand;
 import com.viaoa.object.OAObject;
 import com.viaoa.runtime.OARuntime;
-import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.*;
 
 
@@ -402,8 +402,8 @@ public class CutCopyPasteController {
             if (obj == null) {
                 obj = getClipboardObject(false);
                 if (obj != null) {
-                	OAGraph og =  OARuntime.graph(obj);
-                    obj = og.internal().objects().callbacks().getCopy(obj);
+                	OA oa =  OARuntime.oa(obj);
+                    obj = oa.internal().objects().callbacks().getCopy(obj);
                 }
             }
             if (obj != null) {

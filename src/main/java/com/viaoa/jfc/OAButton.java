@@ -36,7 +36,6 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableCellEditor;
 
-import com.viaoa.graph.service.object.OAObjectEventService;
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.hub.listener.HubChangeListener.Type;
@@ -45,6 +44,7 @@ import com.viaoa.jfc.dialog.OAPasswordDialog;
 import com.viaoa.jfc.table.OAButtonTableCellEditor;
 import com.viaoa.jfc.table.OATableComponent;
 import com.viaoa.lang.OAString;
+import com.viaoa.oa.service.object.OAObjectEventService;
 import com.viaoa.object.OAObject;
 
 public class OAButton extends JButton implements OATableComponent, OAJfcComponent {
@@ -221,7 +221,7 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 				} else {
 					hubx = hub.getMasterHub();
 					if (hubx != null) {
-						propx = control.getGraph().internal().hubs().detail().getPropertyFromMasterToDetail(hub);
+						propx = control.getOA().internal().hubs().detail().getPropertyFromMasterToDetail(hub);
 						//was: propx = HubDetailDelegate.callHubDetailGetPropertyFromMasterToDetail(hub);
 					}
 				}

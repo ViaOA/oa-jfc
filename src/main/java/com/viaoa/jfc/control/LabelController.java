@@ -17,7 +17,6 @@ import javax.swing.border.*;
 
 import com.viaoa.annotation.OACalculatedProperty;
 import com.viaoa.annotation.OAProperty;
-import com.viaoa.graph.sibling.OASiblingHelper;
 import com.viaoa.hub.*;
 import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.object.*;
@@ -26,6 +25,7 @@ import com.viaoa.runtime.OARuntime;
 import com.viaoa.jfc.*;
 import com.viaoa.lang.OAString;
 import com.viaoa.metadata.OALinkInfo;
+import com.viaoa.oa.sibling.OASiblingHelper;
 
 /**
  * Controller for binding OA to JLabel.

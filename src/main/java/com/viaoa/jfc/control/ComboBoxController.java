@@ -283,7 +283,7 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 			if (hubx != null) {
 				activeObject = hubx.getAO();
 			}
-			if (getGraph().internal().hubs().link().getLinkedOnPos(h)) {
+			if (getOA().internal().hubs().link().getLinkedOnPos(h)) {
 				obj = h.getPos(obj);
 			}
 			final boolean wasChanged = (activeObject instanceof OAObject) && ((OAObject) activeObject).getChanged();
@@ -299,9 +299,9 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 				try {
 					if (b) {
 						OAUndoableEdit ue = OAUndoableEdit.createUndoablePropertyChange(
-																						"Change " + getGraph().internal().hubs().link().getLinkToProperty(hub),
+																						"Change " + getOA().internal().hubs().link().getLinkToProperty(hub),
 																						activeObject,
-																						getGraph().internal().hubs().link().getLinkToProperty(hub),
+																						getOA().internal().hubs().link().getLinkToProperty(hub),
 																						oldValue, obj, wasChanged);
 
 						OAUndoManager.add(ue);
@@ -314,7 +314,7 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 						OAUndoManager.add(ue);
 						*/
 					}
-					getGraph().internal().hubs().ao().setActiveObjectForce(getHub(), (OAObject) objOrig);
+					getOA().internal().hubs().ao().setActiveObjectForce(getHub(), (OAObject) objOrig);
 					//getHub().setActiveObject(objOrig);
 				} finally {
 					if (b) {
@@ -408,7 +408,7 @@ public class ComboBoxController extends OAJfcController implements FocusListener
 			return null;
 		}
 
-		Object objx = getGraph().internal().hubs().link().getPropertyValueInLinkedToHub(h, hx.getAO());
+		Object objx = getOA().internal().hubs().link().getPropertyValueInLinkedToHub(h, hx.getAO());
 		if (!(objx instanceof OAObject)) {
 			return null;
 		}

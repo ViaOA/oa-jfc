@@ -59,9 +59,9 @@ import com.viaoa.runtime.OARuntime;
 import com.viaoa.schedule.OAScheduler;
 import com.viaoa.select.OASelect;
 import com.viaoa.datetime.*;
-import com.viaoa.graph.OAGraph;
 import com.viaoa.lang.OAString;
 import com.viaoa.lang.oa.VDate;
+import com.viaoa.oa.OA;
 
 /**
  * UI for displaying items in a Calendar.
@@ -640,7 +640,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                     sel.select(OAMonthCalendar.this.datePropertyPaths[0] +" = ?", new Object[] {dateOrig});
                     obj = sel.next();
                     if (obj == null) {
-                    	obj = (OAObject) OARuntime.graph(c).create(c);
+                    	obj = (OAObject) OARuntime.oa(c).create(c);
                         //was: obj = (OAObject) OAObjectReflectDelegate.createNewObject(c);
                         obj.setProperty(OAMonthCalendar.this.datePropertyPaths[0], dateOrig);
                         obj.save();
@@ -676,7 +676,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
             hubForList = this.hub;
             String propPath = propertyPath;
             if (OAMonthCalendar.this.getDetailHub() != null) {
-            	OARuntime.graph(this.hub).services().hubs().ao().keepActiveObject(this.hub);
+            	OARuntime.oa(this.hub).services().hubs().ao().keepActiveObject(this.hub);
                 //was: HubAODelegate.keepActiveObject(this.hub);
                 hubForList = hub.getDetailHub(OAMonthCalendar.this.getDetailHub().getObjectClass()).createSharedHub();
             }
@@ -686,7 +686,7 @@ public class OAMonthCalendar<F extends OAObject, T extends OAObject> extends JSc
                     OAPath ppx = new OAPath(hub.getObjectClass(), propertyPath);
                     //was: OAPropertyPath ppx = new OAPropertyPath(hub.getObjectClass(), propertyPath);
                     if (ppx.getHasHubProperty()) {
-                    	OARuntime.graph(this.hub).services().hubs().ao().keepActiveObject(this.hub);
+                    	OARuntime.oa(this.hub).services().hubs().ao().keepActiveObject(this.hub);
                         //was: HubAODelegate.keepActiveObject(this.hub);
                         
                         int x = OAString.dcount(propertyPath, '.');

@@ -691,14 +691,14 @@ public class OAComboBox extends JComboBox implements OATableComponent, OAJfcComp
 			String s;
 			Object obj = value;
 			// 20110116 when using linkFromProperty, dont get prop value. Ex: Breed.name linked to Pet.breed (string)
-			Hub hx = control.getGraph().internal().hubs().link().getHubWithLink(h2, true);
+			Hub hx = control.getOA().internal().hubs().link().getHubWithLink(h2, true);
 			//was: Hub hx = HubLinkDelegate.getHubWithLink(h2, true);
 
-			if (hx != null && hx.getLinkHub(false) != null && control.getGraph().internal().hubs().link().getLinkFromProperty(hx) == null) {
+			if (hx != null && hx.getLinkHub(false) != null && control.getOA().internal().hubs().link().getLinkFromProperty(hx) == null) {
 			//was: if (hx != null && hx.getLinkHub(false) != null && HubLinkDelegate.getLinkFromProperty(hx) == null) {
 				// was: if (h2.getLinkHub() != null) {
 				try { // 20081010 add catch, in case the propertyPath for tableColumn is being used instead of using the link value
-					obj = control.getGraph().internal().hubs().link().getPropertyValueInLinkedToHub(h2, h.elementAt(row));
+					obj = control.getOA().internal().hubs().link().getPropertyValueInLinkedToHub(h2, h.elementAt(row));
 					//was: obj = HubLinkDelegate.getPropertyValueInLinkedToHub(h2, h.elementAt(row));
 					s = control.getValueAsString(obj, control.getFormat());
 					//was: s = OAReflect.getPropertyValueAsString(obj, control.getGetMethods());

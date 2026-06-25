@@ -18,10 +18,10 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
-import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.Hub;
 import com.viaoa.jfc.editor.html.OAHTMLTextPane;
 import com.viaoa.jfc.editor.html.protocol.oaproperty.Handler;
+import com.viaoa.oa.OA;
 import com.viaoa.image.OAImageUtil;
 import com.viaoa.object.OAObject;
 import com.viaoa.runtime.OARuntime;
@@ -155,8 +155,8 @@ public class Class2ImageHandler implements ImageHandlerInterface {
         // will save as jpg encoded bytes
         BufferedImage bi = OAImageUtil.convertToBufferedImage(img);
         
-    	OAGraph og =  OARuntime.graph(hub);
-        OAObject obj = (OAObject) og.internal().objects().reflect().createNewObject(hub.getObjectClass());
+    	OA oa =  OARuntime.oa(hub);
+        OAObject obj = (OAObject) oa.internal().objects().reflect().createNewObject(hub.getObjectClass());
         obj.setProperty(byteArrayPropertyName, OAImageUtil.convertToBytes(bi));
         obj.setProperty(sourceNamePropertyName, srcName);
         

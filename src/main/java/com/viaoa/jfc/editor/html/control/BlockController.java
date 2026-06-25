@@ -19,7 +19,6 @@ import javax.swing.text.*;
 import javax.swing.text.html.*;
 
 import com.viaoa.converter.OAConv;
-import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.*;
 import com.viaoa.hub.detail.DetailHub;
 import com.viaoa.jfc.editor.html.*;
@@ -27,6 +26,7 @@ import com.viaoa.jfc.editor.html.oa.*;
 import com.viaoa.jfc.editor.html.view.BlockDialog;
 import com.viaoa.lang.OAStr;
 import com.viaoa.lang.OAString;
+import com.viaoa.oa.OA;
 import com.viaoa.object.OAObject;
 import com.viaoa.runtime.OARuntime;
 

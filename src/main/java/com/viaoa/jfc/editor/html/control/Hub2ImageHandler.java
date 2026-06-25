@@ -15,12 +15,12 @@ import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.Hub;
 import com.viaoa.image.OAImageUtil;
 import com.viaoa.jfc.editor.html.OAHTMLTextPane;
 import com.viaoa.lang.OAString;
 import com.viaoa.metadata.OALinkInfo;
+import com.viaoa.oa.OA;
 import com.viaoa.object.OAObject;
 import com.viaoa.path.OAPath;
 import com.viaoa.runtime.OARuntime;
@@ -149,21 +149,21 @@ public class Hub2ImageHandler implements ImageHandlerInterface {
 
 		OAObject objNew;
 		if (OAString.isEmpty(propertyPathToImageObject)) {
-        	OAGraph og =  OARuntime.graph(hub);
-			objNew = og.internal().objects().reflect().createNewObject(hub.getObjectClass());
+        	OA oa =  OARuntime.oa(hub);
+			objNew = oa.internal().objects().reflect().createNewObject(hub.getObjectClass());
 			hub.add(objNew);
 		} else {
 			OAPath pp = new OAPath(hub.getObjectClass(), propertyPathToImageObject);
 			OALinkInfo li = pp.getEndLinkInfo();
-        	OAGraph og =  OARuntime.graph(li.getToClass());
-			objNew = og.internal().objects().reflect().createNewObject(li.getToClass());
+        	OA oa =  OARuntime.oa(li.getToClass());
+			objNew = oa.internal().objects().reflect().createNewObject(li.getToClass());
 
 			OAObject objAo = hub.getAO();
 			if (li.getType() == li.TYPE_MANY) {
 				Hub hubx = (Hub) li.getValue(objAo);
 				hubx.add(objNew);
 			} else {
-				og.internal().objects().reflect().setProperty((OAObject) objAo, propertyPathToImageObject, objNew, null);
+				oa.internal().objects().reflect().setProperty((OAObject) objAo, propertyPathToImageObject, objNew, null);
 			}
 		}
 		objNew.setProperty(byteArrayPropertyName, OAImageUtil.convertToBytes(bi));

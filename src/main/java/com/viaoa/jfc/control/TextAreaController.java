@@ -27,12 +27,12 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
 import com.viaoa.converter.OAConv;
-import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.OAPlainDocument;
 import com.viaoa.jfc.OATextArea;
 import com.viaoa.lang.OAString;
+import com.viaoa.oa.OA;
 import com.viaoa.object.OAObject;
 import com.viaoa.reflect.OAReflect;
 import com.viaoa.runtime.OARuntime;
@@ -306,8 +306,8 @@ public class TextAreaController extends OAJfcController implements FocusListener
 				// OAReflect.setPropertyValue(activeObject, getSetMethod(), convertedValue);
 				if (text == null || text.length() == 0) {
 					if (OAReflect.isNumber(endPropertyClass) && activeObject instanceof OAObject) {
-	                	OAGraph og =  OARuntime.graph((OAObject) activeObject);
-	                	og.internal().objects().reflect().setProperty((OAObject) activeObject, endPropertyName, null, null); // was: setNull(prop)
+	                	OA oa =  OARuntime.oa((OAObject) activeObject);
+	                	oa.internal().objects().reflect().setProperty((OAObject) activeObject, endPropertyName, null, null); // was: setNull(prop)
 					}
 				}
 			}

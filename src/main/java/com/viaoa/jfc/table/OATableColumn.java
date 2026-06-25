@@ -21,7 +21,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import com.viaoa.converter.OAConv;
-import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubEvent;
 import com.viaoa.hub.HubListener;
@@ -29,6 +28,7 @@ import com.viaoa.hub.HubListenerAdapter;
 import com.viaoa.jfc.OAJfcComponent;
 import com.viaoa.jfc.OATable;
 import com.viaoa.lang.OAString;
+import com.viaoa.oa.OA;
 import com.viaoa.object.OAObject;
 import com.viaoa.path.OAPath;
 import com.viaoa.reflect.OAReflect;
@@ -375,11 +375,11 @@ public class OATableColumn {
 		// changed so that it will only change the path when the component hub
 		//    is linked back to the table.hub
 		if (oaComp != null && oaComp.getHub() != null && !bIsAlreadyExpanded) {
-	    	final OAGraph og =  OARuntime.graph(oaComp.getHub());
-			bLinkOnPos = og.internal().hubs().link().getLinkedOnPos(oaComp.getHub(), true);
+	    	final OA oa =  OARuntime.oa(oaComp.getHub());
+			bLinkOnPos = oa.internal().hubs().link().getLinkedOnPos(oaComp.getHub(), true);
 			path = origPath;
 			if (!bIsAlreadyExpanded) {
-				pathBetweenHubs = og.internal().objects().reflect().getPropertyPathBetweenHubs(hubTable, oaComp.getHub());
+				pathBetweenHubs = oa.internal().objects().reflect().getPropertyPathBetweenHubs(hubTable, oaComp.getHub());
 				betweenHubPropertyPathCount = OAString.dcount(pathBetweenHubs, ".");
 
 				// adjust the number of properties to get from table hub to "base" hub for this column
@@ -407,7 +407,7 @@ public class OATableColumn {
 					} else {
 						s += ".";
 					}
-					pathIntValue = s + og.internal().hubs().link().getLinkToProperty(oaComp.getHub());
+					pathIntValue = s + oa.internal().hubs().link().getLinkToProperty(oaComp.getHub());
 				}
 			}
 		}

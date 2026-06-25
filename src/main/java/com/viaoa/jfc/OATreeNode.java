@@ -41,7 +41,6 @@ import javax.swing.UIManager;
 
 import com.viaoa.converter.OAConv;
 import com.viaoa.converter.OAConverter;
-import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubEvent;
 import com.viaoa.hub.HubListener;
@@ -59,6 +58,7 @@ import com.viaoa.jfc.tree.OATreeNodeData;
 import com.viaoa.lang.OAString;
 import com.viaoa.metadata.OALinkInfo;
 import com.viaoa.metadata.OAObjectInfo;
+import com.viaoa.oa.OA;
 import com.viaoa.object.OAObject;
 import com.viaoa.reflect.OAReflect;
 import com.viaoa.runtime.OARuntime;
@@ -558,14 +558,14 @@ public class OATreeNode implements Cloneable {
 		}
 	}
 
-	public OAGraph getGraph(Hub hub) {
-		return OARuntime.graph(hub);
+	public OA getOA(Hub hub) {
+		return OARuntime.oa(hub);
 	}
-	public OAGraph getGraph(OAObject obj) {
-		return OARuntime.graph(obj);
+	public OA getOA(OAObject obj) {
+		return OARuntime.oa(obj);
 	}
-	public OAGraph getGraph(Class c) {
-		return OARuntime.graph(c);
+	public OA getOA(Class c) {
+		return OARuntime.oa(c);
 	}
 	
 	/**
@@ -593,7 +593,7 @@ public class OATreeNode implements Cloneable {
 					return;
 				}
 				
-				if (hub != null && !getGraph(hub).internal().hubs().share().isUsingSameSharedHub(def.updateHub, hub)) {
+				if (hub != null && !getOA(hub).internal().hubs().share().isUsingSameSharedHub(def.updateHub, hub)) {
 				//was: if (hub != null && !HubShareDelegate.isUsingSameSharedHub(def.updateHub, hub)) {
 					return;
 				}
@@ -604,14 +604,14 @@ public class OATreeNode implements Cloneable {
 					h = OATreeNode.this.hub;
 				} else {
 					// this will "hit" the same hub that the OATreeNodeData is listening to - since it is listening to the "real" Hub.
-					h = getGraph(def.updateHub).internal().hubs().share().getMainSharedHub(def.updateHub);
+					h = getOA(def.updateHub).internal().hubs().share().getMainSharedHub(def.updateHub);
 					//was: h = HubShareDelegate.getMainSharedHub(def.updateHub);
 				}
 				if (obj != h.getAO()) {
 					// 2l0190311 dont set AO, send hub event instead
 					try {
 						bSkip = true;
-						getGraph(h).internal().hubs().events().fireAfterChangeActiveObjectEvent(h, (OAObject) obj, h.getPos(obj), false);
+						getOA(h).internal().hubs().events().fireAfterChangeActiveObjectEvent(h, (OAObject) obj, h.getPos(obj), false);
 						//was: HubEventDelegate.fireAfterChangeActiveObjectEvent(h, obj, h.getPos(obj), false);
 					} finally {
 						bSkip = false;
@@ -644,7 +644,7 @@ public class OATreeNode implements Cloneable {
 
 				// 20110106
 				boolean bHoldWasOnAnotherHub = bWasOnAnotherHub;
-				if (hub != null && !getGraph(def.updateHub).internal().hubs().share().isUsingSameSharedHub(def.updateHub, hub)) {				
+				if (hub != null && !getOA(def.updateHub).internal().hubs().share().isUsingSameSharedHub(def.updateHub, hub)) {				
 				//was: if (hub != null && !HubShareDelegate.isUsingSameSharedHub(def.updateHub, hub)) {
 					bWasOnAnotherHub = true;
 					return;
@@ -654,7 +654,7 @@ public class OATreeNode implements Cloneable {
 					}
 				}
 
-				if (hub != null && getGraph(def.updateHub).internal().hubs().share().isUsingSameSharedAO(def.updateHub, hub)) {
+				if (hub != null && getOA(def.updateHub).internal().hubs().share().isUsingSameSharedAO(def.updateHub, hub)) {
 				//was: if (hub != null && HubShareDelegate.isUsingSameSharedAO(def.updateHub, hub)) {
 					if (!bHoldWasOnAnotherHub) {
 						return;
@@ -668,7 +668,7 @@ public class OATreeNode implements Cloneable {
 					h = OATreeNode.this.hub;
 				} else {
 					// this next statement will "hit" the same hub that the OATreeNodeData is listening to - since it is listening to the "real" Hub.
-					h = getGraph(def.updateHub).internal().hubs().share().getMainSharedHub(def.updateHub);
+					h = getOA(def.updateHub).internal().hubs().share().getMainSharedHub(def.updateHub);
 					//was: h = HubShareDelegate.getMainSharedHub(def.updateHub);
 				}
 				if (obj != h.getAO()) {
@@ -680,7 +680,7 @@ public class OATreeNode implements Cloneable {
 						//    since this is a recursive node that is selected again, and
 						//      the AO has not been changed since it is the node that was last selected.
 						//  otherwise, the node will not be selected - since Hub2TreeNode needs to get a changeAO event
-						getGraph(h).services().hubs().ao().setActiveObject(h, (OAObject) obj, false, false, true);
+						getOA(h).services().hubs().ao().setActiveObject(h, (OAObject) obj, false, false, true);
 						//was: HubAODelegate.setActiveObject(h, obj, false, false, true);
 						bHoldWasOnAnotherHub = false;
 					}
@@ -1033,7 +1033,7 @@ public class OATreeNode implements Cloneable {
 		// 20110802 recursive nodes
 		if (methodsToHub == null && bRecursive) {
 			Class clazz = object.getClass();
-			OAObjectInfo oi = getGraph((OAObject)  object).info(clazz);
+			OAObjectInfo oi = getOA((OAObject)  object).info(clazz);
 			//was: OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(clazz);
 			OALinkInfo li = oi.getRecursiveLinkInfo(OALinkInfo.MANY);
 
@@ -1068,7 +1068,7 @@ public class OATreeNode implements Cloneable {
 
 		// 20110802 recursive nodes
 		if (methodsToHub == null && bRecursive) {
-			OAObjectInfo oi = getGraph(clazz).info(clazz);
+			OAObjectInfo oi = getOA(clazz).info(clazz);
 			// OAObjectInfo oi = OAObjectInfoDelegate.callInfoGetObjectInfo(clazz);
 			OALinkInfo li = oi.getRecursiveLinkInfo(OALinkInfo.MANY);
 

@@ -18,12 +18,12 @@ import javax.swing.tree.TreePath;
 
 import com.viaoa.object.*;
 import com.viaoa.runtime.OARuntime;
-import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.*;
 import com.viaoa.hub.filter.HubFilter;
 import com.viaoa.jfc.*;
 import com.viaoa.jfc.tree.*;
 import com.viaoa.lang.OAArray;
+import com.viaoa.oa.OA;
 
 /** 
     Used by OATreeNodeData for each node in the tree that uses a Hub.
@@ -257,9 +257,9 @@ public class Hub2TreeNode extends HubListenerAdapter {
             if (OAArray.contains(tns, node)) hubUpdate = hub;
         }
         
-    	OAGraph og =  OARuntime.graph(hubUpdate);;
+    	OA oa =  OARuntime.oa(hubUpdate);;
         
-        if (hubUpdate != null && (og.internal().hubs().share().isUsingSameSharedHub(hubUpdate, hub)) ) {
+        if (hubUpdate != null && (oa.internal().hubs().share().isUsingSameSharedHub(hubUpdate, hub)) ) {
             if (node.getTree().isSelectingNode()) return; // OATree.valueChanged() in process
             node.getTree().setSettingNode(this, true); // this tells OATree not to respond to valueChange
 

@@ -15,10 +15,10 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.*;
 import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.lang.OAString;
+import com.viaoa.oa.OA;
 import com.viaoa.undo.*;
 import com.viaoa.object.*;
 import com.viaoa.runtime.OARuntime;
@@ -170,8 +170,8 @@ public class ListController extends OAJfcController implements ListSelectionList
                 int pos = h.getPos();
                 if (ho != null && pos > 0) {
                     h.move(pos,pos-1);
-                	OAGraph og =  OARuntime.graph(ho);
-                    og.internal().hubs().ao().setActiveObjectForce(h, ho);
+                	OA oa =  OARuntime.oa(ho);
+                    oa.internal().hubs().ao().setActiveObjectForce(h, ho);
                 }
             }
         },  KeyStroke.getKeyStroke(KeyEvent.VK_UP, Event.CTRL_MASK, false), JComponent.WHEN_FOCUSED);
@@ -183,8 +183,8 @@ public class ListController extends OAJfcController implements ListSelectionList
                 int pos = h.getPos();
                 if (ho != null && pos+1 != h.getSize()) {
                     h.move(pos,pos+1);
-                	OAGraph og =  OARuntime.graph(ho);
-                    og.internal().hubs().ao().setActiveObjectForce(h, ho);
+                	OA oa =  OARuntime.oa(ho);
+                    oa.internal().hubs().ao().setActiveObjectForce(h, ho);
                 }
             }
         },  KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, Event.CTRL_MASK, false), JComponent.WHEN_FOCUSED);
@@ -208,8 +208,8 @@ public class ListController extends OAJfcController implements ListSelectionList
                 if (hub == null) return;
                 Class<? extends OAObject> c = hub.getObjectClass();
                 if (c == null) return;
-            	OAGraph og =  OARuntime.graph(c);
-                OAObject obj = og.internal().objects().reflect().createNewObject(c);
+            	OA oa =  OARuntime.oa(c);
+                OAObject obj = oa.internal().objects().reflect().createNewObject(c);
 
                 int pos = hub.getPos();
                 if (pos < 0) pos = 0;
