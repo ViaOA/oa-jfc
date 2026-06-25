@@ -101,7 +101,7 @@ import com.viaoa.compare.OACompare;
 import com.viaoa.compare.match.OAMatchNull;
 import com.viaoa.config.OAProperties;
 import com.viaoa.converter.OAConv;
-import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.OAGraph;
 import com.viaoa.graph.service.hub.HubStatusService;
 import com.viaoa.graph.sibling.OASiblingHelper;
 import com.viaoa.hub.Hub;
@@ -688,8 +688,8 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 	}
 
 	
-	public OAGraphInternal getGraph() {
-		return (OAGraphInternal) OARuntime.graph(hub);
+	public OAGraph getGraph() {
+		return OARuntime.graph(hub);
 	}
 	
 	/**

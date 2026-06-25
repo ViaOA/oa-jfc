@@ -19,7 +19,7 @@ import java.net.URLConnection;
 import java.util.logging.Logger;
 
 import com.viaoa.converter.OAConv;
-import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.OAGraph;
 import com.viaoa.image.OAImageUtil;
 import com.viaoa.lang.OAString;
 import com.viaoa.object.OAObject;
@@ -99,7 +99,7 @@ public class Handler extends com.viaoa.jfc.editor.html.protocol.classpath.Handle
 		LOG.fine("getting image, class=" + className + ", property=" + propName + ", id=" + id);
 
 		OAObject obj;
-    	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(c);
+    	OAGraph og =  OARuntime.graph(c);
 		
 		obj = (OAObject) og.internal().objects().cache().getObject(c, id);
 		if (obj == null) {

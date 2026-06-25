@@ -72,7 +72,7 @@ import com.viaoa.lang.OAString;
 import com.viaoa.lang.oa.VString;
 import com.viaoa.find.OAFinder;
 import com.viaoa.graph.OAGraph;
-import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.OAGraph;
 import com.viaoa.metadata.*;
 import com.viaoa.object.OAObject;
 import com.viaoa.path.OAPath;
@@ -523,11 +523,11 @@ public class OAJfcController extends HubListenerAdapter {
 	private Class fromParentClass;
 	private String fromParentPropertyPath;
 
-	public OAGraphInternal getGraph() {
+	public OAGraph getGraph() {
 		Class<?> c = null;
 		if (hub != null) c = hub.getObjectClass();
 		if (c == null && hubObject != null) c = hubObject.getClass();
-		return (OAGraphInternal) OARuntime.graph(c);
+		return OARuntime.graph(c);
 	}
 	
 	protected Object getRealObject(Object fromObject) {

@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.Hub;
 import com.viaoa.image.OAImageUtil;
 import com.viaoa.jfc.editor.html.OAHTMLTextPane;
@@ -149,13 +149,13 @@ public class Hub2ImageHandler implements ImageHandlerInterface {
 
 		OAObject objNew;
 		if (OAString.isEmpty(propertyPathToImageObject)) {
-        	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(hub);
+        	OAGraph og =  OARuntime.graph(hub);
 			objNew = og.internal().objects().reflect().createNewObject(hub.getObjectClass());
 			hub.add(objNew);
 		} else {
 			OAPath pp = new OAPath(hub.getObjectClass(), propertyPathToImageObject);
 			OALinkInfo li = pp.getEndLinkInfo();
-        	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(li.getToClass());
+        	OAGraph og =  OARuntime.graph(li.getToClass());
 			objNew = og.internal().objects().reflect().createNewObject(li.getToClass());
 
 			OAObject objAo = hub.getAO();

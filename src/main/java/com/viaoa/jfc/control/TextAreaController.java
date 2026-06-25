@@ -27,7 +27,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
 import com.viaoa.converter.OAConv;
-import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.OAPlainDocument;
@@ -306,7 +306,7 @@ public class TextAreaController extends OAJfcController implements FocusListener
 				// OAReflect.setPropertyValue(activeObject, getSetMethod(), convertedValue);
 				if (text == null || text.length() == 0) {
 					if (OAReflect.isNumber(endPropertyClass) && activeObject instanceof OAObject) {
-	                	OAGraphInternal og = (OAGraphInternal) OARuntime.graph((OAObject) activeObject);
+	                	OAGraph og =  OARuntime.graph((OAObject) activeObject);
 	                	og.internal().objects().reflect().setProperty((OAObject) activeObject, endPropertyName, null, null); // was: setNull(prop)
 					}
 				}

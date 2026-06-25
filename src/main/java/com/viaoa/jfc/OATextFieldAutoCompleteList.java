@@ -26,7 +26,7 @@ import com.viaoa.jfc.table.*;
 import com.viaoa.object.OAObject;
 import com.viaoa.runtime.OARuntime;
 import com.viaoa.converter.OAConv;
-import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.OAGraph;
 
 public abstract class OATextFieldAutoCompleteList extends JTextField implements OATableComponent {
     OATable table;
@@ -49,10 +49,10 @@ public abstract class OATextFieldAutoCompleteList extends JTextField implements 
         setup();
     }
     
-	public OAGraphInternal getGraph() {
+	public OAGraph getGraph() {
 		Class<?> c = null;
 		if (hub != null) c = hub.getObjectClass();
-		return (OAGraphInternal) OARuntime.graph(c);
+		return OARuntime.graph(c);
 	}
     
     protected void setup() {

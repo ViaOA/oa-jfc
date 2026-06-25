@@ -65,7 +65,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.viaoa.find.OAFinder;
-import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.Hub;
 import com.viaoa.jfc.control.Hub2TreeNode;
 import com.viaoa.jfc.dnd.OATransferable;
@@ -783,11 +783,11 @@ public class OATree extends JTree implements TreeExpansionListener, TreeSelectio
 		}
 	}
 
-	public OAGraphInternal getGraph(Hub hub) {
-		return (OAGraphInternal) OARuntime.graph(hub);
+	public OAGraph getGraph(Hub hub) {
+		return OARuntime.graph(hub);
 	}
-	public OAGraphInternal getGraph(OAObject obj) {
-		return (OAGraphInternal) OARuntime.graph(obj);
+	public OAGraph getGraph(OAObject obj) {
+		return OARuntime.graph(obj);
 	}
 	
 	/** Drag and Drop support. */

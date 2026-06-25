@@ -41,7 +41,7 @@ import javax.swing.UIManager;
 
 import com.viaoa.converter.OAConv;
 import com.viaoa.converter.OAConverter;
-import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubEvent;
 import com.viaoa.hub.HubListener;
@@ -558,14 +558,14 @@ public class OATreeNode implements Cloneable {
 		}
 	}
 
-	public OAGraphInternal getGraph(Hub hub) {
-		return (OAGraphInternal) OARuntime.graph(hub);
+	public OAGraph getGraph(Hub hub) {
+		return OARuntime.graph(hub);
 	}
-	public OAGraphInternal getGraph(OAObject obj) {
-		return (OAGraphInternal) OARuntime.graph(obj);
+	public OAGraph getGraph(OAObject obj) {
+		return OARuntime.graph(obj);
 	}
-	public OAGraphInternal getGraph(Class c) {
-		return (OAGraphInternal) OARuntime.graph(c);
+	public OAGraph getGraph(Class c) {
+		return OARuntime.graph(c);
 	}
 	
 	/**

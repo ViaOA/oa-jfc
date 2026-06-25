@@ -21,7 +21,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import com.viaoa.converter.OAConv;
-import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubEvent;
 import com.viaoa.hub.HubListener;
@@ -375,7 +375,7 @@ public class OATableColumn {
 		// changed so that it will only change the path when the component hub
 		//    is linked back to the table.hub
 		if (oaComp != null && oaComp.getHub() != null && !bIsAlreadyExpanded) {
-	    	final OAGraphInternal og = (OAGraphInternal) OARuntime.graph(oaComp.getHub());
+	    	final OAGraph og =  OARuntime.graph(oaComp.getHub());
 			bLinkOnPos = og.internal().hubs().link().getLinkedOnPos(oaComp.getHub(), true);
 			path = origPath;
 			if (!bIsAlreadyExpanded) {

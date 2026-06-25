@@ -15,7 +15,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.*;
 import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.lang.OAString;
@@ -170,7 +170,7 @@ public class ListController extends OAJfcController implements ListSelectionList
                 int pos = h.getPos();
                 if (ho != null && pos > 0) {
                     h.move(pos,pos-1);
-                	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(ho);
+                	OAGraph og =  OARuntime.graph(ho);
                     og.internal().hubs().ao().setActiveObjectForce(h, ho);
                 }
             }
@@ -183,7 +183,7 @@ public class ListController extends OAJfcController implements ListSelectionList
                 int pos = h.getPos();
                 if (ho != null && pos+1 != h.getSize()) {
                     h.move(pos,pos+1);
-                	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(ho);
+                	OAGraph og =  OARuntime.graph(ho);
                     og.internal().hubs().ao().setActiveObjectForce(h, ho);
                 }
             }
@@ -208,7 +208,7 @@ public class ListController extends OAJfcController implements ListSelectionList
                 if (hub == null) return;
                 Class<? extends OAObject> c = hub.getObjectClass();
                 if (c == null) return;
-            	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(c);
+            	OAGraph og =  OARuntime.graph(c);
                 OAObject obj = og.internal().objects().reflect().createNewObject(c);
 
                 int pos = hub.getPos();

@@ -19,7 +19,7 @@ import javax.swing.text.*;
 import javax.swing.text.html.*;
 
 import com.viaoa.converter.OAConv;
-import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.*;
 import com.viaoa.hub.detail.DetailHub;
 import com.viaoa.jfc.editor.html.*;

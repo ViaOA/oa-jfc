@@ -18,7 +18,7 @@ import javax.swing.tree.TreePath;
 
 import com.viaoa.object.*;
 import com.viaoa.runtime.OARuntime;
-import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.*;
 import com.viaoa.hub.filter.HubFilter;
 import com.viaoa.jfc.*;
@@ -257,7 +257,7 @@ public class Hub2TreeNode extends HubListenerAdapter {
             if (OAArray.contains(tns, node)) hubUpdate = hub;
         }
         
-    	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(hubUpdate);;
+    	OAGraph og =  OARuntime.graph(hubUpdate);;
         
         if (hubUpdate != null && (og.internal().hubs().share().isUsingSameSharedHub(hubUpdate, hub)) ) {
             if (node.getTree().isSelectingNode()) return; // OATree.valueChanged() in process

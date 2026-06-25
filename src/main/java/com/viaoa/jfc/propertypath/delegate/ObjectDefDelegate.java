@@ -10,7 +10,7 @@
 */
 package com.viaoa.jfc.propertypath.delegate;
 
-import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.OAGraph;
 import com.viaoa.hub.Hub;
 import com.viaoa.jfc.propertypath.model.oa.*;
 import com.viaoa.lang.OAString;
@@ -42,7 +42,7 @@ public class ObjectDefDelegate {
             return od;
         }
         
-    	OAGraphInternal og = (OAGraphInternal) OARuntime.graph(rootClass);
+    	OAGraph og =  OARuntime.graph(rootClass);
         OAObjectInfo oi = og.internal().objects().info().getObjectInfo(rootClass);
         od = new ObjectDef();
         od.setObjectClass(rootClass);

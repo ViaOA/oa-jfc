@@ -59,7 +59,7 @@ import com.viaoa.runtime.OARuntime;
 import com.viaoa.schedule.OAScheduler;
 import com.viaoa.select.OASelect;
 import com.viaoa.datetime.*;
-import com.viaoa.graph.api.internal.OAGraphInternal;
+import com.viaoa.graph.OAGraph;
 import com.viaoa.lang.OAString;
 import com.viaoa.lang.oa.VDate;
 
