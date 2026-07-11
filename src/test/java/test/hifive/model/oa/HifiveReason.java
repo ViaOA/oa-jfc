@@ -15,7 +15,7 @@ import com.viaoa.annotation.*;
     shortName = "hr",
     displayName = "Hi5 Reason",
     displayProperty = "name",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Company]."+Company.P_Programs+"."+Program.P_HifiveReasons
     }
 )

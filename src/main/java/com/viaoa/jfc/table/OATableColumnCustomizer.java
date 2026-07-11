@@ -88,7 +88,7 @@ public class OATableColumnCustomizer {
         
         if (pathBetweenHubs == null) {
         	OA oa =  OARuntime.oa(hx);
-            pathBetweenHubs = oa.internal().objects().reflect().getPropertyPathBetweenHubs(hx, hubLocal);
+            pathBetweenHubs = oa.internal().objects().reflect().getPathBetweenHubs(hx, hubLocal);
             if (pathBetweenHubs == null) return obj;
         }
         Object objx = ((OAObject) obj).getProperty(pathBetweenHubs);

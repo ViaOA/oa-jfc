@@ -19,7 +19,7 @@ import test.hifive.model.oa.propertypath.*;
     displayName = "Program Document",
     description = "The CEO/President letter introducing the program.",
     displayProperty = "name",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Company]."+Company.P_Programs+"."+Program.P_AnnouncementDocument, 
         "[Company]."+Company.P_Programs+"."+Program.P_BlogDocuments
     }

@@ -25,7 +25,7 @@ import test.xice.tsam.model.oa.propertypath.*;
     shortName = "sil",
     displayName = "Silo",
     displayProperty = "siloType",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Site]."+Site.P_Environments+"."+Environment.P_Silos
     }
 )

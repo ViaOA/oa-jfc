@@ -16,7 +16,7 @@ import com.viaoa.annotation.*;
     displayName = "Server Group",
     displayProperty = "name",
     sortProperty = "seq",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Site]."+Site.P_Environments+"."+Environment.P_Silos+"."+Silo.P_ServerGroups
     }
 )

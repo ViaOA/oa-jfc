@@ -15,7 +15,7 @@ import com.viaoa.annotation.*;
     shortName = "pi",
     displayName = "Page Info",
     displayProperty = "code",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Page]."+Page.P_PageInfos
     }
 )

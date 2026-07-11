@@ -17,7 +17,7 @@ import test.hifive.model.oa.propertypath.*;
     displayProperty = "name",
     sortProperty = "name",
     filterClasses = {ProgramActiveFilter.class},
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Company]."+Company.P_Programs
     }
 )

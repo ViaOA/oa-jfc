@@ -15,7 +15,7 @@ import test.hifive.model.oa.propertypath.*;
     shortName = "loc",
     displayName = "Location",
     displayProperty = "code",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Company]."+Company.P_Programs+"."+Program.P_Locations
     }
 )

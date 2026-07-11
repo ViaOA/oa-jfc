@@ -15,7 +15,7 @@ import com.viaoa.annotation.*;
     shortName = "env",
     displayName = "Environment",
     displayProperty = "name",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Site]."+Site.P_Environments
     }
 )

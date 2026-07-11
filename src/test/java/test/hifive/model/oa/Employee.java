@@ -39,7 +39,7 @@ import test.hifive.model.oa.filter.EmployeeNextAnniverseriesFilter;
 import test.hifive.model.oa.filter.EmployeeNextBirthdaysFilter;
 
 @OAClass(shortName = "emp", displayName = "Employee", displayProperty = "firstLastName", sortProperty = "lastName", filterClasses = {
-		EmployeeNextAnniverseriesFilter.class, EmployeeNextBirthdaysFilter.class }, rootTreePropertyPaths = {
+		EmployeeNextAnniverseriesFilter.class, EmployeeNextBirthdaysFilter.class }, rootTreePaths = {
 				"[Company]." + Company.P_Programs + "." + Program.P_Locations + "." + Location.P_Employees
 		})
 @OATable(indexes = {

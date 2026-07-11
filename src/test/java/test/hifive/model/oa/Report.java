@@ -16,7 +16,7 @@ import test.hifive.model.oa.propertypath.*;
     displayName = "Report",
     displayProperty = "name",
     sortProperty = "name",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[ReportClass]."+ReportClass.P_Reports
     }
 )

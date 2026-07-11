@@ -17,7 +17,7 @@ import test.hifive.model.oa.propertypath.*;
     isLookup = true,
     isPreSelect = true,
     displayProperty = "name",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Company]."+Company.P_Programs+"."+Program.P_Ecards, 
         "[EcardCategory]."+EcardCategory.P_Ecards
     }

@@ -19,7 +19,7 @@ import com.viaoa.annotation.*;
     displayName = "Hi5 Quality",
     description = "list of qualities that a user has checked when nominating a Hi5 winner.",
     displayProperty = "name",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Company]."+Company.P_Programs+"."+Program.P_HifiveQualities
     }
 )

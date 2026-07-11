@@ -15,7 +15,7 @@ import com.viaoa.annotation.*;
     shortName = "sil",
     displayName = "Silo",
     displayProperty = "siloType",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Site]."+Site.P_Environments+"."+Environment.P_Silos
     }
 )

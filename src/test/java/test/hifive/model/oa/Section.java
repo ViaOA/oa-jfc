@@ -15,7 +15,7 @@ import com.viaoa.annotation.*;
     shortName = "sec",
     displayName = "Section",
     displayProperty = "name",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Catalog]."+Catalog.P_Sections
     }
 )

@@ -17,7 +17,7 @@ import test.xice.tsac.model.oa.propertypath.*;
     displayName = "Server",
     displayProperty = "displayName",
     sortProperty = "displayName",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Site]."+Site.P_Environments+"."+Environment.P_Silos+"."+Silo.P_Servers
     }
 )

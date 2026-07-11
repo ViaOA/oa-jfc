@@ -16,7 +16,7 @@ import test.hifive.model.oa.propertypath.*;
     displayName = "Merchant",
     displayProperty = "name",
     sortProperty = "name",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[MerchantCategory]."+MerchantCategory.P_Merchants
     }
 )

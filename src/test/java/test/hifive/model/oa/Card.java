@@ -16,7 +16,7 @@ import test.hifive.model.oa.propertypath.*;
     displayName = "Card",
     displayProperty = "name",
     filterClasses = {CardDigitalOnlyFilter.class},
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[CardVendor]."+CardVendor.P_Cards, 
         "[MerchantCategory]."+MerchantCategory.P_Merchants+"."+Merchant.P_Cards, 
         "[Company]."+Company.P_Programs+"."+Program.P_Cards

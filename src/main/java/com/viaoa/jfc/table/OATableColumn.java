@@ -379,7 +379,7 @@ public class OATableColumn {
 			bLinkOnPos = oa.internal().hubs().link().getLinkedOnPos(oaComp.getHub(), true);
 			path = origPath;
 			if (!bIsAlreadyExpanded) {
-				pathBetweenHubs = oa.internal().objects().reflect().getPropertyPathBetweenHubs(hubTable, oaComp.getHub());
+				pathBetweenHubs = oa.internal().objects().reflect().getPathBetweenHubs(hubTable, oaComp.getHub());
 				betweenHubPropertyPathCount = OAString.dcount(pathBetweenHubs, ".");
 
 				// adjust the number of properties to get from table hub to "base" hub for this column

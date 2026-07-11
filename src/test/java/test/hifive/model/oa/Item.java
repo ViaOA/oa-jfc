@@ -16,7 +16,7 @@ import test.hifive.model.oa.propertypath.*;
     displayName = "Item",
     displayProperty = "name",
     filterClasses = {ItemHifiveApprovedFilter.class, ItemHelpingHandsFilter.class},
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Catalog]."+Catalog.P_Sections+"."+Section.P_Items, 
         "[ItemCategory]."+ItemCategory.P_Items, 
         "[ItemVendor]."+ItemVendor.P_Items

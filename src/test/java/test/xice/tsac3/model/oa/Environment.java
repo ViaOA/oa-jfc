@@ -15,7 +15,7 @@ import test.xice.tsac3.model.oa.propertypath.*;
     shortName = "env",
     displayName = "Environment",
     displayProperty = "name",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Site]."+Site.P_Environments
     }
 )

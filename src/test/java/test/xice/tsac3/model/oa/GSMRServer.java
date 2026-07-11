@@ -18,7 +18,7 @@ import java.util.*;
     shortName = "gsmrs",
     displayName = "GSMRServer",
     displayProperty = "server",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Site]."+Site.P_Environments+"."+Environment.P_Silos+"."+Silo.P_GSMRServers
     }
 )

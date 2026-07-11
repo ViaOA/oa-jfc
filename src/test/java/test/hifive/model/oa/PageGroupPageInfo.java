@@ -15,7 +15,7 @@ import test.hifive.model.oa.propertypath.*;
     shortName = "pgpi",
     displayName = "Page Group Page Info",
     displayProperty = "pageInfo.code",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[PageGroup]."+PageGroup.P_PageGroupPageInfos
     }
 )

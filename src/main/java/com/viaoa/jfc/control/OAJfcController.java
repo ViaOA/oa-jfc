@@ -304,8 +304,8 @@ public class OAJfcController extends HubListenerAdapter {
 		if (oaPropertyPath.getEndLinkInfo() != null && properties != null && properties.length == 1) {
 			OAOne oaOne = oaPropertyPath.getOAOneAnnotation();
 			if (oaOne != null) {
-				if (OAString.isNotEmpty(oaOne.defaultPropertyPath())) {
-					if (!oaOne.defaultPropertyPathCanBeChanged()) {
+				if (OAString.isNotEmpty(oaOne.defaultPath())) {
+					if (!oaOne.defaultPathCanBeChanged()) {
 						getEnabledChangeListener().addPropertyNull(hub, properties[0]);
 					}
 				}
@@ -338,10 +338,10 @@ public class OAJfcController extends HubListenerAdapter {
 						addEnabledObjectCallbackCheck(hub, prop);
 						addVisibleObjectCallbackCheck(hub, prop);
 					} else {
-						getOA().services().objects().callbacks().addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getEnabledChangeListener(), true);
+						getOA().internal().objects().rules().addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getEnabledChangeListener(), true);
 						//was: OAObjectCallbackDelegate.addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getEnabledChangeListener(), true);
 						
-						getOA().services().objects().callbacks().addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getVisibleChangeListener(), false);
+						getOA().internal().objects().rules().addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getVisibleChangeListener(), false);
 						//was: OAObjectCallbackDelegate.addObjectCallbackChangeListeners(hub, cz, prop, ppPrefix, getVisibleChangeListener(), false);
 					}
 					ppPrefix += prop + ".";
@@ -546,7 +546,7 @@ public class OAJfcController extends HubListenerAdapter {
 
 		if (fromParentClass == null || !fromParentClass.equals(fromObject.getClass())) {
 			fromParentClass = fromObject.getClass();
-			fromParentPropertyPath = getOA().services().objects().reflect().getPropertyPathFromMaster((OAObject) fromObject, getHub());
+			fromParentPropertyPath = getOA().services().objects().reflect().getPathFromMaster((OAObject) fromObject, getHub());
 			// was: fromParentPropertyPath = OAObjectReflectDelegate.getPropertyPathFromMaster((OAObject) fromObject, getHub());
 		}
 		return getOA().services().objects().reflect().getProperty((OAObject) fromObject, fromParentPropertyPath);
@@ -672,7 +672,7 @@ public class OAJfcController extends HubListenerAdapter {
 				}
 			}
 			if (objx instanceof OAObject) {
-				OAObjectCallback em = getOA().internal().objects().callbacks().getConfirmPropertyChangeObjectCallback((OAObject) objx, prop, newValue, confirmMessage, confirmTitle);
+				OAObjectCallback em = getOA().internal().objects().rules().getConfirmPropertyChangeObjectCallback((OAObject) objx, prop, newValue, confirmMessage, confirmTitle);
 				//was: OAObjectCallback em = OAObjectCallbackDelegate.getConfirmPropertyChangeObjectCallback((OAObject) objx, prop, newValue, confirmMessage, confirmTitle);
 				confirmMessage = em.getConfirmMessage();
 				confirmTitle = em.getConfirmTitle();
@@ -741,7 +741,7 @@ public class OAJfcController extends HubListenerAdapter {
 
 		OAObject oaObj = (OAObject) obj;
 		
-		OAObjectCallback em = getOA().internal().objects().callbacks().getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, oaObj, linkPropertyName, null, objNew);
+		OAObjectCallback em = getOA().internal().objects().rules().getVerifyPropertyChangeObjectCallback(oaObj, linkPropertyName, null, objNew);
 		//was: OAObjectCallback em = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, oaObj, linkPropertyName, null, objNew);
 
 		String result = null;
@@ -827,7 +827,7 @@ public class OAJfcController extends HubListenerAdapter {
 		}
 		String result = null;
 		if (objx instanceof OAObject) {
-			OAObjectCallback em = getOA().internal().objects().callbacks().getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) objx, prop, null, newValue);
+			OAObjectCallback em = getOA().internal().objects().rules().getVerifyPropertyChangeObjectCallback((OAObject) objx, prop, null, newValue);
 			//was: OAObjectCallback em = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) objx, prop, null, newValue);
 			if (!em.getAllowed()) {
 				result = em.getResponse();
@@ -882,7 +882,7 @@ public class OAJfcController extends HubListenerAdapter {
 					objx = oaPropertyPath.getLastLinkValue((OAObject) objx);
 				}
 				if (objx instanceof OAObject) {
-					return getOA().internal().objects().callbacks().getFormat((OAObject) objx, endPropertyName, defaultFormat);
+					return getOA().internal().objects().rules().getFormat((OAObject) objx, endPropertyName, defaultFormat);
 					//was: return OAObjectCallbackDelegate.getFormat((OAObject) objx, endPropertyName, defaultFormat);
 				}
 			}
@@ -1522,7 +1522,7 @@ public class OAJfcController extends HubListenerAdapter {
 			String s = bUseLinkHub ? linkPropertyName : propertyPath;
 
 			OACallbackLabel lblx = createCallbackLabel(lbl);
-			getOA().services().objects().callbacks().updateLabel(oaobj, s, lblx);
+			getOA().internal().objects().rules().updateLabel(oaobj, s, lblx);
 			//was: OAObjectCallbackDelegate.updateLabel(oaobj, s, lbl);
 		}
 	}
@@ -1759,7 +1759,7 @@ public class OAJfcController extends HubListenerAdapter {
 							}
 							if (objx instanceof OAObject) {
 								OACallbackLabel lblx = createCallbackLabel(lblThis);
-								getOA().services().objects().callbacks().renderLabel((OAObject) objx, endPropertyName, lblx);
+								getOA().internal().objects().rules().renderLabel((OAObject) objx, endPropertyName, lblx);
 								//was: OAObjectCallbackDelegate.renderLabel((OAObject) objx, endPropertyName, lblThis);
 							}
 						}
@@ -2366,7 +2366,7 @@ public class OAJfcController extends HubListenerAdapter {
 				objx = oaPropertyPath.getLastLinkValue((OAObject) objx);
 			}
 			if (objx instanceof OAObject) {
-				ttDefault = getOA().internal().objects().callbacks().getToolTip((OAObject) objx, endPropertyName, ttDefault);
+				ttDefault = getOA().internal().objects().rules().getToolTip((OAObject) objx, endPropertyName, ttDefault);
 				//was: ttDefault = OAObjectCallbackDelegate.getToolTip((OAObject) objx, endPropertyName, ttDefault);
 			}
 		} else {
@@ -2588,7 +2588,7 @@ public class OAJfcController extends HubListenerAdapter {
 					if (hpx.hubListener == null) {
 						continue;
 					}
-					if (!OAString.equals(prop, hpx.propertyPath)) {
+					if (!OAString.equals(prop, hpx.path)) {
 						continue;
 					}
 					hp = hpx;
@@ -2672,19 +2672,19 @@ public class OAJfcController extends HubListenerAdapter {
 
 		protected boolean _assignHubListener(HubProp newHubProp) {
 			if (OAJfcController.this.hub == newHubProp.hub) {
-				if (newHubProp.propertyPath == null) {
+				if (newHubProp.path == null) {
 					return true;
 				}
-				if (newHubProp.propertyPath.indexOf('.') < 0) {
-					if (newHubProp.hub.getOAObjectInfo().getCalcInfo(newHubProp.propertyPath) == null) {
+				if (newHubProp.path.indexOf('.') < 0) {
+					if (newHubProp.hub.getOAObjectInfo().getCalcInfo(newHubProp.path) == null) {
 						// 20221011
-						OALinkInfo lix = newHubProp.hub.getOAObjectInfo().getLinkInfo(newHubProp.propertyPath);
+						OALinkInfo lix = newHubProp.hub.getOAObjectInfo().getLinkInfo(newHubProp.path);
 						if (lix == null || lix.getType() == OALinkInfo.ONE) {
 							return true;
 						}
 					}
 				}
-				if (newHubProp.propertyPath.equalsIgnoreCase(OAJfcController.this.propertyPath)) {
+				if (newHubProp.path.equalsIgnoreCase(OAJfcController.this.propertyPath)) {
 					return true;
 				}
 			}
@@ -2693,7 +2693,7 @@ public class OAJfcController extends HubListenerAdapter {
 			if (h != null) {
 				h = h.getLinkHub(true);
 				if (h != null && h == newHubProp.hub) {
-					if (newHubProp.propertyPath == null) {
+					if (newHubProp.path == null) {
 						return true;
 					}
 				}
@@ -2714,17 +2714,17 @@ public class OAJfcController extends HubListenerAdapter {
 					if (hp.hubListener == null) {
 						continue;
 					}
-					if (newHubProp.propertyPath == null) {
+					if (newHubProp.path == null) {
 						newHubProp.hubListener = hp.hubListener;
 						return true;
 					}
-					if (newHubProp.propertyPath.indexOf('.') < 0) {
-						if (newHubProp.hub != null && newHubProp.hub.getOAObjectInfo().getCalcInfo(newHubProp.propertyPath) == null) {
+					if (newHubProp.path.indexOf('.') < 0) {
+						if (newHubProp.hub != null && newHubProp.hub.getOAObjectInfo().getCalcInfo(newHubProp.path) == null) {
 							newHubProp.hubListener = hp.hubListener;
 							return true;
 						}
 					}
-					if (!newHubProp.propertyPath.equalsIgnoreCase(hp.propertyPath)) {
+					if (!newHubProp.path.equalsIgnoreCase(hp.path)) {
 						continue;
 					}
 					newHubProp.hubListener = hp.hubListener;

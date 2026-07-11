@@ -15,7 +15,7 @@ import test.hifive.model.oa.propertypath.*;
     shortName = "pf",
     displayName = "Program Faq",
     displayProperty = "created",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Company]."+Company.P_Programs+"."+Program.P_ProgramFaqs
     }
 )

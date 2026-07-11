@@ -403,7 +403,7 @@ public class CutCopyPasteController {
                 obj = getClipboardObject(false);
                 if (obj != null) {
                 	OA oa =  OARuntime.oa(obj);
-                    obj = oa.internal().objects().callbacks().getCopy(obj);
+                    obj = oa.internal().objects().rules().getCopy(obj);
                 }
             }
             if (obj != null) {

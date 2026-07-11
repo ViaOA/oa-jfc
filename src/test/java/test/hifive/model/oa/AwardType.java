@@ -15,7 +15,7 @@ import com.viaoa.annotation.*;
     shortName = "at",
     displayName = "Award Type",
     displayProperty = "name",
-    rootTreePropertyPaths = {
+    rootTreePaths = {
         "[Company]."+Company.P_Programs+"."+Program.P_AwardTypes, 
         "[Company]."+Company.P_Programs+"."+Program.P_Locations+"."+Location.P_AwardTypes
     }
