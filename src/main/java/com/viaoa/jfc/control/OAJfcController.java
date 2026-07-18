@@ -68,6 +68,7 @@ import com.viaoa.jfc.OAResizePanel;
 import com.viaoa.jfc.OATable;
 import com.viaoa.jfc.converter.*;
 import com.viaoa.jfc.table.OATableComponent;
+import com.viaoa.lang.OAStr;
 import com.viaoa.lang.OAString;
 import com.viaoa.lang.oa.VString;
 import com.viaoa.find.OAFinder;
@@ -521,6 +522,7 @@ public class OAJfcController extends HubListenerAdapter {
 	 */
 	private Class fromParentClass;
 	private String fromParentPropertyPath;
+	private String linkFromProperty;
 
 	public OA getOA() {
 		Class<?> c = null;
@@ -547,10 +549,13 @@ public class OAJfcController extends HubListenerAdapter {
 		if (fromParentClass == null || !fromParentClass.equals(fromObject.getClass())) {
 			fromParentClass = fromObject.getClass();
 			fromParentPropertyPath = getOA().services().objects().reflect().getPathFromMaster((OAObject) fromObject, getHub());
-			// was: fromParentPropertyPath = OAObjectReflectDelegate.getPropertyPathFromMaster((OAObject) fromObject, getHub());
+			linkFromProperty = OARuntime.oa().internal().hubs().link().getLinkFromProperty(getHub());
 		}
-		return getOA().services().objects().reflect().getProperty((OAObject) fromObject, fromParentPropertyPath);
-		// was: return OAObjectReflectDelegate.getProperty((OAObject) fromObject, fromParentPropertyPath);
+		Object obj = getOA().services().objects().reflect().getProperty((OAObject) fromObject, fromParentPropertyPath);
+
+		if (OAStr.isEmpty(linkFromProperty)) return obj;
+		Object objx = getHub().find(linkFromProperty, obj);
+		return objx;
 	}
 
 	public Object getValue(Object obj) {

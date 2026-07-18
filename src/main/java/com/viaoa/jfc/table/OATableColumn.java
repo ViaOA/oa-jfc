@@ -27,6 +27,7 @@ import com.viaoa.hub.HubListener;
 import com.viaoa.hub.HubListenerAdapter;
 import com.viaoa.jfc.OAJfcComponent;
 import com.viaoa.jfc.OATable;
+import com.viaoa.lang.OAStr;
 import com.viaoa.lang.OAString;
 import com.viaoa.oa.OA;
 import com.viaoa.object.OAObject;
@@ -50,6 +51,8 @@ public class OATableColumn {
 	private TableCellEditor comp;
 	TableCellRenderer renderer;
 	boolean bLinkOnPos;
+	boolean bLinkUsesFromProperty;
+	boolean bUsesLinkFromProperty;
 	OATable table;
 	//    HubMerger hubMerger;
 	Hub hubCombined;
@@ -226,7 +229,8 @@ public class OATableColumn {
 			} else {
 				// obj = "Invalid";
 			}
-		} else if ((path == null || path.length() == 0) && table.getSelectHub() != null) {
+		}
+		else if ((path == null || path.length() == 0) && table.getSelectHub() != null) {
 			// see if it is in the select hub
 			Hub h = table.getSelectHub();
 			obj = h.contains(obj);
@@ -377,7 +381,18 @@ public class OATableColumn {
 		if (oaComp != null && oaComp.getHub() != null && !bIsAlreadyExpanded) {
 	    	final OA oa =  OARuntime.oa(oaComp.getHub());
 			bLinkOnPos = oa.internal().hubs().link().getLinkedOnPos(oaComp.getHub(), true);
+			bUsesLinkFromProperty = OAStr.isNotEmpty(oa.internal().hubs().link().getLinkFromProperty(oaComp.getHub()));
+			bLinkUsesFromProperty = OAString.isNotEmpty(oa.internal().hubs().link().getLinkFromProperty(oaComp.getHub()));
 			path = origPath;
+			
+			if (bLinkUsesFromProperty) {
+				path = "";
+int xx=0;
+xx++;
+			}
+
+			
+			
 			if (!bIsAlreadyExpanded) {
 				pathBetweenHubs = oa.internal().objects().reflect().getPathBetweenHubs(hubTable, oaComp.getHub());
 				betweenHubPropertyPathCount = OAString.dcount(pathBetweenHubs, ".");
@@ -394,7 +409,7 @@ public class OATableColumn {
 
 				if (!bLinkOnPos) {
 					if (pathBetweenHubs != null) {
-						if (path == null) {
+						if (OAStr.isEmpty(path)) {
 							path = pathBetweenHubs;
 						} else {
 							path = pathBetweenHubs + "." + path;
@@ -432,11 +447,15 @@ public class OATableColumn {
 		} else {
 			OAPath opp = new OAPath(path);
 			try {
-				//qqqqqqqqqqqqqqqqqqqqqqqqqq
 				opp.setup(null, hubTable.getObjectClass(), oaComp.getHub().getObjectClass(), false);
 			} catch (Exception e) {
 				LOG.log(Level.WARNING, String.format("could not parse propertyPath=%s, hub=%s, will use prop=id", path, hubTable), e);
 				path = "id";
+			}
+			if (bLinkUsesFromProperty) {
+//qqqqqqqqqqqqqqq
+				int xx = 4;
+				xx++;
 			}
 			methods = OAReflect.getMethods(hubTable.getObjectClass(), path, oaComp.getHub().getObjectClass(), true);
 		}
@@ -487,10 +506,10 @@ public class OATableColumn {
 
 		
         // see if methodName"Display" exists
+/*qqqqqqq 20260714		
 		methodsAsString = null;
 		if (methods != null && methods.length > 0) {
 			Method m = methods[methods.length - 1];
-
 			// 20240118 enum prop uses propName+"Display"
             Method mx = OAReflect.getMethod(m.getDeclaringClass(), m.getName() + "Display", 0, null);
 			//was: Method mx = OAReflect.getMethod(m.getDeclaringClass(), m.getName() + "AsString", 0, null);
@@ -500,7 +519,11 @@ public class OATableColumn {
 				methodsAsString[methods.length - 1] = mx;
 			}
 		}
-
+*/
 		return methods;
+	}
+	
+	public boolean isUsingLinkFromProperty() {
+		return bUsesLinkFromProperty;
 	}
 }
