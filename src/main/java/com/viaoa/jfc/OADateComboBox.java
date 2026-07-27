@@ -467,7 +467,7 @@ class DatePopup implements ComboPopup, MouseMotionListener, MouseListener, KeyLi
     	    	else obj = comboBox.getSelectedItem();
                 if (obj instanceof OADateTime) {
                     OADateTime dt = (OADateTime) obj;
-                    calendar.set(dt.getYear(),dt.getMonthValue(),dt.getDayOfMonth());
+                    calendar.set(dt.getYear(),dt.getMonthValue()-1,dt.getDayOfMonth());
                     updatePopup();
                 }
             }
@@ -480,7 +480,7 @@ class DatePopup implements ComboPopup, MouseMotionListener, MouseListener, KeyLi
         cmdToday.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 OADate t = new OADate();
-                calendar.set(t.getYear(),t.getMonthValue(),t.getDayOfMonth());
+                calendar.set(t.getYear(), t.getMonthValue()-1, t.getDayOfMonth());
                 comboBox.setSelectedItem(new OADate(calendar));
                 updatePopup();
             }

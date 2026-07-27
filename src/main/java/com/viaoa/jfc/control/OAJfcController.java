@@ -1714,8 +1714,8 @@ public class OAJfcController extends HubListenerAdapter {
 			}
 		}
 
-		if (lblThis != null && (getPropertyPath() != null || object instanceof String) && !getOA().internal().hubs().link().getLinkedOnPos(hub)) {
-		//was: if (lblThis != null && (getPropertyPath() != null || object instanceof String) && !HubLinkDelegate.getLinkedOnPos(hub)) {
+		if (lblThis != null && (getPropertyPath() != null || object instanceof String)) {
+		//before 4.0: if (lblThis != null && (getPropertyPath() != null || object instanceof String) && !HubLinkDelegate.getLinkedOnPos(hub)) {
 			String text;
 			if (object == null) {
 				text = "";
