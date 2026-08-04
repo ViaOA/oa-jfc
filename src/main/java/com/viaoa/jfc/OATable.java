@@ -839,7 +839,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 		boolean bx = OARuntime.thread().getThreadLocalService().addSiblingHelper(siblingHelper);
 		//was: boolean bx = OAThreadLocalDelegate.addSiblingHelper(siblingHelper);
 		hubViewable.clear();
-		OARuntime.thread().getThreadLocalService().setLoading(true);
+		boolean bWasLoading = OARuntime.thread().getThreadLocalService().setLoading(true);
 		//was: OAThreadLocalDelegate.setLoading(true);
 		try {
 			int x = rowBottom;
@@ -855,7 +855,7 @@ public class OATable extends JTable implements DragGestureListener, DropTargetLi
 				OARuntime.thread().getThreadLocalService().removeSiblingHelper(siblingHelper);
 				//was: OAThreadLocalDelegate.removeSiblingHelper(siblingHelper);
 			}
-			OARuntime.thread().getThreadLocalService().setLoading(false);
+			OARuntime.thread().getThreadLocalService().setLoading(bWasLoading);
 			//was: OAThreadLocalDelegate.setLoading(false);
 			
 			getOA().internal().hubs().events().fireOnNewListEvent(hubViewable, true);
@@ -4685,8 +4685,9 @@ class TableController extends OAJfcController implements ListSelectionListener {
 					bWasEmpty = false;
 				}
 			}
+			boolean bWasLoading = false;
 			if (bWasEmpty) {
-				OARuntime.thread().getThreadLocalService().setLoading(true);
+				bWasLoading = OARuntime.thread().getThreadLocalService().setLoading(true);
 				//was: OAThreadLocalDelegate.setLoading(true);
 			}
 
@@ -4731,7 +4732,7 @@ class TableController extends OAJfcController implements ListSelectionListener {
 				}
 			} finally {
 				if (bWasEmpty) {
-					OARuntime.thread().getThreadLocalService().setLoading(false);
+					OARuntime.thread().getThreadLocalService().setLoading(bWasLoading);
 					//was: OAThreadLocalDelegate.setLoading(false);
 					
 					getOA().internal().hubs().events().fireOnNewListEvent(hubSelect, true);

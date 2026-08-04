@@ -214,15 +214,13 @@ public class OATreeTableController extends OATree implements OATableComponent {
             if (hubTable.size() > 0) return;
         }
         
+        final boolean bWasLoading = OARuntime.thread().getThreadLocalService().setLoading(true);
+        bIgnoreFlag = true;
         try {
-            bIgnoreFlag = true;
-            OARuntime.thread().getThreadLocalService().setLoading(true);
-            //was: OAThreadLocalDelegate.setLoading(true);  // 20171214
             _doRefreshHub();
         }
         finally {
-            OARuntime.thread().getThreadLocalService().setLoading(false);
-            //was: OAThreadLocalDelegate.setLoading(false);
+            OARuntime.thread().getThreadLocalService().setLoading(bWasLoading);
             bIgnoreFlag = false;
         }
     }
@@ -351,14 +349,13 @@ public class OATreeTableController extends OATree implements OATableComponent {
                 @Override
                 public void onNewList(HubEvent e) {
                     hubTable.clear();
+                    
+                    final boolean bWasLoading = OARuntime.thread().getThreadLocalService().setLoading(true);
                     try {
-                        OARuntime.thread().getThreadLocalService().setLoading(true);
-                    	//was: OAThreadLocalDelegate.setLoading(true);
                         refreshHub();
                     }
                     finally {
-                        OARuntime.thread().getThreadLocalService().setLoading(false);
-                        //was: OAThreadLocalDelegate.setLoading(false);
+                        OARuntime.thread().getThreadLocalService().setLoading(bWasLoading);
                     }
                 }
             };        

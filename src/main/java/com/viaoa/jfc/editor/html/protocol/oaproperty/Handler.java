@@ -101,7 +101,7 @@ public class Handler extends com.viaoa.jfc.editor.html.protocol.classpath.Handle
 		OAObject obj;
     	OA oa =  OARuntime.oa(c);
 		
-		obj = (OAObject) oa.internal().objects().cache().getObject(c, id);
+		obj = (OAObject) oa.internal().objects().cache().getUsingKey(c, id);
 		if (obj == null) {
 			OASelect sel = new OASelect(clazz);
 			sel.select("ID = ?", new Object[] { id });

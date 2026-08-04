@@ -514,6 +514,10 @@ public class OAWaitDialog extends JDialog implements ActionListener {
                 catch (Exception e) {
                     // TODO: handle exception
                 }
+                finally {
+                	//qqqqqqqqqqq todo: set to previous process value
+                	OARuntime.thread().getThreadLocalService().setProcess(null);
+                }
             }
         };
         t.start();

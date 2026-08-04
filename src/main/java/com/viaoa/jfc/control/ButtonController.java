@@ -1164,6 +1164,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			}
 		}
 
+//qqqqqqq todo: needs to set as previous, in 'finally' block		
 		OARuntime.thread().getThreadLocalService().setProcess(null);
 		//OAThreadLocalDelegate.setProcess(null);
 		
@@ -1726,16 +1727,17 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			return;
 		}
 
+		boolean bWasLoading = false;
 		try {
 			if (!bAssignId) {
-				OARuntime.thread().getThreadLocalService().setLoading(true);
+				bWasLoading = OARuntime.thread().getThreadLocalService().setLoading(true);
 				//was: OAThreadLocalDelegate.setLoading(true);
 			}
 			obj = getOA().internal().objects().reflect().createNewObject(c);
 			//was: obj = OAObjectReflectDelegate.createNewObject(c);
 		} finally {
 			if (!bAssignId) {
-				OARuntime.thread().getThreadLocalService().setLoading(false);
+				OARuntime.thread().getThreadLocalService().setLoading(bWasLoading);
 				//was: OAThreadLocalDelegate.setLoading(false);
 			}
 		}
@@ -1988,7 +1990,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 						break;
 					}
 
-					flag = bAnyTime || ((OAObject) objx).getChanged();
+					flag = bAnyTime || ((OAObject) objx).getChanged(OAObject.CASCADE_LINK_RULES);
 					if (flag && hub != null && !bAnyTime && ((OAObject) objx).isNew()) {
 						objx = hub.getMasterObject();
 						if (objx instanceof OAObject) {
