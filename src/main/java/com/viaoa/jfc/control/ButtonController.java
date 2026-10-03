@@ -50,6 +50,8 @@ import com.viaoa.callback.OAObjectCallback;
 import com.viaoa.compare.OACompare;
 import com.viaoa.hub.Hub;
 import com.viaoa.hub.HubEvent;
+import com.viaoa.hub.link.HubSelectLink;
+import com.viaoa.hub.link.HubSelectLink.Type;
 import com.viaoa.jfc.OAButton;
 import com.viaoa.jfc.OACommand;
 import com.viaoa.jfc.OAConsole;
@@ -322,10 +324,6 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		processingMessage = msg;
 	}
 
-	public Object getSearchObject() {
-		return null;
-	}
-
 	public boolean beforeActionPerformed() {
 		return true;
 	}
@@ -447,6 +445,29 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				title = eq.getConfirmTitle();
 				break;
 			case Search:
+				break;
+				
+			case Select:
+				HubSelectLink<?,?> hsl = hub.getSelectLink();
+				if (hsl != null) {
+					HubSelectLink.Type type = hsl.getType();
+					if (type == null) type = HubSelectLink.Type.Unknown; 
+
+					OAObject objFrom = null;
+					OAObject objTo = null;
+					if (hsl.getFromAoOnly()) objFrom = hsl.getFromHub().getAO();
+					if (hsl.getToAoOnly()) objTo = hsl.getToHub().getAO();
+					
+					String prop = hsl.getToProperty();
+					if (OAStr.isNotEmpty(prop)) {
+						eq = getOA().internal().objects().rules().getConfirmPropertyChangeObjectCallback((OAObject) objTo, prop, objFrom, msg, title);
+						msg = eq.getConfirmMessage();
+						title = eq.getConfirmTitle();
+					}
+					break; 
+				}
+				
+				/*qqqqqq was:
 				Hub hubx = getOA().services().hubs().link().getHubWithLink(hub, true);
 				//was: Hub hubx = HubLinkDelegate.getHubWithLink(hub, true);
 				String propx = null;
@@ -471,6 +492,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				//was: eq = OAObjectCallbackDelegate.getConfirmPropertyChangeObjectCallback((OAObject) objx, propx, objSearch, msg, title);
 				msg = eq.getConfirmMessage();
 				title = eq.getConfirmTitle();
+				*/
 				break;
 			case Save:
 				for (int i = 0;; i++) {
@@ -630,6 +652,27 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				//was: eq = OAObjectCallbackDelegate.getVerifyAddObjectCallback(getHub(), (OAObject) obj, OAObjectCallback.CHECK_ALL);
 			}
 		case Search:
+			
+			break;
+		case Select:
+			HubSelectLink<?,?> hsl = hub.getSelectLink();
+			if (hsl == null) break; 
+			
+			hsl = hub.getSelectLink();
+			if (hsl != null) {
+				OAObject objFrom = null;
+				OAObject objTo = null;
+				if (hsl.getFromAoOnly()) objFrom = hsl.getFromHub().getAO();
+				if (hsl.getToAoOnly()) objTo = hsl.getToHub().getAO();
+				
+				String prop = hsl.getToProperty();
+				if (OAStr.isNotEmpty(prop)) {
+					eq = getOA().internal().objects().rules().getVerifyPropertyChangeObjectCallback(objTo, prop, null, objFrom);
+				}
+				break;
+			}
+			
+			/* qqqqqqqq was:
 			Hub hubx = getOA().internal().hubs().link().getHubWithLink(hub, true);
 			//was: Hub hubx = HubLinkDelegate.getHubWithLink(hub, true);
 			String propx = null;
@@ -652,6 +695,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 			}
 			eq = getOA().internal().objects().rules().getVerifyPropertyChangeObjectCallback((OAObject) objx, propx, null, obj);
 			//was: eq = OAObjectCallbackDelegate.getVerifyPropertyChangeObjectCallback(OAObjectCallback.CHECK_ALL, (OAObject) objx, propx, null, obj);
+			 */
 			break;
 		}
 
@@ -661,8 +705,6 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		}
 		return eq;
 	}
-
-	private Object objSearch;
 
 	public void actionPerformed(ActionEvent e) {
 		default_actionPerformed(e);
@@ -680,15 +722,6 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		OAObject obj = updateObject;
 		if (obj == null && hub != null) {
 			obj = (OAObject) hub.getAO();
-		}
-
-		if (command != null && command == OAButton.SEARCH) {
-			objSearch = getSearchObject();
-			if (!(objSearch instanceof OAObject)) {
-				objSearch = null;
-				return;
-			}
-			obj = (OAObject) objSearch;
 		}
 
 		String s = isValid(obj, null);
@@ -711,7 +744,6 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		}
 
 		if (!confirmActionPerformed()) {
-			objSearch = null;
 			return;
 		}
 
@@ -748,7 +780,6 @@ public class ButtonController extends OAJfcController implements ActionListener 
 		} catch (Exception ex) {
 			reportActionCompleted(false, ex);
 		} finally {
-			objSearch = null;
 		}
 	}
 
@@ -1545,6 +1576,16 @@ public class ButtonController extends OAJfcController implements ActionListener 
 				}
 				break;
 			case Search:
+				break;
+			case Select:
+//qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq				
+				HubSelectLink<?,?> hsl = hub.getSelectLink();
+				if (hsl != null) {
+					hsl.select();
+					break;
+				}
+
+				/*qqqqqqqqq was:
 				if (objSearch == null) {
 					break;
 				}
@@ -1567,6 +1608,7 @@ public class ButtonController extends OAJfcController implements ActionListener 
 					break;
 				}
 				((OAObject) objx).setProperty(propx, objSearch);
+				*/
 				break;
 
 			case Refresh:

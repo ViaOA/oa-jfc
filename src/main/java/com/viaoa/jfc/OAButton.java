@@ -37,6 +37,7 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableCellEditor;
 
 import com.viaoa.hub.Hub;
+import com.viaoa.hub.link.HubSelectLink;
 import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.hub.listener.HubChangeListener.Type;
 import com.viaoa.jfc.control.ButtonController;
@@ -88,7 +89,8 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 		First(true), Last(true),
 		Next(true), Previous(true), Delete(true), Remove(true), New(true), Insert(true), Add(true),
 		Cut(false), Copy(false), Paste(false),
-		NewManual(true), AddManual(true), ClearAO(true), GoTo(false), HubSearch(true), Search(false), Select(true), ObjectMethod(false),
+		NewManual(true), AddManual(true), ClearAO(true), GoTo(false), HubSearch(true), 
+		Search(false), Select(true), ObjectMethod(false),
 		// call a method on Hub
 		HubMethod(false),
 		WizardNew(true), Ok(false), Refresh(true),
@@ -181,8 +183,6 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 					return bIsCurrentlyEnabled;
 				}
 			};
-		} else if (command == ButtonCommand.Select) {
-			control = new OAButtonController(hub, enabledMode, command, HubChangeListener.Type.AoNotNull, true, false);
 		} else if (command == ButtonCommand.HubSearch) {
 			control = new OAButtonController(hub, enabledMode, command) {
 				@Override
@@ -205,6 +205,12 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 				}
 			};
 		} else if (command == ButtonCommand.Search) {
+//qqqqqqqqqqqqqqqqqqqqqqqqqqqqq			
+			control = new OAButtonController(hub, enabledMode, command, HubChangeListener.Type.HubValid, true, true);
+		} else if (command == ButtonCommand.Select) {
+
+			control = new OAButtonController(hub, ButtonEnabledMode.HubIsValid, command, HubChangeListener.Type.HubValid, false, false);
+			/*qqqqqqqq was:
 			control = new OAButtonController(hub, ButtonEnabledMode.HubIsValid, command, HubChangeListener.Type.HubValid, false, false) {
 				@Override
 				public Object getSearchObject() {
@@ -226,9 +232,18 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 					}
 				}
 			}
-			if (hubx != null && OAString.isNotEmpty(propx)) {
-				control.getEnabledChangeListener().addObjectCallbackEnabled(hubx, propx);
+			*/
+			
+			HubSelectLink<?,?> hsl = hub.getSelectLink();
+			if (hsl != null) {
+				Hub hubx = hsl.getToHub();
+				String propx = hsl.getToProperty();
+				if (hubx != null && OAString.isNotEmpty(propx)) {
+					control.getEnabledChangeListener().addObjectCallbackEnabled(hubx, propx);
+				}
 			}
+			
+			
 		} else if (command == ButtonCommand.Save) {
 			control = new OAButtonController(hub, OAButton.ButtonEnabledMode.HubIsValid, command, HubChangeListener.Type.HubValid, false,
 					false);
@@ -1293,9 +1308,11 @@ public class OAButton extends JButton implements OATableComponent, OAJfcComponen
 	}
 	*/
 
+	/*qqqqqq was:
 	public Object getSearchObject() {
 		return null;
 	}
+	*/
 
 	@Override
 	public String getToolTipText(MouseEvent event) {

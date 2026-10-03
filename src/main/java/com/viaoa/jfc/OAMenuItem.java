@@ -25,6 +25,7 @@ import com.viaoa.hub.Hub;
 import com.viaoa.hub.listener.HubChangeListener;
 import com.viaoa.jfc.OAButton.ButtonCommand;
 import com.viaoa.jfc.OAButton.ButtonEnabledMode;
+import com.viaoa.jfc.OAButton.OAButtonController;
 import com.viaoa.jfc.control.ButtonController;
 import com.viaoa.lang.OAString;
 import com.viaoa.object.OAObject;
@@ -100,8 +101,6 @@ public class OAMenuItem extends JMenuItem implements OAJfcComponent {
 					return bIsCurrentlyEnabled;
 				}
 			};
-		} else if (command == ButtonCommand.Select) {
-			control = new OAMenuItemController(hub, enabledMode, command, HubChangeListener.Type.AoNotNull, true, false);
 		} else if (command == ButtonCommand.HubSearch) {
 			control = new OAMenuItemController(hub, enabledMode, command) {
 				@Override
@@ -123,6 +122,12 @@ public class OAMenuItem extends JMenuItem implements OAJfcComponent {
 				}
 			};
 		} else if (command == ButtonCommand.Search) {
+			control = new OAMenuItemController(hub, enabledMode, command, HubChangeListener.Type.HubValid, true, true);
+		} else if (command == ButtonCommand.Select) {
+			control = new OAMenuItemController(hub, ButtonEnabledMode.HubIsValid, command, HubChangeListener.Type.HubValid, false, false);
+			
+			/*qqqqqqqqq was:
+			
 			control = new OAMenuItemController(hub, enabledMode, command) {
 				@Override
 				protected boolean isEnabled(boolean bIsCurrentlyEnabled) {
@@ -156,6 +161,7 @@ public class OAMenuItem extends JMenuItem implements OAJfcComponent {
 					return OAMenuItem.this.getSearchObject();
 				}
 			};
+			*/
 		} else if (command == ButtonCommand.Save) {
 			control = new OAMenuItemController(hub, OAButton.ButtonEnabledMode.HubIsValid, command, HubChangeListener.Type.HubValid, false,
 					false);
@@ -903,8 +909,9 @@ public class OAMenuItem extends JMenuItem implements OAJfcComponent {
 		return this.control.getToolTipTextTemplate();
 	}
 
+	/*qqqqqqqq was:
 	public Object getSearchObject() {
 		return null;
 	}
-
+	*/
 }
